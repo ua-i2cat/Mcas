@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
+import cat.i2cat.mcaslite.config.model.TLevel;
+import cat.i2cat.mcaslite.config.model.TProfile;
+import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.entities.ApplicationConfig;
-import cat.i2cat.mcaslite.entities.TLevel;
-import cat.i2cat.mcaslite.entities.TProfile;
 import cat.i2cat.mcaslite.entities.Transco;
-import cat.i2cat.mcaslite.entities.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class TranscoderUtils {
@@ -56,7 +56,7 @@ public class TranscoderUtils {
 	
 	private static String ffCommandBuilder(TLevel level, TProfile profile, String input, String output){
 		String cmd = "ffmpeg -i " + input;
-		cmd += " -s " + level.getScreen()[0] + "x" + level.getScreen()[1] + " -b " + level.getvBitrate() + " -ac " + level.getaChannels() + " -ab " + level.getaBitrate() + "k ";
+		cmd += " -s " + level.getScreenx() + "x" + level.getScreeny() + " -b " + level.getvBitrate() + " -ac " + level.getaChannels() + " -ab " + level.getaBitrate() + "k ";
 		cmd += " -f " + profile.getFormat() + " -vcodec " + profile.getvCodec() + " -acodec " + profile.getaCodec();
 		cmd += output;
 		return cmd;

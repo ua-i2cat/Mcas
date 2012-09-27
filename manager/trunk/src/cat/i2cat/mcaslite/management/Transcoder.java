@@ -7,10 +7,10 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 
+import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.entities.Transco;
 import cat.i2cat.mcaslite.entities.TranscoQueue;
 import cat.i2cat.mcaslite.entities.TranscoRequest;
-import cat.i2cat.mcaslite.entities.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
