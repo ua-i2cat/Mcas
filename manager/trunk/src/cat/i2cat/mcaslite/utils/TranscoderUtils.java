@@ -22,24 +22,24 @@ public class TranscoderUtils {
 		if(config.getTranscoder() == TranscoderConfig.FFMPEG){
 			for(TLevel level : config.getLevels()){
 				for(TProfile profile : config.getProfiles()){
-					cmd = ffCommandBuilder(level, profile, getInput(id), getOutput(id, level.getName(), profile.getFormat()));
+					cmd = ffCommandBuilder(level, profile, getInput(id), getOutput(id, ((Integer) level.getId()).toString(), profile.getFormat()));
 					commands.add(new Transco(cmd, 
 							getOutput(id, level.getName(), profile.getFormat()), 
-							getInput(id),
-							getDestination(dstUri, level.getName(), profile.getFormat())));
+							getDestination(dstUri, ((Integer) level.getId()).toString(), profile.getFormat()),
+							getInput(id)));
 				}
 			}
 		}
 		return commands;
 	}
 	
-	private static String getDestination(String dstUri, String levelName, String extension) throws MCASException {
+	private static String getDestination(String dstUri, String levelId, String extension) throws MCASException {
 		String name = null;
 		try {
 			URI uri = new URI(dstUri);
-			name = FilenameUtils.getBaseName(uri.getPath()) + levelName + "." + extension;
+			name = FilenameUtils.getBaseName(uri.getPath()) + levelId + "." + extension;
 			name = FilenameUtils.concat(FilenameUtils.getFullPath(uri.getPath()), name);
-			return uri.getScheme() + "://" + uri.getAuthority() + name;
+			return uri.getScheme() + "://" + ((uri.getAuthority() == null) ? "" : uri.getAuthority())  + name;
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			throw new MCASException();
@@ -58,7 +58,7 @@ public class TranscoderUtils {
 		String cmd = "ffmpeg -i " + input;
 		cmd += " -s " + level.getScreenx() + "x" + level.getScreeny() + " -b " + level.getvBitrate() + " -ac " + level.getaChannels() + " -ab " + level.getaBitrate() + "k ";
 		cmd += " -f " + profile.getFormat() + " -vcodec " + profile.getvCodec() + " -acodec " + profile.getaCodec();
-		cmd += output;
+		cmd += " " + output;
 		return cmd;
 	}
 
