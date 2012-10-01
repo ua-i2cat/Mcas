@@ -67,14 +67,22 @@ public class TranscoRequest {
 	private UUID id = UUID.randomUUID();
 	private State state = State.CREATED;
 	private int numOutputs;
-	private List<String> transcodedUris = new ArrayList<String>();
+	private List<Transco> transcoded = new ArrayList<Transco>();
 			
-	public void addTrancodedUri(String uri){
-		transcodedUris.add(uri);
+	public void addTrancoded(Transco transco){
+		transcoded.add(transco);
 	}
 	
-	public boolean isTranscodedUriEmpty(){
-		return transcodedUris.isEmpty();
+	public void deleteTranscoded(Transco transco){
+		transcoded.remove(transco);
+	}
+	
+	public boolean isTranscodedEmpty(){
+		return transcoded.isEmpty();
+	}
+	
+	public List<Transco> getTranscoded(){
+		return transcoded;
 	}
 	
 	public int getNumOutputs() {

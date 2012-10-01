@@ -24,7 +24,7 @@ public class ApplicationConfigTest {
 	public void getMaxTest(){
 		int i = ApplicationConfig.getMaxTransco();
 		assertTrue(i > 0);
-		i = ApplicationConfig.getMaxMediaH();
+		i = ApplicationConfig.getMaxInMediaH();
 		assertTrue(i > 0);
 	}
 

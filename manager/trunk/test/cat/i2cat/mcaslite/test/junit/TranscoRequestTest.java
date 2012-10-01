@@ -22,13 +22,13 @@ public class TranscoRequestTest {
 		assertNull(request.getConfig());
 		assertNotNull(request.getId());
 		assertNotNull(request.getState());
-		assertTrue(request.isTranscodedUriEmpty());
+		assertTrue(request.isTranscodedEmpty());
 		assertEquals(State.CREATED,request.getState());
 		boolean fail = false;
 		try {
 			request.increaseState();
 			assertEquals(State.M_QUEUED,request.getState());
-			for (int i = 0; i < 10 ; i++) request.increaseState();
+			for (int i = 0; i < 15 ; i++) request.increaseState();
 		} catch (MCASException e) {
 			fail = true;
 		}

@@ -27,11 +27,22 @@ public class ApplicationConfig {
 		return null;
 	}
 	
-	public static int getMaxMediaH() {
+	public static int getMaxInMediaH() {
 		Properties prop = new Properties();
 		try {
 			prop.load(ApplicationConfig.class.getResourceAsStream("application.properties"));
-			return Integer.parseInt(prop.getProperty("MaxMediaH"));
+			return Integer.parseInt(prop.getProperty("MaxInMediaH"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	public static int getMaxOutMediaH() {
+		Properties prop = new Properties();
+		try {
+			prop.load(ApplicationConfig.class.getResourceAsStream("application.properties"));
+			return Integer.parseInt(prop.getProperty("MaxOutMediaH"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			return 0;

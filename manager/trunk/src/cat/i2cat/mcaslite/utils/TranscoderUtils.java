@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
+import cat.i2cat.mcaslite.config.dao.TranscoderConfigDao;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
@@ -22,7 +23,7 @@ public class TranscoderUtils {
 		if(config.getTranscoder() == TranscoderConfig.FFMPEG){
 			for(TLevel level : config.getLevels()){
 				for(TProfile profile : config.getProfiles()){
-					cmd = ffCommandBuilder(level, profile, getInput(id), getOutput(id, ((Integer) level.getId()).toString(), profile.getFormat()));
+					cmd = ffCommandBuilder(level, profile, getInput(id), getOutput(id, level.getName(), profile.getFormat()));
 					commands.add(new Transco(cmd, 
 							getOutput(id, level.getName(), profile.getFormat()), 
 							getDestination(dstUri, ((Integer) level.getId()).toString(), profile.getFormat()),
@@ -46,11 +47,11 @@ public class TranscoderUtils {
 		}
 	}
 
-	public static String getInput(String id){
+	private static String getInput(String id){
 		return FilenameUtils.concat(ApplicationConfig.getInputWorkingDir(), id);
 	}
 	
-	public static String getOutput(String id, String levelName, String extension){
+	private static String getOutput(String id, String levelName, String extension){
 		return FilenameUtils.concat(ApplicationConfig.getOutputWorkingDir(), id + levelName + "." + extension);
 	}
 	
@@ -58,13 +59,12 @@ public class TranscoderUtils {
 		String cmd = "ffmpeg -i " + input;
 		cmd += " -s " + level.getScreenx() + "x" + level.getScreeny() + " -b " + level.getvBitrate() + " -ac " + level.getaChannels() + " -ab " + level.getaBitrate() + "k ";
 		cmd += " -f " + profile.getFormat() + " -vcodec " + profile.getvCodec() + " -acodec " + profile.getaCodec();
-		cmd += " " + output;
+		cmd += " -y " + output;
 		return cmd;
 	}
 
-	public static TranscoderConfig loadConfig(String config) {
-		// TODO Auto-generated method stub
-		return null;
+	public static TranscoderConfig loadConfig(String config) throws MCASException {
+		return TranscoderConfigDao.findByName("default");
 	}
 	
 

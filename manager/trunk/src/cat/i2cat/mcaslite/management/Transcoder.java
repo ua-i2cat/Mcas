@@ -8,10 +8,12 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
+import cat.i2cat.mcaslite.entities.ApplicationConfig;
 import cat.i2cat.mcaslite.entities.Transco;
 import cat.i2cat.mcaslite.entities.TranscoQueue;
 import cat.i2cat.mcaslite.entities.TranscoRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.MediaUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 public class Transcoder implements Runnable {
@@ -22,11 +24,12 @@ public class Transcoder implements Runnable {
 	private List<Transco> transcos;
 	private DefaultExecutor executor;
 	
-	public Transcoder(TranscoQueue queue, TranscoRequest request, String config) throws MCASException{
+	public Transcoder(TranscoQueue queue, TranscoRequest request) throws MCASException{
 		this.queue = queue;
 		this.request = request;
-		this.config = TranscoderUtils.loadConfig(config);
+		this.config = TranscoderUtils.loadConfig(request.getConfig());
 		this.transcos = TranscoderUtils.transcoBuilder(this.config, request.getIdStr(), request.getDst());
+		this.executor= new DefaultExecutor(); 
 	}
 
 	@Override
@@ -34,21 +37,22 @@ public class Transcoder implements Runnable {
 		request.setNumOutputs(transcos.size());
 		for(Transco transco : transcos){
 			try {
-				executeCommand(transco.getCommand().trim(), executor);
-				request.addTrancodedUri(transco.getDestinationUriStr());
+				executeCommand(transco.getCommand().trim());
+				request.addTrancoded(transco);
 			} catch (MCASException e) {
 				e.printStackTrace();
 			}
 		}
-		if (request.isTranscodedUriEmpty()){
+		if (request.isTranscodedEmpty()){
+			MediaUtils.deleteFile(ApplicationConfig.getInputWorkingDir() + request.getIdString());
 			request.setError();
-			//TODO: manage callback
+			queue.update(request);
 			return;
 		}
-		queue.update(request);
 		try {
+			request.increaseState();
 			synchronized(queue){
-				request.increaseState();
+				queue.update(request);
 				queue.notifyAll();
 			}
 		} catch (MCASException e){
@@ -63,9 +67,8 @@ public class Transcoder implements Runnable {
 			}
 	}
 	
-	private void executeCommand(String cmd, DefaultExecutor executor) throws MCASException{
+	private void executeCommand(String cmd) throws MCASException{
 		CommandLine commandLine = CommandLine.parse(cmd.trim());
-		executor = new DefaultExecutor();
 		executor.setWatchdog(new ExecuteWatchdog(24 * 3600 * 1000));
 		//TODO: manage in a different manner timeout when live processing
 		executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());

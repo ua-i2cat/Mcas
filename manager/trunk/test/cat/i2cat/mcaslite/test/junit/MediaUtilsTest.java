@@ -32,6 +32,23 @@ public class MediaUtilsTest {
 		}
 		
 	}
+	
+	@Test
+	public void toDestinationUriTest(){
+		try {
+			MediaUtils.toDestinationUri("/etc/fstab", new URI("file:///home/david/prova.c3po"));
+			File file = new File("/home/david/prova.c3po");
+			assertTrue(file.exists());
+			assertTrue(file.delete());
+		} catch (MCASException e) {
+			e.printStackTrace();
+			Assert.fail();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
+		
+	}
 
 
 }
