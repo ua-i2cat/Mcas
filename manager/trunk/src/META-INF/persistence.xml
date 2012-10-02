@@ -14,7 +14,7 @@
             <property name="javax.persistence.jdbc.password" value="mcas" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
             <!--<property name="hibernate.connection.shutdown" value="true"/>-->
-            <!--<property name="hibernate.hbm2ddl.auto" value="create-drop"/>-->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
     </persistence-unit>
 </persistence>

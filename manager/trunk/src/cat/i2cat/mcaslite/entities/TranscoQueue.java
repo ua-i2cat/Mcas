@@ -2,7 +2,9 @@ package cat.i2cat.mcaslite.entities;
 
 import java.util.ArrayList;
 import java.util.List;
-import cat.i2cat.mcaslite.entities.TranscoRequest.State;
+
+import cat.i2cat.mcaslite.config.model.TranscoRequest;
+import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class TranscoQueue {
@@ -58,6 +60,13 @@ public class TranscoQueue {
 	synchronized public State getState(TranscoRequest r) {
 		if (queue.contains(r)){
 			return queue.get(queue.indexOf(r)).getState();
+		}
+		return null;
+	}
+	
+	synchronized public TranscoRequest getRequest(TranscoRequest r) {
+		if (queue.contains(r)){
+			return queue.get(queue.indexOf(r));
 		}
 		return null;
 	}

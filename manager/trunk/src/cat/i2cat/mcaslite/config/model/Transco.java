@@ -1,10 +1,21 @@
-package cat.i2cat.mcaslite.entities;
+package cat.i2cat.mcaslite.config.model;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.UUID;
+
+//import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
+@Entity
+@Table(name = "transco")
 public class Transco {
 	
 	private String inputFile;
@@ -12,11 +23,35 @@ public class Transco {
 	private String outputFile;
 	private String destinationUri;
 	
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	private int id;
+	private UUID request;
+	
+	public Transco(){
+		
+	}
+	
 	public Transco(String command, String outputFile, String destinationUri, String inputFile){
 		this.command = command;
 		this.outputFile = outputFile;
 		this.inputFile = inputFile;
 		this.destinationUri = destinationUri;
+	}
+	
+	public UUID getRequest(){
+		return request;
+	}
+	
+	public void setRequest(UUID request){
+		this.request = request;
+	}
+
+	public int getId(){
+		return id;
+	}
+	
+	public void setId(int id){
+		this.id = id;
 	}
 	
 	public String getCommand() {
@@ -35,7 +70,8 @@ public class Transco {
 		this.outputFile = outputFile;
 	}
 
-	public URI getDestinationUri() throws MCASException {
+	@Transient
+	public URI getDestinationUriUri() throws MCASException {
 		try {
 			URI uri = new URI(destinationUri);
 			return uri;
@@ -45,7 +81,7 @@ public class Transco {
 		}
 	}
 	
-	public String getDestinationUriStr(){
+	public String getDestinationUri(){
 		return destinationUri;
 	}
 

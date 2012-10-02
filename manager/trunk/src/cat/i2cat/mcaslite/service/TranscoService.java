@@ -16,10 +16,10 @@ import javax.ws.rs.core.Response;
 
 import com.sun.jersey.spi.resource.Singleton;
 
-import cat.i2cat.mcaslite.entities.TranscoRequest;
+import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.TranscoHandler;
-import cat.i2cat.mcaslite.utils.RequestValidator;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Singleton
 @Path("/transco")
@@ -28,7 +28,7 @@ public class TranscoService {
 	private TranscoHandler transcoH;
 	private Thread managerTh;
 	
-	public TranscoService(){
+	public TranscoService() throws MCASException{
 		transcoH = new TranscoHandler();
 		managerTh = new Thread(transcoH);
 		managerTh.setName("MainManager");
@@ -40,12 +40,12 @@ public class TranscoService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response addTransco(TranscoRequest request) throws MCASException {
 		try {
-			if (!RequestValidator.isValidSrcUri(new URI(request.getSrc())) || !RequestValidator.isValidDestination(new URI(request.getDst()))) {
-				return Response.status(400).entity("Bad Request: Check source and destination.").build();
+			if (!RequestUtils.isValidSrcUri(new URI(request.getSrc())) || !RequestUtils.isValidDestination(new URI(request.getDst()))) {
+				return Response.status(Response.Status.BAD_REQUEST).entity("Check source and destination.").build();
 			}
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
-			Response.status(Response.Status.BAD_REQUEST).entity("Check source and destination.").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Check source and destination.").build();
 		}
 		transcoH.putRequest(request);
 		return Response.status(Response.Status.CREATED).entity(request.getIdStr()).build();
@@ -66,6 +66,26 @@ public class TranscoService {
 			e.printStackTrace();
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
+	}
+	
+	@GET
+	@Path("uris")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getDestinationUris(@QueryParam("id") String idStr){
+		try {
+			TranscoRequest request = transcoH.getRequest(UUID.fromString(idStr));
+			if (request == null){
+				throw new WebApplicationException(Response.Status.NOT_FOUND);
+			} else {
+				return RequestUtils.destinationJSONbuilder(request);
+			}
+		} catch (IllegalArgumentException e){
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		} catch (MCASException e) {
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status.NO_CONTENT);
+		}	
 	}
 	
 }

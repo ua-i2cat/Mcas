@@ -14,16 +14,24 @@ import javax.persistence.Table;
 public class TLevel implements Serializable{
 
 	private static final long serialVersionUID = -2998112001342903672L;
+	
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+	@Column(unique = true, nullable = false, length = 100)
 	private String name;
+	@Column(nullable = false)
 	private int screenx;
+	@Column(nullable = false)
 	private int screeny;
+	@Column(nullable = false)
 	private int vBitrate;
+	@Column(nullable = false)
 	private int aChannels;
+	@Column(nullable = false)
 	private int aBitrate;
+	@Column(nullable = false)
 	private int tConfig;
 	
-	@Column(name = "vBitrate", nullable = false)
 	public int getvBitrate() {
 		return vBitrate;
 	}
@@ -31,8 +39,7 @@ public class TLevel implements Serializable{
 	public void setvBitrate(int vBitrate) {
 		this.vBitrate = vBitrate;
 	}
-	
-	@Column(name = "aChannels", nullable = false)
+
 	public int getaChannels() {
 		return aChannels;
 	}
@@ -41,7 +48,6 @@ public class TLevel implements Serializable{
 		this.aChannels = aChannels;
 	}
 	
-	@Column(name = "aBitrate", nullable = false)
 	public int getaBitrate() {
 		return aBitrate;
 	}
@@ -50,7 +56,6 @@ public class TLevel implements Serializable{
 		this.aBitrate = aBitrate;
 	}
 	
-	@Column(name = "name", nullable = false, length = 100)
 	public String getName() {
 		return name;
 	}
@@ -59,7 +64,6 @@ public class TLevel implements Serializable{
 		this.name = name;
 	}
 
-	@Column(name = "screenx", nullable = false)
 	public int getScreenx() {
 		return screenx;
 	}
@@ -68,7 +72,6 @@ public class TLevel implements Serializable{
 		this.screenx = screenx;
 	}
 
-	@Column(name = "screeny", nullable = false)
 	public int getScreeny() {
 		return screeny;
 	}
@@ -77,8 +80,6 @@ public class TLevel implements Serializable{
 		this.screeny = screeny;
 	}
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "id", unique = true, nullable = false)
 	public int getId() {
 		return id;
 	}
@@ -87,7 +88,6 @@ public class TLevel implements Serializable{
 		this.id = id;
 	}
 
-	@Column(name = "tConfig", nullable = false)
 	public int gettConfig() {
 		return tConfig;
 	}

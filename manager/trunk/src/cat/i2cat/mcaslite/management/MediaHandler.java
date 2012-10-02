@@ -3,12 +3,12 @@ package cat.i2cat.mcaslite.management;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import cat.i2cat.mcaslite.entities.ApplicationConfig;
-import cat.i2cat.mcaslite.entities.Transco;
+import cat.i2cat.mcaslite.config.model.Transco;
+import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.entities.TranscoQueue;
-import cat.i2cat.mcaslite.entities.TranscoRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.MediaUtils;
+import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 public class MediaHandler implements Runnable {
 
@@ -43,7 +43,7 @@ public class MediaHandler implements Runnable {
 	}
 	
 	private void inputHandle() throws MCASException, URISyntaxException{
-		MediaUtils.toWorkingDir(new URI(request.getSrc()), request.getIdStr());
+		MediaUtils.toWorkingDir(new URI(request.getSrc()), request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
 		request.increaseState();
 		synchronized(queue){
 			queue.update(request);
@@ -54,7 +54,7 @@ public class MediaHandler implements Runnable {
 	private void outputHandle() throws MCASException {
 		for(Transco transco : request.getTranscoded()){
 			try {
-				MediaUtils.toDestinationUri(transco.getOutputFile(), transco.getDestinationUri());
+				MediaUtils.toDestinationUri(transco.getOutputFile(), transco.getDestinationUriUri());
 			} catch (MCASException e) {
 				e.printStackTrace();
 				request.deleteTranscoded(transco);
@@ -63,7 +63,7 @@ public class MediaHandler implements Runnable {
 		}
 		if (request.getNumOutputs() > request.getTranscoded().size()){
 			if (request.isTranscodedEmpty()){
-				MediaUtils.deleteFile(ApplicationConfig.getInputWorkingDir() + request.getIdString());
+				MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
 				request.setError();
 			} else {
 				request.setPartialError();

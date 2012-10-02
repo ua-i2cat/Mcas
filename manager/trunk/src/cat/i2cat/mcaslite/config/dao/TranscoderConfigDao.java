@@ -54,8 +54,7 @@ public class TranscoderConfigDao extends DAO {
 	public static void deleteById(Integer id) throws MCASException {
 		try {
 			begin();
-			TranscoderConfig config = findById(id);
-			getEntityManager().remove(config);
+			getEntityManager().remove(findById(id));
 			commit();
 		} catch (Exception e) {
 			rollback();

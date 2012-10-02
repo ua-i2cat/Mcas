@@ -1,12 +1,29 @@
-package cat.i2cat.mcaslite.entities;
+package cat.i2cat.mcaslite.config.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
+//import javax.persistence.EnumType;
+//import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
-public class TranscoRequest {
+@Entity
+@Table(name = "history")
+public class TranscoRequest implements Serializable{
+
+	private static final long serialVersionUID = 4636926585290770053L;
 
 	public enum State {
 		CREATED(1, "CREATED"){
@@ -57,17 +74,23 @@ public class TranscoRequest {
 		public String getName(){
 			return this.name;
 		}
-
 	}
 
+	@Column(nullable = false, length = 100)
 	private String src;
+	@Column(nullable = false, length = 100)
 	private String dst;
+	@Column(nullable = false, length = 100)
 	private String config;
+	@Column(nullable = false, length = 100)
 	private String usr;
 	private UUID id = UUID.randomUUID();
-	private State state = State.CREATED;
-	private int numOutputs;
+	@Transient
+	private int numOutputs; //TODO: block its initialization from automatic mapping
 	private List<Transco> transcoded = new ArrayList<Transco>();
+	
+	@Enumerated(EnumType.STRING)
+	private State state = State.CREATED;
 			
 	public void addTrancoded(Transco transco){
 		transcoded.add(transco);
@@ -77,12 +100,19 @@ public class TranscoRequest {
 		transcoded.remove(transco);
 	}
 	
+	@Transient
 	public boolean isTranscodedEmpty(){
 		return transcoded.isEmpty();
 	}
 	
+	@OneToMany
+	@JoinColumn(name="request", referencedColumnName="id")
 	public List<Transco> getTranscoded(){
 		return transcoded;
+	}
+	
+	public void setTranscoded(List<Transco> transcoded){
+		this.transcoded = transcoded;
 	}
 	
 	public int getNumOutputs() {
@@ -97,16 +127,22 @@ public class TranscoRequest {
 		state = state.next();
 	}
 	
+	@Transient
 	public void setError() {
 		state = State.ERROR;
 	}
 	
+	@Transient
 	public void setPartialError() {
 		state = State.PARTIAL_ERROR;
 	}
 
 	public State getState() {
 		return state;
+	}
+	
+	public void setState(State state) {
+		this.state = state;
 	}
 
 	public String getSrc() {
@@ -141,15 +177,18 @@ public class TranscoRequest {
 		this.usr = usr;
 	}
 
+	@Id
+	@Column(name = "id", nullable = false, unique= true)
 	public UUID getId() {
 		return id;
 	}
-
-	public String getIdStr() {
-		return id.toString();
+	
+	public void setId(UUID id){
+		this.id = id;
 	}
 
-	public String getIdString() {
+	@Transient
+	public String getIdStr() {
 		return id.toString();
 	}
 	
@@ -164,5 +203,4 @@ public class TranscoRequest {
 		TranscoRequest req = (TranscoRequest) o;
 		return this.id.equals(req.getId());
 	}
-
 }

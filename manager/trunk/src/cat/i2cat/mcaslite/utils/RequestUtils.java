@@ -5,7 +5,12 @@ import java.net.URI;
 
 import org.apache.commons.io.FilenameUtils;
 
-public class RequestValidator {
+import cat.i2cat.mcaslite.config.model.Transco;
+import cat.i2cat.mcaslite.config.model.TranscoRequest;
+import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
+import cat.i2cat.mcaslite.exceptions.MCASException;
+
+public class RequestUtils {
 
 	public static boolean isValidSrcUri(URI uri){
 		if (isValidUri(uri)){
@@ -44,4 +49,20 @@ public class RequestValidator {
 		return true;
 	}
 	
+	public static String destinationJSONbuilder(TranscoRequest request) throws MCASException{
+		if (!request.getState().equals(State.DONE) && !request.getState().equals(State.PARTIAL_ERROR)){
+			throw new MCASException();
+		}
+		String json = "{\n \"destinationUris\": [\n";
+		for(Transco transco : request.getTranscoded()){
+			json += "{\"uri\":\"" + transco.getDestinationUri() + "\"}\n";
+		}
+		json += "]\n}";
+		return json;
+	}
+	
+	public static boolean obsoleteRequest(TranscoRequest request){
+		
+		return false;
+	}
 }

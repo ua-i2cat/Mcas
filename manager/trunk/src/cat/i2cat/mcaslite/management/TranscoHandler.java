@@ -2,21 +2,25 @@ package cat.i2cat.mcaslite.management;
 
 import java.util.UUID;
 
-import cat.i2cat.mcaslite.entities.ApplicationConfig;
+import cat.i2cat.mcaslite.config.dao.ApplicationConfigDao;
+import cat.i2cat.mcaslite.config.model.ApplicationConfig;
+import cat.i2cat.mcaslite.config.model.TranscoRequest;
+import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
 import cat.i2cat.mcaslite.entities.TranscoQueue;
-import cat.i2cat.mcaslite.entities.TranscoRequest;
-import cat.i2cat.mcaslite.entities.TranscoRequest.State;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class TranscoHandler implements Runnable {
 
-	private TranscoQueue queue;
-	private int MAX_IN_MEDIAH = ApplicationConfig.getMaxInMediaH();
-	private int MAX_OUT_MEDIAH = ApplicationConfig.getMaxOutMediaH();
-	private int MAX_TRANSCO = ApplicationConfig.getMaxTransco();
+	private static final int DEFAULT_CONFIG_ID = 1;
 	
-	public TranscoHandler(){
+	private TranscoQueue queue;
+	private int maxInMedia;
+	private int maxOutMedia;
+	private int maxTransco;
+	
+	public TranscoHandler() throws MCASException{
 		queue = TranscoQueue.getInstance();
+		loadDefaults();
 	}
 	
 	@Override
@@ -28,15 +32,15 @@ public class TranscoHandler implements Runnable {
 					waitCondition();
 				}
 				request = queue.get(State.M_QUEUED);
-				if (request != null && queue.count(State.M_PROCESS) < MAX_IN_MEDIAH){
+				if (request != null && queue.count(State.M_PROCESS) < maxInMedia){
 					mediaHandle(request);
 				}
 				request = queue.get(State.T_QUEUED);
-				if (request != null && queue.count(State.T_PROCESS) < MAX_TRANSCO){
+				if (request != null && queue.count(State.T_PROCESS) < maxTransco){
 					transcode(request);
 				}
 				request = queue.get(State.T_TRANSCODED);
-				if (request != null && queue.count(State.T_TRANSCODED) < MAX_OUT_MEDIAH){
+				if (request != null && queue.count(State.T_TRANSCODED) < maxOutMedia){
 					mediaHandle(request);
 				}
 			} catch (MCASException e) {
@@ -46,7 +50,26 @@ public class TranscoHandler implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+		}
+	}
+	
+	private void loadDefaults() throws MCASException{
+		ApplicationConfig config = ApplicationConfigDao.findById(DEFAULT_CONFIG_ID);
+		maxInMedia = config.getMaxInMediaH();
+		maxOutMedia = config.getMaxOutMediaH();
+		maxTransco = config.getMaxTransco();
+	}
+	
+	public void loadConfig(Integer id) throws MCASException {
+		ApplicationConfig config;
+		try {
+			config = ApplicationConfigDao.findById(id);
+			maxInMedia = config.getMaxInMediaH();
+			maxOutMedia = config.getMaxOutMediaH();
+			maxTransco = config.getMaxTransco();
+		} catch (MCASException e) {
+			loadDefaults();
+			e.printStackTrace();
 		}
 	}
 
@@ -64,6 +87,15 @@ public class TranscoHandler implements Runnable {
 			queue.update(request);
 			queue.notifyAll();
 		}
+	}
+	
+	public TranscoRequest getRequest(TranscoRequest r) {
+		return queue.getRequest(r);
+		
+	}
+	
+	public TranscoRequest getRequest(UUID id) {
+		return getRequest(TranscoRequest.getEqualRequest(id));
 	}
 	
 	public String getState(TranscoRequest r) {
@@ -97,13 +129,13 @@ public class TranscoHandler implements Runnable {
 	
 	private void waitCondition() throws MCASException, InterruptedException{
 		if ((queue.isEmpty(State.T_TRANSCODED) && queue.isEmpty(State.T_QUEUED) && queue.isEmpty(State.M_QUEUED)) ||
-				(queue.isEmpty(State.T_TRANSCODED) && queue.isEmpty(State.T_QUEUED) && queue.count(State.M_PROCESS) >= MAX_IN_MEDIAH) ||
-				(queue.isEmpty(State.T_TRANSCODED) && queue.count(State.T_PROCESS) >= MAX_TRANSCO && queue.isEmpty(State.M_QUEUED)) ||
-				(queue.isEmpty(State.T_TRANSCODED) && queue.count(State.T_PROCESS) >= MAX_TRANSCO && queue.count(State.M_PROCESS) >= MAX_IN_MEDIAH) ||
-				(queue.count(State.T_TRANSCODED) >= MAX_OUT_MEDIAH && queue.isEmpty(State.T_QUEUED) && queue.isEmpty(State.M_QUEUED)) ||
-				(queue.count(State.T_TRANSCODED) >= MAX_OUT_MEDIAH && queue.isEmpty(State.T_QUEUED) && queue.count(State.M_PROCESS) >= MAX_IN_MEDIAH) ||
-				(queue.count(State.T_TRANSCODED) >= MAX_OUT_MEDIAH && queue.count(State.T_PROCESS) >= MAX_TRANSCO && queue.isEmpty(State.M_QUEUED)) ||
-				(queue.count(State.T_TRANSCODED) >= MAX_OUT_MEDIAH && queue.count(State.T_PROCESS) >= MAX_TRANSCO && queue.count(State.M_PROCESS) >= MAX_IN_MEDIAH)){
+				(queue.isEmpty(State.T_TRANSCODED) && queue.isEmpty(State.T_QUEUED) && queue.count(State.M_PROCESS) >= maxInMedia) ||
+				(queue.isEmpty(State.T_TRANSCODED) && queue.count(State.T_PROCESS) >= maxTransco && queue.isEmpty(State.M_QUEUED)) ||
+				(queue.isEmpty(State.T_TRANSCODED) && queue.count(State.T_PROCESS) >= maxTransco && queue.count(State.M_PROCESS) >= maxInMedia) ||
+				(queue.count(State.T_TRANSCODED) >= maxOutMedia && queue.isEmpty(State.T_QUEUED) && queue.isEmpty(State.M_QUEUED)) ||
+				(queue.count(State.T_TRANSCODED) >= maxOutMedia && queue.isEmpty(State.T_QUEUED) && queue.count(State.M_PROCESS) >= maxInMedia) ||
+				(queue.count(State.T_TRANSCODED) >= maxOutMedia && queue.count(State.T_PROCESS) >= maxTransco && queue.isEmpty(State.M_QUEUED)) ||
+				(queue.count(State.T_TRANSCODED) >= maxOutMedia && queue.count(State.T_PROCESS) >= maxTransco && queue.count(State.M_PROCESS) >= maxInMedia)){
 			queue.wait();
 		}
 	}

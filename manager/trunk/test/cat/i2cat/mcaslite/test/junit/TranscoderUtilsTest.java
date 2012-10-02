@@ -12,8 +12,8 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import cat.i2cat.mcaslite.config.dao.TranscoderConfigDao;
+import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.entities.Transco;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 public class TranscoderUtilsTest {
@@ -26,9 +26,9 @@ public class TranscoderUtilsTest {
 			for(Transco transco : transcos){
 				assertNotNull(transco);
 				assertEquals("/home/david/work/input/04e119ed-8862-42ba-b8ee-22e3d97df550", transco.getInputFile());
-				assertTrue(transco.getDestinationUriStr().equals("file:///home/david/prova1.ogg") ||
-						transco.getDestinationUriStr().equals("file:///home/david/prova1.webm") ||
-						transco.getDestinationUriStr().equals("file:///home/david/prova1.mp4"));
+				assertTrue(transco.getDestinationUri().equals("file:///home/david/prova1.ogg") ||
+						transco.getDestinationUri().equals("file:///home/david/prova1.webm") ||
+						transco.getDestinationUri().equals("file:///home/david/prova1.mp4"));
 				System.out.println(transco.getCommand());
 				System.out.println(transco.getDestinationUri());
 				System.out.println("---");

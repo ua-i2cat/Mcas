@@ -14,14 +14,20 @@ import javax.persistence.Table;
 public class TProfile implements Serializable{
 
 	private static final long serialVersionUID = 4031066984726638669L;
+	
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+	@Column(nullable = false)
 	private int tConfig;
-	private String name; 
+	@Column(unique = true, nullable = false, length = 100)
+	private String name;
+	@Column(nullable = false, length = 100)
 	private String format;
+	@Column(nullable = false, length = 100)
 	private String vCodec;
+	@Column(nullable = false, length = 100)
 	private String aCodec;
 	
-	@Column(name = "format", nullable = false, length = 100)
 	public String getFormat() {
 		return format;
 	}
@@ -30,7 +36,6 @@ public class TProfile implements Serializable{
 		this.format = format;
 	}
 	
-	@Column(name = "vCodec", nullable = false, length = 100)
 	public String getvCodec() {
 		return vCodec;
 	}
@@ -39,7 +44,6 @@ public class TProfile implements Serializable{
 		this.vCodec = vCodec;
 	}
 	
-	@Column(name = "acodec", nullable = false, length = 100)
 	public String getaCodec() {
 		return aCodec;
 	}
@@ -48,7 +52,6 @@ public class TProfile implements Serializable{
 		this.aCodec = aCodec;
 	}
 	
-	@Column(name = "name", nullable = false, length = 100)
 	public String getName() {
 		return name;
 	}
@@ -57,8 +60,6 @@ public class TProfile implements Serializable{
 		this.name = name;
 	}
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "id", unique = true, nullable = false)
 	public int getId() {
 		return id;
 	}
@@ -67,7 +68,6 @@ public class TProfile implements Serializable{
 		this.id = id;
 	}
 
-	@Column(name = "tConfig", nullable = false)
 	public int gettConfig() {
 		return tConfig;
 	}

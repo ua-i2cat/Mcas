@@ -10,9 +10,8 @@ import org.apache.commons.io.FilenameUtils;
 import cat.i2cat.mcaslite.config.dao.TranscoderConfigDao;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
+import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.entities.ApplicationConfig;
-import cat.i2cat.mcaslite.entities.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class TranscoderUtils {
@@ -23,11 +22,11 @@ public class TranscoderUtils {
 		if(config.getTranscoder() == TranscoderConfig.FFMPEG){
 			for(TLevel level : config.getLevels()){
 				for(TProfile profile : config.getProfiles()){
-					cmd = ffCommandBuilder(level, profile, getInput(id), getOutput(id, level.getName(), profile.getFormat()));
+					cmd = ffCommandBuilder(level, profile, getInput(id, config.getId()), getOutput(id, level.getName(), profile.getFormat(), config.getId()));
 					commands.add(new Transco(cmd, 
-							getOutput(id, level.getName(), profile.getFormat()), 
+							getOutput(id, level.getName(), profile.getFormat(), config.getId()), 
 							getDestination(dstUri, ((Integer) level.getId()).toString(), profile.getFormat()),
-							getInput(id)));
+							getInput(id, config.getId())));
 				}
 			}
 		}
@@ -38,7 +37,7 @@ public class TranscoderUtils {
 		String name = null;
 		try {
 			URI uri = new URI(dstUri);
-			name = FilenameUtils.getBaseName(uri.getPath()) + levelId + "." + extension;
+			name = FilenameUtils.getBaseName(uri.getPath()) + "_" + levelId + "." + extension;
 			name = FilenameUtils.concat(FilenameUtils.getFullPath(uri.getPath()), name);
 			return uri.getScheme() + "://" + ((uri.getAuthority() == null) ? "" : uri.getAuthority())  + name;
 		} catch (URISyntaxException e) {
@@ -47,12 +46,12 @@ public class TranscoderUtils {
 		}
 	}
 
-	private static String getInput(String id){
-		return FilenameUtils.concat(ApplicationConfig.getInputWorkingDir(), id);
+	private static String getInput(String id, int configId) throws MCASException{
+		return FilenameUtils.concat(TranscoderConfigDao.findById(configId).getInputWorkingDir(), id);
 	}
 	
-	private static String getOutput(String id, String levelName, String extension){
-		return FilenameUtils.concat(ApplicationConfig.getOutputWorkingDir(), id + levelName + "." + extension);
+	private static String getOutput(String id, String levelName, String extension, int configId) throws MCASException{
+		return FilenameUtils.concat(TranscoderConfigDao.findById(configId).getOutputWorkingDir(), id + levelName + "." + extension);
 	}
 	
 	private static String ffCommandBuilder(TLevel level, TProfile profile, String input, String output){
@@ -67,6 +66,7 @@ public class TranscoderUtils {
 		return TranscoderConfigDao.findByName("default");
 	}
 	
-
-
+	public static int getConfigId(String configName) throws MCASException {
+		return TranscoderConfigDao.findByName("default").getId();
+	}
 }

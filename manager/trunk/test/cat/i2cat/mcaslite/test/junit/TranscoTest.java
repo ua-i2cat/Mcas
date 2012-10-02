@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import cat.i2cat.mcaslite.entities.Transco;
+import cat.i2cat.mcaslite.config.model.Transco;
 
 public class TranscoTest {
 

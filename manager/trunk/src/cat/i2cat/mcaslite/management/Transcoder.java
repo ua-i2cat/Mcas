@@ -7,11 +7,10 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 
+import cat.i2cat.mcaslite.config.model.Transco;
+import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.entities.ApplicationConfig;
-import cat.i2cat.mcaslite.entities.Transco;
 import cat.i2cat.mcaslite.entities.TranscoQueue;
-import cat.i2cat.mcaslite.entities.TranscoRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
@@ -29,7 +28,7 @@ public class Transcoder implements Runnable {
 		this.request = request;
 		this.config = TranscoderUtils.loadConfig(request.getConfig());
 		this.transcos = TranscoderUtils.transcoBuilder(this.config, request.getIdStr(), request.getDst());
-		this.executor= new DefaultExecutor(); 
+		this.executor = new DefaultExecutor(); 
 	}
 
 	@Override
@@ -44,7 +43,7 @@ public class Transcoder implements Runnable {
 			}
 		}
 		if (request.isTranscodedEmpty()){
-			MediaUtils.deleteFile(ApplicationConfig.getInputWorkingDir() + request.getIdString());
+			MediaUtils.deleteInputFile(request.getIdStr(), config.getId());
 			request.setError();
 			queue.update(request);
 			return;
@@ -69,7 +68,7 @@ public class Transcoder implements Runnable {
 	
 	private void executeCommand(String cmd) throws MCASException{
 		CommandLine commandLine = CommandLine.parse(cmd.trim());
-		executor.setWatchdog(new ExecuteWatchdog(24 * 3600 * 1000));
+		executor.setWatchdog(new ExecuteWatchdog(config.getTimeout() * 1000));
 		//TODO: manage in a different manner timeout when live processing
 		executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
 		try {

@@ -5,16 +5,29 @@ import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import cat.i2cat.mcaslite.entities.ApplicationConfig;
-import cat.i2cat.mcaslite.entities.Transco;
+import org.apache.commons.io.FilenameUtils;
+
+import cat.i2cat.mcaslite.config.dao.TranscoderConfigDao;
+import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class MediaUtils {
+	
+	public static void deleteInputFile(String requestId, Integer configId){
+		try {
+			File fd = new File(FilenameUtils.concat(TranscoderConfigDao.findById(configId).getInputWorkingDir(), requestId));
+			if (fd.exists()){
+				fd.delete();
+			}
+		} catch (MCASException e) {
+			e.printStackTrace();
+		}
+	}
 
-	public static void toWorkingDir(URI uri, String id) throws MCASException {
+	public static void toWorkingDir(URI uri, String id, int configId) throws MCASException {
 		try {
 			if (uri.getScheme().equals("file")) {
-				FileUtils.copyFile(new File(uri.getPath()), new File(ApplicationConfig.getInputWorkingDir() + id));
+				FileUtils.copyFile(new File(uri.getPath()), new File(FilenameUtils.concat(TranscoderConfigDao.findById(configId).getInputWorkingDir(), id)));
 			} else if (uri.getScheme().equals("http")) {
 				//TODO
 			} else if (uri.getScheme().equals("https")) {

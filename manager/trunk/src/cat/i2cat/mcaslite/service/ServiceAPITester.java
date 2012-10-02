@@ -14,8 +14,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
-import cat.i2cat.mcaslite.entities.TranscoRequest;
-import cat.i2cat.mcaslite.utils.RequestValidator;
+import cat.i2cat.mcaslite.config.model.TranscoRequest;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 
 import com.sun.jersey.spi.resource.Singleton;
 
@@ -28,7 +28,7 @@ public class ServiceAPITester {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response addTransco(TranscoRequest request) {
 		try {
-			if (!RequestValidator.isValidSrcUri(new URI(request.getSrc())) || !RequestValidator.isValidDestination(new URI(request.getDst()))) {
+			if (!RequestUtils.isValidSrcUri(new URI(request.getSrc())) || !RequestUtils.isValidDestination(new URI(request.getDst()))) {
 				return Response.status(400).entity("Bad Request: Check source and destination.").build();
 			}
 		} catch (URISyntaxException e) {

@@ -10,7 +10,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import cat.i2cat.mcaslite.entities.ApplicationConfig;
+import cat.i2cat.mcaslite.config.dao.TranscoderConfigDao;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 
@@ -19,8 +19,8 @@ public class MediaUtilsTest {
 	@Test
 	public void toWorkingDirTest(){
 		try {
-			MediaUtils.toWorkingDir(new URI("file:///etc/fstab"),"thisIsMyId");
-			File file = new File(ApplicationConfig.getInputWorkingDir() + "/thisIsMyId");
+			MediaUtils.toWorkingDir(new URI("file:///etc/fstab"),"thisIsMyId",1);
+			File file = new File(TranscoderConfigDao.findById(1).getInputWorkingDir() + "/thisIsMyId");
 			assertTrue(file.exists());
 			assertTrue(file.delete());
 		} catch (MCASException e) {

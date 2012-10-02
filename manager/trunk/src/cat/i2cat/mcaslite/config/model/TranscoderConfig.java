@@ -20,14 +20,28 @@ public class TranscoderConfig implements Serializable {
 	private static final long serialVersionUID = 5142563434573216847L;
 	public static final int FFMPEG 		= 1;
 	
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+	@Column(unique = true, nullable = false, length = 100)
 	private String name;
+	@Column(nullable = false, length = 100)
+	private String inputWorkingDir;
+	@Column(nullable = false, length = 100)
+	private String outputWorkingDir;
+	@Column(nullable = false)
+	private int timeout;
+	@Column(nullable = false)
 	private int threads;
+	@Column(nullable = false)
 	private int transcoder;
+	@OneToMany
+	@JoinColumn(name="tConfig", referencedColumnName="id")
 	private Set<TProfile> profiles;
+	@OneToMany
+	@JoinColumn(name="tConfig", referencedColumnName="id")
 	private Set<TLevel> levels;
 	
-	@Column(name = "name", nullable = false, unique = true, length = 100)
+	
 	public String getName() {
 		return name;
 	}
@@ -36,7 +50,14 @@ public class TranscoderConfig implements Serializable {
 		this.name = name;
 	}
 	
-	@Column(name = "threads", nullable = false)
+	public int getTimeout() {
+		return timeout;
+	}
+	
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+	
 	public int getThreads() {
 		return threads;
 	}
@@ -45,7 +66,6 @@ public class TranscoderConfig implements Serializable {
 		this.threads = threads;
 	}
 	
-	@Column(name = "transcoder", nullable = false)
 	public int getTranscoder() {
 		return transcoder;
 	}
@@ -54,8 +74,6 @@ public class TranscoderConfig implements Serializable {
 		this.transcoder = transcoder;
 	}
 	
-	@OneToMany
-	@JoinColumn(name="tConfig", referencedColumnName="id")
 	public Set<TProfile> getProfiles() {
 		return profiles;
 	}
@@ -64,8 +82,6 @@ public class TranscoderConfig implements Serializable {
 		this.profiles = profiles;
 	}
 	
-	@OneToMany
-	@JoinColumn(name="tConfig", referencedColumnName="id")
 	public Set<TLevel> getLevels() {
 		return levels;
 	}
@@ -74,8 +90,22 @@ public class TranscoderConfig implements Serializable {
 		this.levels = levels;
 	}
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "id", unique = true, nullable = false)
+	public String getInputWorkingDir() {
+		return inputWorkingDir;
+	}
+
+	public void setInputWorkingDir(String inputWorkigDir) {
+		this.inputWorkingDir = inputWorkigDir;
+	}
+
+	public String getOutputWorkingDir() {
+		return outputWorkingDir;
+	}
+
+	public void setOutputWorkingDir(String outputWorkigDir) {
+		this.outputWorkingDir = outputWorkigDir;
+	}
+
 	public int getId() {
 		return id;
 	}
