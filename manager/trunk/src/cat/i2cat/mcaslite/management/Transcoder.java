@@ -7,10 +7,10 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 
+import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.entities.TranscoQueue;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
@@ -22,6 +22,7 @@ public class Transcoder implements Runnable {
 	private TranscoRequest request;
 	private List<Transco> transcos;
 	private DefaultExecutor executor;
+	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class); 
 	
 	public Transcoder(TranscoQueue queue, TranscoRequest request) throws MCASException{
 		this.queue = queue;
@@ -42,13 +43,16 @@ public class Transcoder implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		if (request.isTranscodedEmpty()){
-			MediaUtils.deleteInputFile(request.getIdStr(), config.getId());
-			request.setError();
-			queue.update(request);
-			return;
-		}
 		try {
+			if (request.isTranscodedEmpty()){
+				MediaUtils.deleteInputFile(request.getIdStr(), config.getId());
+				request.setError();
+				synchronized(queue){
+					queue.removeRequest(request);
+					requestDao.save(request);
+				}
+				return;
+			}
 			request.increaseState();
 			synchronized(queue){
 				queue.update(request);

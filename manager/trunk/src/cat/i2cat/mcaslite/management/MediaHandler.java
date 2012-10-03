@@ -3,9 +3,9 @@ package cat.i2cat.mcaslite.management;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
-import cat.i2cat.mcaslite.entities.TranscoQueue;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
@@ -14,6 +14,7 @@ public class MediaHandler implements Runnable {
 
 	private TranscoQueue queue;
 	private TranscoRequest request;
+	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class); 
 	
 	public MediaHandler(TranscoQueue queue, TranscoRequest request){
 		this.queue = queue;
@@ -35,15 +36,22 @@ public class MediaHandler implements Runnable {
 			}
 		} catch (MCASException e) {
 			request.setError();
-			queue.update(request);
+			synchronized(queue){
+				queue.removeRequest(request);
+				requestDao.save(request);
+			}
 			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+		} 
 	}
 	
-	private void inputHandle() throws MCASException, URISyntaxException{
-		MediaUtils.toWorkingDir(new URI(request.getSrc()), request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
+	private void inputHandle() throws MCASException {
+		try {
+			MediaUtils.toWorkingDir(new URI(request.getSrc()), request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
+			throw new MCASException();
+		}
 		request.increaseState();
 		synchronized(queue){
 			queue.update(request);
@@ -73,8 +81,8 @@ public class MediaHandler implements Runnable {
 		}
 		MediaUtils.clean(request.getTranscoded());
 		synchronized(queue){
-			queue.update(request);
-			queue.notifyAll();
+			queue.removeRequest(request);
+			requestDao.save(request);
 		}
 	}
 	

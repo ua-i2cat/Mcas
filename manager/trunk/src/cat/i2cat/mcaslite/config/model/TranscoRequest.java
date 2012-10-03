@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
+import javax.persistence.CascadeType;
 //import javax.persistence.EnumType;
 //import javax.persistence.Enumerated;
 import javax.persistence.Id;
@@ -16,6 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
@@ -80,16 +83,20 @@ public class TranscoRequest implements Serializable{
 	private String src;
 	@Column(nullable = false, length = 100)
 	private String dst;
-	@Column(nullable = false, length = 100)
+	@Column(length = 100)
 	private String config;
-	@Column(nullable = false, length = 100)
+	@Column(length = 100)
 	private String usr;
+	@Id
+	@Type(type="uuid-char")
 	private UUID id = UUID.randomUUID();
 	@Transient
 	private int numOutputs; //TODO: block its initialization from automatic mapping
+	@OneToMany(cascade=CascadeType.ALL)
+	@JoinColumn(name="request", referencedColumnName="id")
 	private List<Transco> transcoded = new ArrayList<Transco>();
-	
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private State state = State.CREATED;
 			
 	public void addTrancoded(Transco transco){
@@ -105,8 +112,6 @@ public class TranscoRequest implements Serializable{
 		return transcoded.isEmpty();
 	}
 	
-	@OneToMany
-	@JoinColumn(name="request", referencedColumnName="id")
 	public List<Transco> getTranscoded(){
 		return transcoded;
 	}
@@ -177,8 +182,6 @@ public class TranscoRequest implements Serializable{
 		this.usr = usr;
 	}
 
-	@Id
-	@Column(name = "id", nullable = false, unique= true)
 	public UUID getId() {
 		return id;
 	}

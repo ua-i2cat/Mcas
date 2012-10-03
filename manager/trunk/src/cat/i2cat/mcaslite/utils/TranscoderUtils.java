@@ -4,10 +4,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.io.FilenameUtils;
 
-import cat.i2cat.mcaslite.config.dao.TranscoderConfigDao;
+import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.Transco;
@@ -47,11 +46,13 @@ public class TranscoderUtils {
 	}
 
 	private static String getInput(String id, int configId) throws MCASException{
-		return FilenameUtils.concat(TranscoderConfigDao.findById(configId).getInputWorkingDir(), id);
+		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+		return FilenameUtils.concat(tConfigDao.findById(configId).getInputWorkingDir(), id);
 	}
 	
 	private static String getOutput(String id, String levelName, String extension, int configId) throws MCASException{
-		return FilenameUtils.concat(TranscoderConfigDao.findById(configId).getOutputWorkingDir(), id + levelName + "." + extension);
+		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+		return FilenameUtils.concat(tConfigDao.findById(configId).getOutputWorkingDir(), id + levelName + "." + extension);
 	}
 	
 	private static String ffCommandBuilder(TLevel level, TProfile profile, String input, String output){
@@ -63,10 +64,17 @@ public class TranscoderUtils {
 	}
 
 	public static TranscoderConfig loadConfig(String config) throws MCASException {
-		return TranscoderConfigDao.findByName("default");
+		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+		try {
+			return tConfigDao.findByName(config);
+		}catch (Exception e){
+			e.printStackTrace();
+			return tConfigDao.findByName("default");
+		}
 	}
 	
 	public static int getConfigId(String configName) throws MCASException {
-		return TranscoderConfigDao.findByName("default").getId();
+		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+		return tConfigDao.findByName("default").getId();
 	}
 }

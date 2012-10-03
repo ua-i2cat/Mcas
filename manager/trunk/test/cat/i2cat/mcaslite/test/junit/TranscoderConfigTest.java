@@ -8,7 +8,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import cat.i2cat.mcaslite.config.dao.TranscoderConfigDao;
+import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
@@ -18,8 +18,9 @@ public class TranscoderConfigTest {
 	
 	@Test
 	public void getConfigTest(){
+		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		try {
-			TranscoderConfig config = TranscoderConfigDao.findById(1);
+			TranscoderConfig config = tConfigDao.findById(1);
 			assertNotNull(config);
 			Set<TLevel> levels = config.getLevels();
 			for(TLevel level : levels){
@@ -29,7 +30,7 @@ public class TranscoderConfigTest {
 			for (TProfile profile : profiles){
 				assertNotNull(profile);
 			}
-			config = TranscoderConfigDao.findByName("default");
+			config = tConfigDao.findByName("default");
 			assertNotNull(config);
 		} catch (MCASException e) {
 			e.printStackTrace();

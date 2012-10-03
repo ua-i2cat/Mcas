@@ -2,11 +2,10 @@ package cat.i2cat.mcaslite.management;
 
 import java.util.UUID;
 
-import cat.i2cat.mcaslite.config.dao.ApplicationConfigDao;
+import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.ApplicationConfig;
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
-import cat.i2cat.mcaslite.entities.TranscoQueue;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class TranscoHandler implements Runnable {
@@ -17,6 +16,8 @@ public class TranscoHandler implements Runnable {
 	private int maxInMedia;
 	private int maxOutMedia;
 	private int maxTransco;
+	private DAO<ApplicationConfig> applicationDao = new DAO<ApplicationConfig>(ApplicationConfig.class);
+	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class);
 	
 	public TranscoHandler() throws MCASException{
 		queue = TranscoQueue.getInstance();
@@ -54,7 +55,7 @@ public class TranscoHandler implements Runnable {
 	}
 	
 	private void loadDefaults() throws MCASException{
-		ApplicationConfig config = ApplicationConfigDao.findById(DEFAULT_CONFIG_ID);
+		ApplicationConfig config = applicationDao.findById(DEFAULT_CONFIG_ID);
 		maxInMedia = config.getMaxInMediaH();
 		maxOutMedia = config.getMaxOutMediaH();
 		maxTransco = config.getMaxTransco();
@@ -63,7 +64,7 @@ public class TranscoHandler implements Runnable {
 	public void loadConfig(Integer id) throws MCASException {
 		ApplicationConfig config;
 		try {
-			config = ApplicationConfigDao.findById(id);
+			config = applicationDao.findById(id);
 			maxInMedia = config.getMaxInMediaH();
 			maxOutMedia = config.getMaxOutMediaH();
 			maxTransco = config.getMaxTransco();
@@ -89,25 +90,41 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 	
-	public TranscoRequest getRequest(TranscoRequest r) {
-		return queue.getRequest(r);
+	public TranscoRequest getRequest(TranscoRequest r) throws MCASException {
+		TranscoRequest request = queue.getRequest(r);
+		if (request == null)
+		{
+			request = requestDao.findById(r.getId());
+			if (request == null){
+				return null;
+			} else {
+				return request;
+			}
+		} else {
+			return request;
+		}
 		
 	}
 	
-	public TranscoRequest getRequest(UUID id) {
+	public TranscoRequest getRequest(UUID id) throws MCASException {
 		return getRequest(TranscoRequest.getEqualRequest(id));
 	}
 	
-	public String getState(TranscoRequest r) {
+	public String getState(TranscoRequest r) throws MCASException {
 		State state = queue.getState(r);
 		if (state != null){
 			return state.getName();
 		} else {
-			return null;
+			TranscoRequest req = requestDao.findById(r.getId());
+			if (req == null){
+				return null;
+			} else {
+				return req.getState().getName();
+			}
 		}
 	}
 	
-	public String getState(UUID id){
+	public String getState(UUID id) throws MCASException{
 		return getState(TranscoRequest.getEqualRequest(id));
 	}
 	

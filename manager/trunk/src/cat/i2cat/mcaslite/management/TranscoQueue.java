@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.entities;
+package cat.i2cat.mcaslite.management;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +32,8 @@ public class TranscoQueue {
 		}
 	}
 	
-	synchronized public void removeRequest(TranscoRequest r) throws MCASException{
-		if (! queue.remove(r)){
-			throw new MCASException();
-		}
+	synchronized public boolean removeRequest(TranscoRequest r) {
+		return queue.remove(r);
 	}
 
 	synchronized public TranscoRequest get(State state) throws MCASException {

@@ -6,6 +6,8 @@ import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
 
+import junit.framework.Assert;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -31,8 +33,21 @@ public class TranscoServiceClient {
 				br = new BufferedReader(new InputStreamReader(System.in));
 				dst = br.readLine();
 				input = "{\"usr\":\"joe\",\"dst\":\"" + dst + "\","
-						+ "\"src\":\"" + src + "\",\"config\":\"default\"}";
-				service.path("/transco").type("application/json").post(ClientResponse.class, input);
+						+ "\"src\":\"" + src + "\"}";
+				ClientResponse response= service.path("/transco").type("application/json").post(ClientResponse.class, input);
+				if (response.hasEntity()){
+					String id = response.getEntity(String.class);
+					String state = "CREATED";
+					while(! state.equals("DONE") && ! state.equals("ERROR") && ! state.equals("PARTIAL_ERROR")){
+						Thread.sleep(1000*5);
+						state = service.path("/transco").queryParam("id", id).get(String.class);
+						System.out.println(state);
+					}
+					state = service.path("/transco/uris").queryParam("id", id).get(String.class);
+					System.out.println(state);
+				} else {
+					Assert.fail();
+				}
 			}
 		} catch (Exception e){
 			e.printStackTrace();

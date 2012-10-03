@@ -65,6 +65,9 @@ public class TranscoService {
 		} catch (IllegalArgumentException e){
 			e.printStackTrace();
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		} catch (MCASException e){
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 		}
 	}
 	

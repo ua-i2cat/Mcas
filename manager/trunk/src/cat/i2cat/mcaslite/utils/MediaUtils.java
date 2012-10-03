@@ -7,15 +7,17 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import cat.i2cat.mcaslite.config.dao.TranscoderConfigDao;
+import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.Transco;
+import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class MediaUtils {
 	
 	public static void deleteInputFile(String requestId, Integer configId){
+		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		try {
-			File fd = new File(FilenameUtils.concat(TranscoderConfigDao.findById(configId).getInputWorkingDir(), requestId));
+			File fd = new File(FilenameUtils.concat(tConfigDao.findById(configId).getInputWorkingDir(), requestId));
 			if (fd.exists()){
 				fd.delete();
 			}
@@ -25,9 +27,10 @@ public class MediaUtils {
 	}
 
 	public static void toWorkingDir(URI uri, String id, int configId) throws MCASException {
+		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		try {
 			if (uri.getScheme().equals("file")) {
-				FileUtils.copyFile(new File(uri.getPath()), new File(FilenameUtils.concat(TranscoderConfigDao.findById(configId).getInputWorkingDir(), id)));
+				FileUtils.copyFile(new File(uri.getPath()), new File(FilenameUtils.concat(tConfigDao.findById(configId).getInputWorkingDir(), id)));
 			} else if (uri.getScheme().equals("http")) {
 				//TODO
 			} else if (uri.getScheme().equals("https")) {

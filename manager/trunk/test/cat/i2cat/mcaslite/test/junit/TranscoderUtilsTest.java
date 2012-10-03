@@ -11,7 +11,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import cat.i2cat.mcaslite.config.dao.TranscoderConfigDao;
+import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
@@ -20,8 +20,9 @@ public class TranscoderUtilsTest {
 
 	@Test
 	public void transcoBuilderTest(){
+		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		try {
-			TranscoderConfig config = TranscoderConfigDao.findByName("default");
+			TranscoderConfig config = tConfigDao.findByName("default");
 			List<Transco> transcos = TranscoderUtils.transcoBuilder(config, UUID.fromString("04e119ed-8862-42ba-b8ee-22e3d97df550").toString(), "file:///home/david/prova.unusedextension");
 			for(Transco transco : transcos){
 				assertNotNull(transco);

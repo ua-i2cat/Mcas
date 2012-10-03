@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
-import cat.i2cat.mcaslite.entities.TranscoQueue;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.TranscoQueue;
 
 public class TranscoQueueTest {
 	
