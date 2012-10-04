@@ -17,7 +17,7 @@ public class MediaUtils {
 	public static void deleteInputFile(String requestId, Integer configId){
 		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		try {
-			File fd = new File(FilenameUtils.concat(tConfigDao.findById(configId).getInputWorkingDir(), requestId));
+			File fd = new File(FilenameUtils.concat(getWorkDir(tConfigDao.findById(configId).getInputWorkingDir()), requestId));
 			if (fd.exists()){
 				fd.delete();
 			}
@@ -25,20 +25,44 @@ public class MediaUtils {
 			e.printStackTrace();
 		}
 	}
+	
+	public static String getWorkDir(String workDir){
+		File file = new File(workDir);
+		if (! file.isAbsolute()){
+			file = new File(FilenameUtils.concat(System.getProperty("mcas.home"), workDir));
+		}
+		return file.getPath();
+	}
+	
+	private static String createWorkDir(String workDir) throws MCASException{
+		File file = new File(getWorkDir(workDir));
+		if (! file.exists()){
+			file.mkdirs();
+		} else if (! file.isDirectory()) {
+			throw new MCASException();
+		}
+		return file.getPath();
+	}
 
 	public static void toWorkingDir(URI uri, String id, int configId) throws MCASException {
 		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		try {
+			String inputDir = createWorkDir(tConfigDao.findById(configId).getInputWorkingDir());
+			createWorkDir(tConfigDao.findById(configId).getOutputWorkingDir());
 			if (uri.getScheme().equals("file")) {
-				FileUtils.copyFile(new File(uri.getPath()), new File(FilenameUtils.concat(tConfigDao.findById(configId).getInputWorkingDir(), id)));
+				FileUtils.copyFile(new File(uri.getPath()), new File(FilenameUtils.concat(inputDir, id)));
 			} else if (uri.getScheme().equals("http")) {
 				//TODO
+				throw new MCASException();
 			} else if (uri.getScheme().equals("https")) {
 				//TODO
+				throw new MCASException();
 			} else if (uri.getScheme().equals("ftp")) {
 				//TODO
+				throw new MCASException();
 			} else if (uri.getScheme().equals("scp")) {
 				//TODO
+				throw new MCASException();
 			}
 		} catch (Exception e){
 			e.printStackTrace();
@@ -56,12 +80,16 @@ public class MediaUtils {
 				}
 			} else if (uri.getScheme().equals("http")) {
 				//TODO
+				throw new MCASException();
 			} else if (uri.getScheme().equals("https")) {
 				//TODO
+				throw new MCASException();
 			} else if (uri.getScheme().equals("ftp")) {
 				//TODO
+				throw new MCASException();
 			} else if (uri.getScheme().equals("scp")) {
 				//TODO
+				throw new MCASException();
 			}
 		} catch (Exception e){
 			e.printStackTrace();

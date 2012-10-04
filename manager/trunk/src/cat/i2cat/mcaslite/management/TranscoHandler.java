@@ -7,11 +7,10 @@ import cat.i2cat.mcaslite.config.model.ApplicationConfig;
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.DefaultsUtils;
 
 public class TranscoHandler implements Runnable {
 
-	private static final int DEFAULT_CONFIG_ID = 1;
-	
 	private TranscoQueue queue;
 	private int maxInMedia;
 	private int maxOutMedia;
@@ -21,6 +20,10 @@ public class TranscoHandler implements Runnable {
 	
 	public TranscoHandler() throws MCASException{
 		queue = TranscoQueue.getInstance();
+		if (DefaultsUtils.feedDefaultsNeeded()){
+			DefaultsUtils.applicationFeedDefaults();
+			DefaultsUtils.tConfigFeedDefaults();
+		}
 		loadDefaults();
 	}
 	
@@ -55,7 +58,7 @@ public class TranscoHandler implements Runnable {
 	}
 	
 	private void loadDefaults() throws MCASException{
-		ApplicationConfig config = applicationDao.findById(DEFAULT_CONFIG_ID);
+		ApplicationConfig config = applicationDao.findByName(DefaultsUtils.DEFAULT);
 		maxInMedia = config.getMaxInMediaH();
 		maxOutMedia = config.getMaxOutMediaH();
 		maxTransco = config.getMaxTransco();

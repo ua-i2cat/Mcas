@@ -14,7 +14,7 @@ import com.sun.jersey.api.client.WebResource;
 
 public class TranscoServiceClient {
 	
-	public static final String uri = "http://localhost:8081/MCASlite";
+	public static final String uri = "http://localhost:8080/MCASlite";
 	
 	public static void main(String[] args){
 		BufferedReader br;

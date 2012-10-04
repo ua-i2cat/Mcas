@@ -17,8 +17,6 @@ public class TProfile implements Serializable{
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	@Column(nullable = false)
-	private int tConfig;
 	@Column(unique = true, nullable = false, length = 100)
 	private String name;
 	@Column(nullable = false, length = 100)
@@ -66,13 +64,5 @@ public class TProfile implements Serializable{
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public int gettConfig() {
-		return tConfig;
-	}
-
-	public void settConfig(int tConfig) {
-		this.tConfig = tConfig;
 	}
 }

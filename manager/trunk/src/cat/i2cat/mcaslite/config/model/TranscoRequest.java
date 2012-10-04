@@ -79,9 +79,9 @@ public class TranscoRequest implements Serializable{
 		}
 	}
 
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 255)
 	private String src;
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 255)
 	private String dst;
 	@Column(length = 100)
 	private String config;

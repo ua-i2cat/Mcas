@@ -2,10 +2,8 @@ package cat.i2cat.mcaslite.config.model;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.UUID;
 
 import javax.persistence.Column;
-//import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,30 +11,23 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.io.FilenameUtils;
-import org.hibernate.annotations.Type;
-
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 @Entity
 @Table(name = "transco")
 public class Transco {
 	
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 255)
 	private String inputFile;
-	@Column(nullable = false, length = 500)
+	@Column(nullable = false, length = 1000)
 	private String command;
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 255)
 	private String outputFile;
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 255)
 	private String destinationUri;
-	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	@Column(nullable = false)
-	@Type(type="uuid-char")
-	private UUID request;
-	
+
 	public Transco(){
 		
 	}
@@ -46,17 +37,8 @@ public class Transco {
 		this.outputFile = outputFile;
 		this.inputFile = inputFile;
 		this.destinationUri = destinationUri;
-		this.request = UUID.fromString(FilenameUtils.getBaseName(inputFile));
 	}
 	
-	public UUID getRequest(){
-		return request;
-	}
-	
-	public void setRequest(UUID request){
-		this.request = request;
-	}
-
 	public int getId(){
 		return id;
 	}

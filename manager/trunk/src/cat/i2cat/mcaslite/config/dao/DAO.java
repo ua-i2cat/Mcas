@@ -9,8 +9,8 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class DAO<T> {
 	
-	protected EntityManagerFactory emf = Persistence.createEntityManagerFactory("tConfig");
-    protected EntityManager em = emf.createEntityManager();
+	protected static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("tConfig");
+    protected static final EntityManager em = emf.createEntityManager();
     private Class<T> type;
     
     public DAO(Class<T> arg){

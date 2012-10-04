@@ -1,8 +1,9 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,9 +25,9 @@ public class TranscoderConfig implements Serializable {
 	private int id;
 	@Column(unique = true, nullable = false, length = 100)
 	private String name;
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 255)
 	private String inputWorkingDir;
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 255)
 	private String outputWorkingDir;
 	@Column(nullable = false)
 	private int timeout;
@@ -34,13 +35,14 @@ public class TranscoderConfig implements Serializable {
 	private int threads;
 	@Column(nullable = false)
 	private int transcoder;
-	@OneToMany
-	@JoinColumn(name="tConfig", referencedColumnName="id")
-	private Set<TProfile> profiles;
-	@OneToMany
-	@JoinColumn(name="tConfig", referencedColumnName="id")
-	private Set<TLevel> levels;
 	
+	@OneToMany(cascade=CascadeType.ALL)
+	@JoinColumn(name="tConfig", referencedColumnName="id")
+	private List<TProfile> profiles;
+	
+	@OneToMany(cascade=CascadeType.ALL)
+	@JoinColumn(name="tConfig", referencedColumnName="id")
+	private List<TLevel> levels;
 	
 	public String getName() {
 		return name;
@@ -74,19 +76,19 @@ public class TranscoderConfig implements Serializable {
 		this.transcoder = transcoder;
 	}
 	
-	public Set<TProfile> getProfiles() {
+	public List<TProfile> getProfiles() {
 		return profiles;
 	}
 	
-	public void setProfiles(Set<TProfile> profiles) {
+	public void setProfiles(List<TProfile> profiles) {
 		this.profiles = profiles;
 	}
 	
-	public Set<TLevel> getLevels() {
+	public List<TLevel> getLevels() {
 		return levels;
 	}
 	
-	public void setLevels(Set<TLevel> levels) {
+	public void setLevels(List<TLevel> levels) {
 		this.levels = levels;
 	}
 

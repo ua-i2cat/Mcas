@@ -47,12 +47,12 @@ public class TranscoderUtils {
 
 	private static String getInput(String id, int configId) throws MCASException{
 		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
-		return FilenameUtils.concat(tConfigDao.findById(configId).getInputWorkingDir(), id);
+		return FilenameUtils.concat(MediaUtils.getWorkDir(tConfigDao.findById(configId).getInputWorkingDir()), id);
 	}
 	
 	private static String getOutput(String id, String levelName, String extension, int configId) throws MCASException{
 		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
-		return FilenameUtils.concat(tConfigDao.findById(configId).getOutputWorkingDir(), id + levelName + "." + extension);
+		return FilenameUtils.concat(MediaUtils.getWorkDir(tConfigDao.findById(configId).getOutputWorkingDir()), id + levelName + "." + extension);
 	}
 	
 	private static String ffCommandBuilder(TLevel level, TProfile profile, String input, String output){
@@ -69,12 +69,17 @@ public class TranscoderUtils {
 			return tConfigDao.findByName(config);
 		}catch (Exception e){
 			e.printStackTrace();
-			return tConfigDao.findByName("default");
+			return tConfigDao.findByName(DefaultsUtils.DEFAULT);
 		}
 	}
 	
 	public static int getConfigId(String configName) throws MCASException {
 		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
-		return tConfigDao.findByName("default").getId();
+		try {
+			return tConfigDao.findByName(configName).getId();
+		} catch (Exception e){
+			e.printStackTrace();
+			return tConfigDao.findByName(DefaultsUtils.DEFAULT).getId();
+		}
 	}
 }

@@ -29,8 +29,6 @@ public class TLevel implements Serializable{
 	private int aChannels;
 	@Column(nullable = false)
 	private int aBitrate;
-	@Column(nullable = false)
-	private int tConfig;
 	
 	public int getvBitrate() {
 		return vBitrate;
@@ -87,12 +85,5 @@ public class TLevel implements Serializable{
 	public void setId(int id) {
 		this.id = id;
 	}
-
-	public int gettConfig() {
-		return tConfig;
-	}
-
-	public void settConfig(int tConfig) {
-		this.tConfig = tConfig;
-	}
+	
 }

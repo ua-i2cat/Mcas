@@ -2,7 +2,7 @@ package cat.i2cat.mcaslite.test.junit;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Set;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -22,11 +22,11 @@ public class TranscoderConfigTest {
 		try {
 			TranscoderConfig config = tConfigDao.findById(1);
 			assertNotNull(config);
-			Set<TLevel> levels = config.getLevels();
+			List<TLevel> levels = config.getLevels();
 			for(TLevel level : levels){
 				assertNotNull(level);
 			}
-			Set<TProfile> profiles = config.getProfiles();
+			List<TProfile> profiles = config.getProfiles();
 			for (TProfile profile : profiles){
 				assertNotNull(profile);
 			}
