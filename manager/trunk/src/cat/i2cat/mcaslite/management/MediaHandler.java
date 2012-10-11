@@ -2,6 +2,7 @@ package cat.i2cat.mcaslite.management;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Iterator;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.Transco;
@@ -38,6 +39,7 @@ public class MediaHandler implements Runnable {
 			request.setError();
 			synchronized(queue){
 				queue.removeRequest(request);
+				queue.notifyAll();
 				requestDao.save(request);
 			}
 			e.printStackTrace();
@@ -60,12 +62,14 @@ public class MediaHandler implements Runnable {
 	}
 	
 	private void outputHandle() throws MCASException {
-		for(Transco transco : request.getTranscoded()){
+		Iterator<Transco> i = request.getTranscoded().iterator();
+		while(i.hasNext()){
+			Transco transco = i.next();
 			try {
 				MediaUtils.toDestinationUri(transco.getOutputFile(), transco.getDestinationUriUri());
-			} catch (MCASException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-				request.deleteTranscoded(transco);
+				i.remove();
 				MediaUtils.deleteFile(transco.getOutputFile());
 			}
 		}
@@ -82,6 +86,7 @@ public class MediaHandler implements Runnable {
 		MediaUtils.clean(request.getTranscoded());
 		synchronized(queue){
 			queue.removeRequest(request);
+			queue.notifyAll();
 			requestDao.save(request);
 		}
 	}

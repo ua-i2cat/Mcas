@@ -11,12 +11,18 @@ import cat.i2cat.mcaslite.utils.DefaultsUtils;
 
 public class TranscoHandler implements Runnable {
 
+	private static final int MAX_REQUESTS = 1000;
+	
 	private TranscoQueue queue;
 	private int maxInMedia;
 	private int maxOutMedia;
 	private int maxTransco;
 	private DAO<ApplicationConfig> applicationDao = new DAO<ApplicationConfig>(ApplicationConfig.class);
 	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class);
+	
+	private boolean MQBlock = false;
+	private boolean TQBlock = false;
+	private boolean TTBlock = false;
 	
 	public TranscoHandler() throws MCASException{
 		queue = TranscoQueue.getInstance();
@@ -35,23 +41,21 @@ public class TranscoHandler implements Runnable {
 				synchronized(queue){
 					waitCondition();
 				}
-				request = queue.get(State.M_QUEUED);
-				if (request != null && queue.count(State.M_PROCESS) < maxInMedia){
+				if (! MQBlock){
+					request = queue.get(State.M_QUEUED);
 					mediaHandle(request);
-				}
-				request = queue.get(State.T_QUEUED);
-				if (request != null && queue.count(State.T_PROCESS) < maxTransco){
+				} 
+				if (! TQBlock) {
+					request = queue.get(State.T_QUEUED);
 					transcode(request);
-				}
-				request = queue.get(State.T_TRANSCODED);
-				if (request != null && queue.count(State.T_TRANSCODED) < maxOutMedia){
+				} 
+				if (! TTBlock) {
+					request = queue.get(State.T_TRANSCODED);
 					mediaHandle(request);
-				}
+				} 
 			} catch (MCASException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -77,11 +81,16 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 
-	public void putRequest(TranscoRequest request) throws MCASException {
-		request.increaseState();
-		synchronized(queue){
-			queue.put(request);
-			queue.notifyAll();
+	public boolean putRequest(TranscoRequest request) throws MCASException {
+		if (queue.size() < MAX_REQUESTS) {
+			request.increaseState();
+			synchronized(queue){
+				queue.put(request);
+				queue.notifyAll();
+			}
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
@@ -148,15 +157,24 @@ public class TranscoHandler implements Runnable {
 	}
 	
 	private void waitCondition() throws MCASException, InterruptedException{
-		if ((queue.isEmpty(State.T_TRANSCODED) && queue.isEmpty(State.T_QUEUED) && queue.isEmpty(State.M_QUEUED)) ||
-				(queue.isEmpty(State.T_TRANSCODED) && queue.isEmpty(State.T_QUEUED) && queue.count(State.M_PROCESS) >= maxInMedia) ||
-				(queue.isEmpty(State.T_TRANSCODED) && queue.count(State.T_PROCESS) >= maxTransco && queue.isEmpty(State.M_QUEUED)) ||
-				(queue.isEmpty(State.T_TRANSCODED) && queue.count(State.T_PROCESS) >= maxTransco && queue.count(State.M_PROCESS) >= maxInMedia) ||
-				(queue.count(State.T_TRANSCODED) >= maxOutMedia && queue.isEmpty(State.T_QUEUED) && queue.isEmpty(State.M_QUEUED)) ||
-				(queue.count(State.T_TRANSCODED) >= maxOutMedia && queue.isEmpty(State.T_QUEUED) && queue.count(State.M_PROCESS) >= maxInMedia) ||
-				(queue.count(State.T_TRANSCODED) >= maxOutMedia && queue.count(State.T_PROCESS) >= maxTransco && queue.isEmpty(State.M_QUEUED)) ||
-				(queue.count(State.T_TRANSCODED) >= maxOutMedia && queue.count(State.T_PROCESS) >= maxTransco && queue.count(State.M_PROCESS) >= maxInMedia)){
+		if(conditionMQ() & conditionTQ() & conditionTT()){
 			queue.wait();
+			waitCondition();
 		}
+	}
+	
+	private boolean conditionMQ() throws MCASException {
+		MQBlock = queue.isEmpty(State.M_QUEUED) || queue.count(State.M_PROCESS) >= maxInMedia || queue.count(State.T_QUEUED) >= maxInMedia;
+		return MQBlock;
+	}
+	
+	private boolean conditionTQ() throws MCASException {
+		TQBlock = queue.isEmpty(State.T_QUEUED) || queue.count(State.T_PROCESS) >= maxTransco || queue.count(State.T_TRANSCODED) >= maxOutMedia;
+		return TQBlock;
+	}
+	
+	private boolean conditionTT() throws MCASException {
+		TTBlock = queue.isEmpty(State.T_TRANSCODED) || queue.count(State.MOVING) >= maxOutMedia;
+		return TTBlock;
 	}
 }

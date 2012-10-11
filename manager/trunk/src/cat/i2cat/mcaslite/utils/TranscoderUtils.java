@@ -56,8 +56,8 @@ public class TranscoderUtils {
 	}
 	
 	private static String ffCommandBuilder(TLevel level, TProfile profile, String input, String output){
-		String cmd = "ffmpeg -i " + input;
-		cmd += " -s " + level.getScreenx() + "x" + level.getScreeny() + " -b " + level.getvBitrate() + " -ac " + level.getaChannels() + " -ab " + level.getaBitrate() + "k ";
+		String cmd = "avconv -i " + input;
+		cmd += " -s " + level.getScreenx() + "x" + level.getScreeny() + " -b " + level.getvBitrate() + "k " + " -ac " + level.getaChannels() + " -ab " + level.getaBitrate() + "k ";
 		cmd += " -f " + profile.getFormat() + " -vcodec " + profile.getvCodec() + " -acodec " + profile.getaCodec();
 		cmd += " -y " + output;
 		return cmd;

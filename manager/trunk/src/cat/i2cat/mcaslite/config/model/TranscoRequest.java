@@ -23,7 +23,7 @@ import org.hibernate.annotations.Type;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 @Entity
-@Table(name = "history")
+@Table(name = "reqHistory")
 public class TranscoRequest implements Serializable{
 
 	private static final long serialVersionUID = 4636926585290770053L;

@@ -49,6 +49,7 @@ public class Transcoder implements Runnable {
 				request.setError();
 				synchronized(queue){
 					queue.removeRequest(request);
+					queue.notifyAll();
 					requestDao.save(request);
 				}
 				return;

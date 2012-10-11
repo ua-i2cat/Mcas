@@ -52,8 +52,11 @@ public class TranscoService {
 			e.printStackTrace();
 			return Response.status(Response.Status.BAD_REQUEST).entity("Check source and destination.").build();
 		}
-		transcoH.putRequest(request);
-		return Response.status(Response.Status.CREATED).entity(request.getIdStr()).build();
+		if (transcoH.putRequest(request)){
+			return Response.status(Response.Status.CREATED).entity(request.getIdStr()).build();
+		} else {
+			return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("System overloaded, wait and retry.").build();
+		}
 	}
 	
 

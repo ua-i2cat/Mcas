@@ -89,6 +89,10 @@ public class TranscoQueue {
 		return this.queue.isEmpty();
 	}
 	
+	synchronized public int size() {
+		return this.queue.size();
+	}
+	
 	synchronized public boolean isEmpty(State state) {
 		if (queue.isEmpty()) {
 			return true;
