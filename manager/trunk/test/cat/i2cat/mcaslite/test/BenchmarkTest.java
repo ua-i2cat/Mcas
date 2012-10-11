@@ -10,10 +10,10 @@ import com.sun.jersey.api.client.WebResource;
 
 public class BenchmarkTest {
 
-	public static final String uri = "http://localhost:8080/MCASlite";
+	public static final String uri = "http://192.168.1.2:8080/MCASlite";
 
-	public static final String input = "{\"usr\":\"joe\",\"dst\":\"file:///home/david/prova\","
-			+ "\"src\":\"file:///home/david/maninman.avi\"}";
+	public static final String input = "{\"usr\":\"joe\",\"dst\":\"file:///home/i2cat/prova\","
+			+ "\"src\":\"file:///home/i2cat/maninman.avi\"}";
 	
 	public static void main(String[] args) throws InterruptedException{
 		URI baseURI = UriBuilder.fromUri(uri).build();
