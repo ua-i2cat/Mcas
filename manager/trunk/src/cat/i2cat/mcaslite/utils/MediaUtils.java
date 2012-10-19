@@ -9,6 +9,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.Transco;
+import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
@@ -18,6 +19,18 @@ public class MediaUtils {
 		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		try {
 			File fd = new File(FilenameUtils.concat(getWorkDir(tConfigDao.findById(configId).getInputWorkingDir()), requestId));
+			if (fd.exists()){
+				fd.delete();
+			}
+		} catch (MCASException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void deleteInputFile(String requestId, String configName){
+		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+		try {
+			File fd = new File(FilenameUtils.concat(getWorkDir(tConfigDao.findByName(configName).getInputWorkingDir()), requestId));
 			if (fd.exists()){
 				fd.delete();
 			}
@@ -44,26 +57,12 @@ public class MediaUtils {
 		return file.getPath();
 	}
 
-	public static void toWorkingDir(URI uri, String id, int configId) throws MCASException {
+	public static File setInFile(String id, int configId) throws MCASException {
 		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		try {
 			String inputDir = createWorkDir(tConfigDao.findById(configId).getInputWorkingDir());
 			createWorkDir(tConfigDao.findById(configId).getOutputWorkingDir());
-			if (uri.getScheme().equals("file")) {
-				FileUtils.copyFile(new File(uri.getPath()), new File(FilenameUtils.concat(inputDir, id)));
-			} else if (uri.getScheme().equals("http")) {
-				//TODO
-				throw new MCASException();
-			} else if (uri.getScheme().equals("https")) {
-				//TODO
-				throw new MCASException();
-			} else if (uri.getScheme().equals("ftp")) {
-				//TODO
-				throw new MCASException();
-			} else if (uri.getScheme().equals("scp")) {
-				//TODO
-				throw new MCASException();
-			}
+			return new File(FilenameUtils.concat(inputDir, id));
 		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();
@@ -115,9 +114,17 @@ public class MediaUtils {
 		}
 	}
 	
-	public static void clean(List<Transco> transcos){
+	private static void clean(List<Transco> transcos){
 		for(Transco transco : transcos){
 			cleanTransco(transco);
+		}
+	}
+	
+	public static void clean(TranscoRequest request){
+		if (request.getTranscoded().size() > 0){
+			clean(request.getTranscoded());
+		} else {
+			deleteInputFile(request.getIdStr(), request.getConfig());
 		}
 	}
 

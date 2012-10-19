@@ -3,9 +3,9 @@ package cat.i2cat.mcaslite.service;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
-
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -96,6 +96,29 @@ public class TranscoService {
 		} catch (MCASException e) {
 			e.printStackTrace();
 			throw new WebApplicationException(Response.Status.NO_CONTENT);
+		}	
+	}
+	
+	@POST
+	@Path("cancel")
+	public Response cancelTransco(@QueryParam("id") String idStr, @DefaultValue("true") @QueryParam("interrupt") boolean interrupt) {
+		try {
+			TranscoRequest request = transcoH.getRequest(UUID.fromString(idStr));
+			if (request == null){
+				return Response.status(Response.Status.NOT_FOUND).build();
+			} else {
+				if(transcoH.cancelRequest(request, interrupt)){
+					return Response.status(Response.Status.OK).build();
+				} else {
+					return Response.status(Response.Status.NOT_MODIFIED).build();
+				}
+			}
+		} catch (IllegalArgumentException e){
+			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		} catch (MCASException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.NO_CONTENT).build();
 		}	
 	}
 }

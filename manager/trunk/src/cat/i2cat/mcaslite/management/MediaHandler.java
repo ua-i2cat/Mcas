@@ -1,23 +1,29 @@
 package cat.i2cat.mcaslite.management;
 
+import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
+import cat.i2cat.mcaslite.utils.Uploader;
 
-public class MediaHandler implements Runnable {
+public class MediaHandler implements Runnable, Cancellable {
 
 	private TranscoQueue queue;
 	private TranscoRequest request;
 	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class); 
+	private Downloader downloader;
+	private Uploader uploader;
+	private boolean cancelled = false;
+	private boolean done = false;
 	
-	public MediaHandler(TranscoQueue queue, TranscoRequest request){
+	public MediaHandler(TranscoQueue queue, TranscoRequest request) throws MCASException {
 		this.queue = queue;
 		this.request = request;
 	}
@@ -35,20 +41,25 @@ public class MediaHandler implements Runnable {
 				default: 
 					throw new MCASException();
 			}
+			done = true;
 		} catch (MCASException e) {
 			request.setError();
+			MediaUtils.clean(request);
 			synchronized(queue){
-				queue.removeRequest(request);
-				queue.notifyAll();
-				requestDao.save(request);
+				if (queue.removeRequest(request)){
+					requestDao.save(request);
+					queue.notifyAll();
+				}
 			}
 			e.printStackTrace();
+			done = true;
 		} 
 	}
 	
 	private void inputHandle() throws MCASException {
 		try {
-			MediaUtils.toWorkingDir(new URI(request.getSrc()), request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
+			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig())));
+			downloader.toWorkingDir();
 		} catch (Exception e) {
 			e.printStackTrace();
 			MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
@@ -66,36 +77,74 @@ public class MediaHandler implements Runnable {
 		while(i.hasNext()){
 			Transco transco = i.next();
 			try {
-				MediaUtils.toDestinationUri(transco.getOutputFile(), transco.getDestinationUriUri());
+				uploader = new Uploader(new URI(transco.getDestinationUri()), new File(transco.getOutputFile()));
+				uploader.toDestinationUri();
 			} catch (Exception e) {
 				e.printStackTrace();
 				i.remove();
 				MediaUtils.deleteFile(transco.getOutputFile());
 			}
 		}
-		if (request.getNumOutputs() > request.getTranscoded().size()){
-			if (request.isTranscodedEmpty()){
-				MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
-				request.setError();
+		try {
+			if (request.getNumOutputs() > request.getTranscoded().size()){
+				if (request.isTranscodedEmpty()){
+					MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
+					request.setError();
+				} else {
+					request.setPartialError();
+				}
 			} else {
-				request.setPartialError();
+				request.increaseState();
 			}
-		} else {
-			request.increaseState();
-		}
-		MediaUtils.clean(request.getTranscoded());
-		synchronized(queue){
-			queue.removeRequest(request);
-			queue.notifyAll();
-			requestDao.save(request);
+			synchronized(queue){
+				if (queue.removeRequest(request)) {
+					requestDao.save(request);
+					queue.notifyAll();
+				}
+			}
+		} finally {
+			MediaUtils.clean(request);
 		}
 	}
 	
-	public void inputHandleTest() throws MCASException, URISyntaxException {
-		inputHandle();
+	private boolean cancelDownload(boolean mayInterruptIfRunning){
+		if (downloader != null) {
+			return downloader.cancel(mayInterruptIfRunning);
+		}
+		request.setCancelled();
+		return true;
 	}
 	
-	public void outputHandleTest() throws MCASException, URISyntaxException {
-		outputHandle();
+	private boolean cancelUpload(boolean mayInterruptIfRunning){
+		if (uploader != null) {
+			return uploader.cancel(mayInterruptIfRunning);
+		}
+		request.setCancelled();
+		return true;
+	}
+
+	@Override
+	public boolean cancel(boolean mayInterruptIfRunning) {
+		switch (request.getState()) {
+			case M_PROCESS:
+				cancelled = cancelDownload(mayInterruptIfRunning);
+				break;
+			case MOVING:
+				cancelled = cancelUpload(mayInterruptIfRunning);
+				break;
+			default:
+				cancelled = false;
+		}
+		return cancelled;
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	@Override
+	public boolean isDone() {
+		return done;
 	}
 }

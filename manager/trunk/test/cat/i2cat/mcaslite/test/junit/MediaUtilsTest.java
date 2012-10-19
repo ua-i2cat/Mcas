@@ -10,30 +10,28 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 
 public class MediaUtilsTest {
 
-	@Test
-	public void toWorkingDirTest(){
-		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
-		try {
-			MediaUtils.toWorkingDir(new URI("file:///etc/fstab"),"thisIsMyId",1);
-			File file = new File(tConfigDao.findById(1).getInputWorkingDir() + "/thisIsMyId");
-			assertTrue(file.exists());
-			assertTrue(file.delete());
-		} catch (MCASException e) {
-			e.printStackTrace();
-			Assert.fail();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			Assert.fail();
-		}
-		
-	}
+//	@Test
+//	public void toWorkingDirTest(){
+//		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+//		try {
+//			MediaUtils.toWorkingDir(new URI("file:///etc/fstab"),"thisIsMyId",1);
+//			File file = new File(tConfigDao.findById(1).getInputWorkingDir() + "/thisIsMyId");
+//			assertTrue(file.exists());
+//			assertTrue(file.delete());
+//		} catch (MCASException e) {
+//			e.printStackTrace();
+//			Assert.fail();
+//		} catch (URISyntaxException e) {
+//			e.printStackTrace();
+//			Assert.fail();
+//		}
+//		
+//	}
 	
 	@Test
 	public void toDestinationUriTest(){

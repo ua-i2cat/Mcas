@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.management;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.exec.CommandLine;
@@ -15,14 +16,16 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
-public class Transcoder implements Runnable {
+public class Transcoder implements Runnable, Cancellable {
 
 	private TranscoderConfig config;
 	private TranscoQueue queue;
 	private TranscoRequest request;
 	private List<Transco> transcos;
 	private DefaultExecutor executor;
-	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class); 
+	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class);
+	private boolean done = false;
+	private boolean cancel = false;
 	
 	public Transcoder(TranscoQueue queue, TranscoRequest request) throws MCASException{
 		this.queue = queue;
@@ -35,9 +38,11 @@ public class Transcoder implements Runnable {
 	@Override
 	public void run() {
 		request.setNumOutputs(transcos.size());
-		for(Transco transco : transcos){
+		Iterator<Transco> it = transcos.iterator();
+		while(!cancel && it.hasNext()){
 			try {
-				executeCommand(transco.getCommand().trim());
+				Transco transco = it.next();
+				executeCommand(transco.getCommand().trim());				
 				request.addTrancoded(transco);
 			} catch (MCASException e) {
 				e.printStackTrace();
@@ -48,9 +53,10 @@ public class Transcoder implements Runnable {
 				MediaUtils.deleteInputFile(request.getIdStr(), config.getId());
 				request.setError();
 				synchronized(queue){
-					queue.removeRequest(request);
-					queue.notifyAll();
-					requestDao.save(request);
+					if (queue.removeRequest(request)) {
+						requestDao.save(request);
+						queue.notifyAll();
+					}
 				}
 				return;
 			}
@@ -59,16 +65,27 @@ public class Transcoder implements Runnable {
 				queue.update(request);
 				queue.notifyAll();
 			}
+			done = true;
 		} catch (MCASException e){
 			e.printStackTrace();
+			done = true;
 		}	
 	}
 
-	public void stop() {
-		if (this.executor != null)
+	private boolean stop(boolean mayInterruptIfRunning) {
+		cancel = true;
+		if (this.executor != null) {
 			while (this.executor.getWatchdog().isWatching()) {
-				this.executor.getWatchdog().destroyProcess();
+				if (mayInterruptIfRunning) {
+					this.executor.getWatchdog().destroyProcess();
+				}
 			}
+			MediaUtils.clean(request);
+			request.setCancelled();
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private void executeCommand(String cmd) throws MCASException{
@@ -83,5 +100,19 @@ public class Transcoder implements Runnable {
 			throw new MCASException();
 		}
 	}
-	
+
+	@Override
+	public boolean cancel(boolean mayInterruptIfRunning) {
+		return stop(mayInterruptIfRunning);
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return cancel;
+	}
+
+	@Override
+	public boolean isDone() {
+		return done;
+	}	
 }

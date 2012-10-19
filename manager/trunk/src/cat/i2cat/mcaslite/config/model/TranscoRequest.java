@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
 import javax.persistence.CascadeType;
-//import javax.persistence.EnumType;
-//import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -51,6 +49,9 @@ public class TranscoRequest implements Serializable{
 			public State next(){return DONE;}
 		},
 		DONE(8, "DONE"){
+			public State next() throws MCASException{throw new MCASException();}
+		},
+		CANCELLED(50, "CANCELLED"){
 			public State next() throws MCASException{throw new MCASException();}
 		},
 		PARTIAL_ERROR(101, "PARTIAL_ERROR"){
@@ -130,6 +131,11 @@ public class TranscoRequest implements Serializable{
 
 	public void increaseState() throws MCASException {
 		state = state.next();
+	}
+	
+	@Transient
+	public void setCancelled() {
+		state = State.CANCELLED;
 	}
 	
 	@Transient

@@ -1,9 +1,11 @@
 package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
+import java.net.HttpURLConnection;
 import java.net.URI;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
@@ -12,15 +14,25 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class RequestUtils {
 
-	public static boolean isValidSrcUri(URI uri){
-		if (isValidUri(uri)){
-			File file = new File(uri.getPath());
-			return file.exists();
+	public static boolean isValidSrcUri(URI uri) {
+		try {
+			if (isValidUri(uri)){
+				if (uri.getScheme().equals("file")) {
+					File file = new File(uri.getPath());
+					return file.exists();
+				} else if (uri.getScheme().equals("http")) {
+					HttpURLConnection httpCon = (HttpURLConnection) uri.toURL().openConnection();
+					httpCon.setRequestMethod("HEAD");
+					return (httpCon.getResponseCode() == HttpURLConnection.HTTP_OK);
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			return false;
 		}
-		return false;
 	}
 	
-	public static boolean isValidUri(URI uri){
+	private static boolean isValidUri(URI uri){
 		if (! uri.isAbsolute()) {
 			return false;
 		} else if (uri.getScheme().equals("file")) {
@@ -30,7 +42,8 @@ public class RequestUtils {
 				return true;
 			}
 		} else if (uri.getScheme().equals("http")) {
-			return false;
+			UrlValidator urlValidator = new UrlValidator();
+			return urlValidator.isValid(uri.toString());
 		} else if (uri.getScheme().equals("https")) {
 			return false;
 		} else if (uri.getScheme().equals("ftp")) {
@@ -59,10 +72,5 @@ public class RequestUtils {
 		}
 		json += "]\n}";
 		return json;
-	}
-	
-	public static boolean obsoleteRequest(TranscoRequest request){
-		
-		return false;
 	}
 }
