@@ -18,6 +18,7 @@ public class Uploader implements Runnable {
 	private boolean cancel = false;
 	private URI destination;
 	private File origin;
+	private boolean failed = false;
 	
 	public Uploader(URI destination, File origin){
 		this.destination = destination;
@@ -26,11 +27,14 @@ public class Uploader implements Runnable {
 	
 	public void toDestinationUri() throws MCASException{
 		Thread th = new Thread(this);
-		th.start();
 		try {
+			th.start();
 			th.join();
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			throw new MCASException();
+		}
+		if (isFailed()){
 			throw new MCASException();
 		}
 	}
@@ -62,6 +66,7 @@ public class Uploader implements Runnable {
 			}
 		} catch (Exception e){
 			e.printStackTrace();
+			setFailed(true);
 		}
 	}
 	
@@ -104,5 +109,11 @@ public class Uploader implements Runnable {
 		}
 	}
 	
+	private boolean isFailed(){
+		return failed;
+	}
 	
+	private void setFailed(boolean failed){
+		this.failed = failed;
+	}
 }

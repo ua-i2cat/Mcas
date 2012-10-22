@@ -120,7 +120,7 @@ public class MediaUtils {
 		}
 	}
 	
-	public static void clean(TranscoRequest request){
+	public static synchronized void clean(TranscoRequest request){
 		if (request.getTranscoded().size() > 0){
 			clean(request.getTranscoded());
 		} else {

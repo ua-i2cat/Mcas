@@ -41,7 +41,7 @@ public class MediaHandler implements Runnable, Cancellable {
 				default: 
 					throw new MCASException();
 			}
-			done = true;
+			setDone(true);
 		} catch (MCASException e) {
 			request.setError();
 			MediaUtils.clean(request);
@@ -52,7 +52,7 @@ public class MediaHandler implements Runnable, Cancellable {
 				}
 			}
 			e.printStackTrace();
-			done = true;
+			setDone(true);
 		} 
 	}
 	
@@ -65,10 +65,13 @@ public class MediaHandler implements Runnable, Cancellable {
 			MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
 			throw new MCASException();
 		}
-		request.increaseState();
-		synchronized(queue){
-			queue.update(request);
-			queue.notifyAll();
+		setDone(true);
+		if (! isCancelled()) {
+			request.increaseState();
+			synchronized(queue){
+				queue.update(request);
+				queue.notifyAll();
+			}
 		}
 	}
 	
@@ -86,20 +89,23 @@ public class MediaHandler implements Runnable, Cancellable {
 			}
 		}
 		try {
-			if (request.getNumOutputs() > request.getTranscoded().size()){
-				if (request.isTranscodedEmpty()){
-					MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
-					request.setError();
+			setDone(true);
+			if (! isCancelled()) {
+				if (request.getNumOutputs() > request.getTranscoded().size()){
+					if (request.isTranscodedEmpty()){
+						MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
+						request.setError();
+					} else {
+						request.setPartialError();
+					}
 				} else {
-					request.setPartialError();
+					request.increaseState();
 				}
-			} else {
-				request.increaseState();
-			}
-			synchronized(queue){
-				if (queue.removeRequest(request)) {
-					requestDao.save(request);
-					queue.notifyAll();
+				synchronized(queue){
+					if (queue.removeRequest(request)) {
+						requestDao.save(request);
+						queue.notifyAll();
+					}
 				}
 			}
 		} finally {
@@ -111,7 +117,6 @@ public class MediaHandler implements Runnable, Cancellable {
 		if (downloader != null) {
 			return downloader.cancel(mayInterruptIfRunning);
 		}
-		request.setCancelled();
 		return true;
 	}
 	
@@ -119,32 +124,44 @@ public class MediaHandler implements Runnable, Cancellable {
 		if (uploader != null) {
 			return uploader.cancel(mayInterruptIfRunning);
 		}
-		request.setCancelled();
 		return true;
 	}
 
 	@Override
 	public boolean cancel(boolean mayInterruptIfRunning) {
-		switch (request.getState()) {
-			case M_PROCESS:
-				cancelled = cancelDownload(mayInterruptIfRunning);
-				break;
-			case MOVING:
-				cancelled = cancelUpload(mayInterruptIfRunning);
-				break;
-			default:
-				cancelled = false;
+		if (! isDone()){
+			switch (request.getState()) {
+				case M_PROCESS:
+					setCancelled(cancelDownload(mayInterruptIfRunning));
+					break;
+				case MOVING:
+					setCancelled(cancelUpload(mayInterruptIfRunning));
+					break;
+				default:
+					setCancelled(false);
+			}
+			return isCancelled();
+		} else {
+			MediaUtils.clean(request);
+			return true;
 		}
-		return cancelled;
 	}
 
 	@Override
 	public boolean isCancelled() {
 		return cancelled;
 	}
+	
+	private void setCancelled(boolean cancelled){
+		this.cancelled = cancelled;
+	}
 
 	@Override
 	public boolean isDone() {
 		return done;
+	}
+	
+	private void setDone(boolean done){
+		this.done = done; 
 	}
 }
