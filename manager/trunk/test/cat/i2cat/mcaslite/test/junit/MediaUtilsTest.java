@@ -1,54 +1,151 @@
 package cat.i2cat.mcaslite.test.junit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.UUID;
 
-import junit.framework.Assert;
-
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import cat.i2cat.mcaslite.config.model.Transco;
+import cat.i2cat.mcaslite.config.model.TranscoRequest;
+import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.DefaultsUtils;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 
+import static org.powermock.api.easymock.PowerMock.reset;
+import static org.powermock.api.easymock.PowerMock.expectNew;
+import static org.powermock.api.easymock.PowerMock.createMock;
+import static org.powermock.api.easymock.PowerMock.replayAll;
+import static org.powermock.api.easymock.PowerMock.verify;
+import static org.easymock.EasyMock.expect;
+import static org.powermock.api.support.membermodification.MemberMatcher.method;
+import static org.powermock.api.support.membermodification.MemberModifier.suppress;
+
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(MediaUtils.class)
 public class MediaUtilsTest {
 
-//	@Test
-//	public void toWorkingDirTest(){
-//		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
-//		try {
-//			MediaUtils.toWorkingDir(new URI("file:///etc/fstab"),"thisIsMyId",1);
-//			File file = new File(tConfigDao.findById(1).getInputWorkingDir() + "/thisIsMyId");
-//			assertTrue(file.exists());
-//			assertTrue(file.delete());
-//		} catch (MCASException e) {
-//			e.printStackTrace();
-//			Assert.fail();
-//		} catch (URISyntaxException e) {
-//			e.printStackTrace();
-//			Assert.fail();
-//		}
-//		
-//	}
+	private String relativeWorkingDir = "this/is/relative/path";
+	private String absoluteWorkingDir = "/this/is/absolute/path";
+	private static String fakeHome = "/fake/home/path";
+	private static TranscoderConfig tConfig;
+	private String fakeId = "fakeId";
+	
+	@BeforeClass
+	public static void setup(){
+		System.setProperty("mcas.home", fakeHome);
+		tConfig = DefaultsUtils.tConfigGetDefaults();
+	}
 	
 	@Test
-	public void toDestinationUriTest(){
-		try {
-			MediaUtils.toDestinationUri("/etc/fstab", new URI("file:///home/david/prova.c3po"));
-			File file = new File("/home/david/prova.c3po");
-			assertTrue(file.exists());
-			assertTrue(file.delete());
-		} catch (MCASException e) {
-			e.printStackTrace();
-			Assert.fail();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			Assert.fail();
-		}
-		
+	public void testGetWorkDirRelative(){
+		assertEquals(fakeHome + "/" + relativeWorkingDir,MediaUtils.getWorkDir(relativeWorkingDir));
 	}
-
+	
+	@Test
+	public void testGetWorkDirAbsolute(){
+		assertEquals(absoluteWorkingDir,MediaUtils.getWorkDir(absoluteWorkingDir));
+	}
+	
+	@Test
+	public void testSetInWorkDirExists() throws Exception{
+		File inDirMock = createMock(File.class);
+		expectNew(File.class,tConfig.getInputWorkingDir()).andReturn(inDirMock).times(2);
+		expect(inDirMock.exists()).andReturn(true).once();
+		expect(inDirMock.isDirectory()).andReturn(true).once();
+		expect(inDirMock.isAbsolute()).andReturn(true).once();
+		expect(inDirMock.getPath()).andReturn(tConfig.getInputWorkingDir()).times(2);
+		
+		File outDirMock = createMock(File.class);
+		expectNew(File.class,tConfig.getOutputWorkingDir()).andReturn(outDirMock).times(2);
+		expect(outDirMock.exists()).andReturn(false).once();
+		expect(outDirMock.isAbsolute()).andReturn(true).once();
+		expect(outDirMock.mkdirs()).andReturn(true).once();
+		expect(outDirMock.getPath()).andReturn(tConfig.getOutputWorkingDir()).times(2);
+		
+		File inFileMock = createMock(File.class);
+		expectNew(File.class,tConfig.getInputWorkingDir() + "/" + fakeId).andReturn(inFileMock);
+		expect(inFileMock.getPath()).andReturn(tConfig.getInputWorkingDir() + "/" + fakeId);
+		
+		replayAll();
+		
+		File file = MediaUtils.setInFile(fakeId, tConfig);
+		assertEquals(file.getPath(), tConfig.getInputWorkingDir() + "/" + fakeId);
+		
+		verify();
+		reset(File.class);
+	}
+	
+	@Test(expected = MCASException.class)
+	public void testSetInWorkDirExistsFail() throws Exception{
+		File inDirMock = createMock(File.class);
+		expectNew(File.class,tConfig.getInputWorkingDir()).andReturn(inDirMock).times(2);
+		expect(inDirMock.exists()).andReturn(true).once();
+		expect(inDirMock.isDirectory()).andReturn(false).once();
+		expect(inDirMock.isAbsolute()).andReturn(true).once();
+		expect(inDirMock.getPath()).andReturn(tConfig.getInputWorkingDir()).once();
+		
+		replayAll();
+		
+		File file = MediaUtils.setInFile(fakeId, tConfig);
+		assertEquals(file.getPath(), tConfig.getInputWorkingDir() + "/" + fakeId);
+		
+		verify();
+		reset(File.class);
+	}
+	
+	@Test
+	public void testDeleteFileExist() throws Exception{
+		File inFileMock = createMock(File.class);
+		expectNew(File.class, fakeId).andReturn(inFileMock).once();
+		expect(inFileMock.exists()).andReturn(true).once();
+		expect(inFileMock.delete()).andReturn(true).once();
+		
+		replayAll();
+		
+		assertTrue(MediaUtils.deleteFile(fakeId));
+		
+		verify();
+		reset(File.class);
+	}
+	
+	@Test
+	public void testDeleteFileNoExist() throws Exception{
+		File inFileMock = createMock(File.class);
+		expectNew(File.class, fakeId).andReturn(inFileMock).once();
+		expect(inFileMock.exists()).andReturn(false).once();
+		
+		replayAll();
+		
+		assertTrue(! MediaUtils.deleteFile(fakeId));
+		
+		verify();
+		reset(File.class);
+	}
+	
+	@Test
+	public void testCleanWithOut(){
+		suppress(method(MediaUtils.class, "cleanTranscos"));
+		TranscoRequest request = TranscoRequest.getEqualRequest(UUID.randomUUID());
+		Transco transco = new Transco();
+		request.addTrancoded(transco);
+		MediaUtils.clean(request);
+	}
+	
+	@Test
+	public void testCleanWithoutOut(){
+		suppress(method(MediaUtils.class, "deleteInputFile"));
+		TranscoRequest request = TranscoRequest.getEqualRequest(UUID.randomUUID());
+		request.setTConfig(tConfig);
+		MediaUtils.clean(request);
+	}
 
 }

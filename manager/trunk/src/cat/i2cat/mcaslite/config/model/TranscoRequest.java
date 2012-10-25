@@ -92,7 +92,7 @@ public class TranscoRequest implements Serializable{
 	@Transient
 	private String config;
 	//TODO: switch to optional true and fetch eager in order to be able to delete configurations safely
-	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name="tConfig", referencedColumnName="id")
 	private TranscoderConfig tConfig;
 	@Id
