@@ -19,10 +19,7 @@ import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replayAll;
 import static org.powermock.api.easymock.PowerMock.verify;
 
-import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(PowerMockRunner.class)
@@ -35,9 +32,9 @@ public class TranscoderUtilsTest {
 	public static void setup() throws Exception{
 		@SuppressWarnings("unchecked")
 		DAO<TranscoderConfig> tConfigDaoMock = (DAO<TranscoderConfig>) createMock(DAO.class);
-		expectNew(DAO.class, TranscoderConfig.class).andReturn(tConfigDaoMock).anyTimes();
-		expect(tConfigDaoMock.findByName("default")).andReturn(DefaultsUtils.tConfigGetDefaults()).anyTimes();
-		expect(tConfigDaoMock.findByName("fakeConfig")).andThrow(new MCASException()).anyTimes();
+		expectNew(DAO.class, TranscoderConfig.class).andReturn(tConfigDaoMock).times(2);
+		expect(tConfigDaoMock.findByName("default")).andReturn(DefaultsUtils.tConfigGetDefaults()).times(2);
+		expect(tConfigDaoMock.findByName("fakeConfig")).andThrow(new MCASException()).times(2);
 		replayAll();
 	}
 	
@@ -51,9 +48,5 @@ public class TranscoderUtilsTest {
 		TranscoderConfig tConfig = TranscoderUtils.loadConfig("fakeConfig");
 		assertTrue(tConfig.getName().equals("default"));
 	}
-	
-	@Test
-	public void testLoadConfId() throws MCASException{
-		assertTrue(TranscoderUtils.getConfigId("fakeConfig") == 1);
-	}
+
 }

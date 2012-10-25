@@ -10,7 +10,6 @@ import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.TranscoderUtils;
 import cat.i2cat.mcaslite.utils.Uploader;
 
 public class MediaHandler implements Runnable, Cancellable {
@@ -58,11 +57,11 @@ public class MediaHandler implements Runnable, Cancellable {
 	
 	private void inputHandle() throws MCASException {
 		try {
-			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig())));
+			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getIdStr(), request.getTConfig()));
 			downloader.toWorkingDir();
 		} catch (Exception e) {
 			e.printStackTrace();
-			MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getInputWorkingDir(request.getConfig()));
+			MediaUtils.deleteInputFile(request.getIdStr(), request.getTConfig().getInputWorkingDir());
 			throw new MCASException();
 		}
 		setDone(true);
@@ -93,7 +92,7 @@ public class MediaHandler implements Runnable, Cancellable {
 			if (! isCancelled()) {
 				if (request.getNumOutputs() > request.getTranscoded().size()){
 					if (request.isTranscodedEmpty()){
-						MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getInputWorkingDir(request.getConfig()));
+						MediaUtils.deleteInputFile(request.getIdStr(), request.getTConfig().getInputWorkingDir());
 						request.setError();
 					} else {
 						request.setPartialError();

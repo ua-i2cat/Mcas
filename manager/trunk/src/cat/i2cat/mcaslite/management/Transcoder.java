@@ -11,14 +11,12 @@ import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
-import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 public class Transcoder implements Runnable, Cancellable {
 
-	private TranscoderConfig config;
 	private TranscoQueue queue;
 	private TranscoRequest request;
 	private List<Transco> transcos;
@@ -30,14 +28,12 @@ public class Transcoder implements Runnable, Cancellable {
 	public Transcoder(TranscoQueue queue, TranscoRequest request) throws MCASException{
 		this.queue = queue;
 		this.request = request;
-		this.config = TranscoderUtils.loadConfig(request.getConfig());
-		this.transcos = TranscoderUtils.transcoBuilder(this.config, request.getIdStr(), request.getDst());
+		this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getIdStr(), request.getDst());
 		this.executor = new DefaultExecutor(); 
 	}
 
 	@Override
 	public void run() {
-		request.setNumOutputs(transcos.size());
 		Iterator<Transco> it = transcos.iterator();
 		while(! isCancelled() && it.hasNext()){
 			Transco transco = it.next();
@@ -93,7 +89,7 @@ public class Transcoder implements Runnable, Cancellable {
 	
 	private void executeCommand(String cmd) throws MCASException{
 		CommandLine commandLine = CommandLine.parse(cmd.trim());
-		executor.setWatchdog(new ExecuteWatchdog(config.getTimeout() * 1000));
+		executor.setWatchdog(new ExecuteWatchdog(request.getTConfig().getTimeout() * 1000));
 		//TODO: manage in a different manner timeout when live processing
 		executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
 		try {

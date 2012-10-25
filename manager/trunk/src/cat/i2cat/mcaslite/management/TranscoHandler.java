@@ -124,6 +124,7 @@ public class TranscoHandler implements Runnable {
 
 	public boolean putRequest(TranscoRequest request) throws MCASException {
 		if (queue.size() < MAX_REQUESTS) {
+			request.initTConf();
 			request.increaseState();
 			synchronized(queue){
 				queue.put(request);

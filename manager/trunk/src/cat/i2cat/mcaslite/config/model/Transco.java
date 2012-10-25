@@ -14,7 +14,7 @@ import javax.persistence.Transient;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 @Entity
-@Table(name = "transHistory")
+@Table(name = "transcos")
 public class Transco {
 	
 	@Column(nullable = false, length = 255)

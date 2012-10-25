@@ -10,8 +10,10 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
 import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -19,9 +21,10 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
-@Table(name = "reqHistory")
+@Table(name = "requests")
 public class TranscoRequest implements Serializable{
 
 	private static final long serialVersionUID = 4636926585290770053L;
@@ -85,14 +88,16 @@ public class TranscoRequest implements Serializable{
 	@Column(nullable = false, length = 255)
 	private String dst;
 	@Column(length = 100)
-	private String config;
-	@Column(length = 100)
 	private String usr;
+	@Transient
+	private String config;
+	//TODO: switch to optional true and fetch eager in order to be able to delete configurations safely
+	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.EAGER)
+	@JoinColumn(name="tConfig", referencedColumnName="id")
+	private TranscoderConfig tConfig;
 	@Id
 	@Type(type="uuid-char")
 	private UUID id = UUID.randomUUID();
-	@Transient
-	private int numOutputs; //TODO: block its initialization from automatic mapping
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="request", referencedColumnName="id")
 	private List<Transco> transcoded = new ArrayList<Transco>();
@@ -121,12 +126,9 @@ public class TranscoRequest implements Serializable{
 		this.transcoded = transcoded;
 	}
 	
+	@Transient
 	public int getNumOutputs() {
-		return numOutputs;
-	}
-
-	public void setNumOutputs(int numOutputs) {
-		this.numOutputs = numOutputs;
+		return tConfig.getNumOutputs();
 	}
 
 	public void increaseState() throws MCASException {
@@ -172,6 +174,14 @@ public class TranscoRequest implements Serializable{
 		this.dst = dst;
 	}
 
+	public TranscoderConfig getTConfig() {
+		return tConfig;
+	}
+
+	public void setTConfig(TranscoderConfig config) {
+		this.tConfig = config;
+	}
+	
 	public String getConfig() {
 		return config;
 	}
@@ -211,5 +221,10 @@ public class TranscoRequest implements Serializable{
 	public boolean equals(Object o){
 		TranscoRequest req = (TranscoRequest) o;
 		return this.id.equals(req.getId());
+	}
+	
+	@Transient
+	public void initTConf() throws MCASException{
+		setTConfig(TranscoderUtils.loadConfig(config));
 	}
 }

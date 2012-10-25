@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 @Entity
@@ -114,5 +115,10 @@ public class TranscoderConfig implements Serializable {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	@Transient
+	public int getNumOutputs(){
+		return profiles.size() * levels.size();
 	}
 }

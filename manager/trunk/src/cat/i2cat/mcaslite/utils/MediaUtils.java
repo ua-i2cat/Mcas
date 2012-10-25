@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
@@ -40,11 +39,10 @@ public class MediaUtils {
 		return file.getPath();
 	}
 
-	public static File setInFile(String id, int configId) throws MCASException {
-		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+	public static File setInFile(String id, TranscoderConfig tConfig) throws MCASException {
 		try {
-			String inputDir = createWorkDir(tConfigDao.findById(configId).getInputWorkingDir());
-			createWorkDir(tConfigDao.findById(configId).getOutputWorkingDir());
+			String inputDir = createWorkDir(tConfig.getInputWorkingDir());
+			createWorkDir(tConfig.getOutputWorkingDir());
 			return new File(FilenameUtils.concat(inputDir, id));
 		} catch (Exception e){
 			e.printStackTrace();
@@ -107,11 +105,7 @@ public class MediaUtils {
 		if (request.getTranscoded().size() > 0){
 			clean(request.getTranscoded());
 		} else {
-			try {
-				deleteInputFile(request.getIdStr(), TranscoderUtils.getInputWorkingDir(request.getConfig()));
-			} catch (MCASException e) {
-				e.printStackTrace();
-			}
+			deleteInputFile(request.getIdStr(), request.getTConfig().getInputWorkingDir());
 		}
 	}
 
