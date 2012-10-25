@@ -8,17 +8,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class Uploader implements Runnable {
 
 	private static final int BLOCK_SIZE 	= 1024*100;
 	
-	private boolean cancel = false;
+	private boolean cancelled = false;
 	private URI destination;
 	private File origin;
-	private boolean failed = false;
+	private Thread th;
 	
 	public Uploader(URI destination, File origin){
 		this.destination = destination;
@@ -26,7 +25,7 @@ public class Uploader implements Runnable {
 	}
 	
 	public void toDestinationUri() throws MCASException{
-		Thread th = new Thread(this);
+		th = new Thread(this);
 		try {
 			th.start();
 			th.join();
@@ -34,14 +33,11 @@ public class Uploader implements Runnable {
 			e.printStackTrace();
 			throw new MCASException();
 		}
-		if (isFailed()){
-			throw new MCASException();
-		}
 	}
 
 	public boolean cancel(boolean mayInterruptIfRunning){
 		if (mayInterruptIfRunning){
-			cancel = true;
+			setCancelled(true);
 		}
 		return true;
 	}
@@ -66,7 +62,6 @@ public class Uploader implements Runnable {
 			}
 		} catch (Exception e){
 			e.printStackTrace();
-			setFailed(true);
 		}
 	}
 	
@@ -81,18 +76,18 @@ public class Uploader implements Runnable {
 	
 	private void inputStreamToFile(InputStream in) throws IOException {
 		FileOutputStream writer = null;
-		InputStream inStream = null;
+		BufferedInputStream inStream = null;
 		boolean done = false;
 		try {
 			writer = new FileOutputStream(new File(destination.getPath()));
 			inStream = new BufferedInputStream(in);
 			byte[] buffer = new byte[BLOCK_SIZE];
 			int bytesRead = 0;
-			while ((bytesRead = in.read(buffer)) != -1) {
-				writer.write(buffer, 0, bytesRead);
-		        if (cancel){
+			while ((bytesRead = inStream.read(buffer)) != -1) {
+		        if (isCancelled()){
 		        	return;
 		        }
+		        writer.write(buffer, 0, bytesRead);
 		    }
 			done = true;
 		} finally {
@@ -103,17 +98,23 @@ public class Uploader implements Runnable {
 				writer.close();
 			}
 			if (! done){
-				MediaUtils.deleteFile(origin.getPath());
 				MediaUtils.deleteFile(destination.getPath());
 			}
 		}
 	}
 	
-	private boolean isFailed(){
-		return failed;
+	public boolean isRunning(){
+		if (th != null){
+			return th.isAlive();
+		}
+		return false;
 	}
 	
-	private void setFailed(boolean failed){
-		this.failed = failed;
+	private void setCancelled(boolean cancelled){
+		this.cancelled = cancelled;
+	}
+	
+	public boolean isCancelled(){
+		return cancelled;
 	}
 }

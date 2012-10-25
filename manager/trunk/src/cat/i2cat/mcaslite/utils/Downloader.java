@@ -17,9 +17,10 @@ public class Downloader implements Runnable {
 	private static final int BLOCK_SIZE 	= 1024*100;
 	private static final int HTTP_TIMEOUT 	= 30*1000;
 	
-	private boolean cancel = false;
+	private boolean cancelled = false;
 	private URI input;
 	private File destination;
+	private Thread th;
 	
 	public Downloader(URI input, File destination){
 		this.input = input;
@@ -27,7 +28,7 @@ public class Downloader implements Runnable {
 	}
 	
 	public void toWorkingDir() throws MCASException{
-		Thread th = new Thread(this);
+		th = new Thread(this);
 		th.start();
 		try {
 			th.join();
@@ -39,7 +40,7 @@ public class Downloader implements Runnable {
 
 	public boolean cancel(boolean mayInterruptIfRunning){
 		if (mayInterruptIfRunning){
-			cancel = true;
+			setCancelled(true);
 		}
 		return true;
 	}
@@ -63,7 +64,7 @@ public class Downloader implements Runnable {
 			}
 		} catch (Exception e){
 			e.printStackTrace();
-		}
+		} 
 	}
 	
 	private void fileToFile() throws MCASException{
@@ -96,11 +97,11 @@ public class Downloader implements Runnable {
 			inStream = new BufferedInputStream(in);
 			byte[] buffer = new byte[BLOCK_SIZE];
 			int bytesRead = 0;
-			while ((bytesRead = in.read(buffer)) != -1) {
-				writer.write(buffer, 0, bytesRead);
-		        if (cancel){
+			while ((bytesRead = inStream.read(buffer)) != -1) {
+		        if (isCancelled()){
 		        	return;
 		        }
+		        writer.write(buffer, 0, bytesRead);
 		    }
 			done = true;
 		} finally {
@@ -116,5 +117,18 @@ public class Downloader implements Runnable {
 		}
 	}
 	
+	private boolean isCancelled(){
+		return cancelled;
+	}
 	
+	private void setCancelled(boolean cancelled){
+		this.cancelled = cancelled;
+	}
+	
+	public boolean isRunning(){
+		if (th != null){
+			return th.isAlive();
+		}
+		return false;
+	}
 }

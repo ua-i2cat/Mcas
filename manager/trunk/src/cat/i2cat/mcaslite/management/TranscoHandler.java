@@ -74,7 +74,7 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 	
-	private void loadDefaults() throws MCASException{
+	private void loadDefaults() throws MCASException {
 		ApplicationConfig config = applicationDao.findByName(DefaultsUtils.DEFAULT);
 		maxInMedia = config.getMaxInMediaH();
 		maxOutMedia = config.getMaxOutMediaH();
@@ -135,7 +135,7 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 	
-	public void increaseRequestState(TranscoRequest request) throws MCASException {
+	private void increaseRequestState(TranscoRequest request) throws MCASException {
 		request.increaseState();
 		synchronized(queue){
 			queue.update(request);

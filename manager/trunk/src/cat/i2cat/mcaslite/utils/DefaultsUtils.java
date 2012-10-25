@@ -13,13 +13,12 @@ public class DefaultsUtils {
 	
 	public static final String DEFAULT = "default";
 	
-	public static void tConfigFeedDefaults(){
+	public static TranscoderConfig tConfigGetDefaults(){
 		TranscoderConfig tConfig = new TranscoderConfig();
 		List<TLevel> levels = new ArrayList<TLevel>();
 		List<TProfile> profiles = new ArrayList<TProfile>();
 		TLevel level = new TLevel();
 		TProfile profile = new TProfile();
-		DAO<TranscoderConfig> transcoConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class); 
 		
 		tConfig.setInputWorkingDir("input");
 		tConfig.setOutputWorkingDir("output");
@@ -58,19 +57,28 @@ public class DefaultsUtils {
 		profiles.add(profile);
 		tConfig.setProfiles(profiles);
 		
-		transcoConfigDao.save(tConfig);
+		return tConfig;
 	}
 	
-	public static void applicationFeedDefaults(){
+	public static void tConfigFeedDefaults(){
+		DAO<TranscoderConfig> transcoConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+		transcoConfigDao.save(tConfigGetDefaults());
+	}
+	
+	private static ApplicationConfig applicationGetDefaults(){
 		ApplicationConfig appConf = new ApplicationConfig();
-		DAO<ApplicationConfig> appConfDao = new DAO<ApplicationConfig>(ApplicationConfig.class);
 		
 		appConf.setMaxInMediaH(4);
 		appConf.setMaxOutMediaH(4);
 		appConf.setMaxTransco(2);
 		appConf.setName(DEFAULT);
 		
-		appConfDao.save(appConf);
+		return appConf;
+	}
+	
+	public static void applicationFeedDefaults(){
+		DAO<ApplicationConfig> appConfDao = new DAO<ApplicationConfig>(ApplicationConfig.class);
+		appConfDao.save(applicationGetDefaults());
 	}
 	
 	public static boolean feedDefaultsNeeded(){

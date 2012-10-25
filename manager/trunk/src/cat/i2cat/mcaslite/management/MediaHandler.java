@@ -62,7 +62,7 @@ public class MediaHandler implements Runnable, Cancellable {
 			downloader.toWorkingDir();
 		} catch (Exception e) {
 			e.printStackTrace();
-			MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
+			MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getInputWorkingDir(request.getConfig()));
 			throw new MCASException();
 		}
 		setDone(true);
@@ -93,7 +93,7 @@ public class MediaHandler implements Runnable, Cancellable {
 			if (! isCancelled()) {
 				if (request.getNumOutputs() > request.getTranscoded().size()){
 					if (request.isTranscodedEmpty()){
-						MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getConfigId(request.getConfig()));
+						MediaUtils.deleteInputFile(request.getIdStr(), TranscoderUtils.getInputWorkingDir(request.getConfig()));
 						request.setError();
 					} else {
 						request.setPartialError();

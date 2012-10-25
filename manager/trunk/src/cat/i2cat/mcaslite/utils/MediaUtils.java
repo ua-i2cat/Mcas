@@ -15,27 +15,10 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class MediaUtils {
 	
-	public static void deleteInputFile(String requestId, Integer configId){
-		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
-		try {
-			File fd = new File(FilenameUtils.concat(getWorkDir(tConfigDao.findById(configId).getInputWorkingDir()), requestId));
-			if (fd.exists()){
-				fd.delete();
-			}
-		} catch (MCASException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void deleteInputFile(String requestId, String configName){
-		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
-		try {
-			File fd = new File(FilenameUtils.concat(getWorkDir(tConfigDao.findByName(configName).getInputWorkingDir()), requestId));
-			if (fd.exists()){
-				fd.delete();
-			}
-		} catch (MCASException e) {
-			e.printStackTrace();
+	public static void deleteInputFile(String requestId, String inputWorkingDir){
+		File fd = new File(FilenameUtils.concat(getWorkDir(inputWorkingDir), requestId));
+		if (fd.exists()){
+			fd.delete();
 		}
 	}
 	
@@ -124,7 +107,11 @@ public class MediaUtils {
 		if (request.getTranscoded().size() > 0){
 			clean(request.getTranscoded());
 		} else {
-			deleteInputFile(request.getIdStr(), request.getConfig());
+			try {
+				deleteInputFile(request.getIdStr(), TranscoderUtils.getInputWorkingDir(request.getConfig()));
+			} catch (MCASException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

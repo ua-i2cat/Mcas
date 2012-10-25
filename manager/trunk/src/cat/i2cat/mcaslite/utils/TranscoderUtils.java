@@ -74,12 +74,16 @@ public class TranscoderUtils {
 	}
 	
 	public static int getConfigId(String configName) throws MCASException {
+		return loadConfig(configName).getId();
+	}
+	
+	public static String getInputWorkingDir(String configName) throws MCASException {
 		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		try {
-			return tConfigDao.findByName(configName).getId();
+			return tConfigDao.findByName(configName).getInputWorkingDir();
 		} catch (Exception e){
 			e.printStackTrace();
-			return tConfigDao.findByName(DefaultsUtils.DEFAULT).getId();
+			return tConfigDao.findByName(DefaultsUtils.DEFAULT).getInputWorkingDir();
 		}
 	}
 }
