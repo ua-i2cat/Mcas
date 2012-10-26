@@ -12,6 +12,7 @@ import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
+
 public class RequestUtils {
 
 	public static boolean isValidSrcUri(URI uri) {

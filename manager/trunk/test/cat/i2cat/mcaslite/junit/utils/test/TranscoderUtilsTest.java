@@ -1,9 +1,8 @@
-package cat.i2cat.mcaslite.test.junit;
+package cat.i2cat.mcaslite.junit.utils.test;
 
 import java.util.List;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,8 +21,8 @@ import cat.i2cat.mcaslite.utils.TranscoderUtils;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replayAll;
-import static org.powermock.api.easymock.PowerMock.reset;
-import static org.powermock.api.easymock.PowerMock.verify;
+import static org.powermock.api.easymock.PowerMock.resetAll;
+import static org.powermock.api.easymock.PowerMock.verifyAll;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -44,11 +43,6 @@ public class TranscoderUtilsTest {
 		System.setProperty("mcas.home", FAKEHOME);
 	}
 	
-	@AfterClass
-	public static void tearDown() {
-		verify();
-	}
-	
 	@Before
 	public void setUp() throws Exception{
 		@SuppressWarnings("unchecked")
@@ -61,7 +55,8 @@ public class TranscoderUtilsTest {
 	
 	@After
 	public void teardown(){
-		reset(DAO.class);
+		verifyAll();
+		resetAll();
 	}
 
 	@Test

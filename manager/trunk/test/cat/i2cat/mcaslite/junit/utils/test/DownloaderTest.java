@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.test.junit;
+package cat.i2cat.mcaslite.junit.utils.test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,7 +16,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replayAll;
-import static org.powermock.api.easymock.PowerMock.verify;
+import static org.powermock.api.easymock.PowerMock.verifyAll;
 import static org.junit.Assert.assertTrue;
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.anyObject;
@@ -56,7 +56,7 @@ public class DownloaderTest {
 	
 	@AfterClass
 	public static void tearDown() {
-		verify();
+		verifyAll();
 	}
 	
 	@Test

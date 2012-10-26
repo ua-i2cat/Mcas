@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.test.junit;
+package cat.i2cat.mcaslite.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

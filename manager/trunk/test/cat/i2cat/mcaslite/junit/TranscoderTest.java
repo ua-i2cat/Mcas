@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.test.junit;
+package cat.i2cat.mcaslite.junit;
 
 import org.junit.Test;
 

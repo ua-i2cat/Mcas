@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.test.junit;
+package cat.i2cat.mcaslite.junit.utils.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.UUID;
 
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,11 +20,11 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.DefaultsUtils;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 
-import static org.powermock.api.easymock.PowerMock.reset;
+import static org.powermock.api.easymock.PowerMock.resetAll;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replayAll;
-import static org.powermock.api.easymock.PowerMock.verify;
+import static org.powermock.api.easymock.PowerMock.verifyAll;
 import static org.easymock.EasyMock.expect;
 import static org.powermock.api.support.membermodification.MemberMatcher.method;
 import static org.powermock.api.support.membermodification.MemberModifier.suppress;
@@ -43,6 +44,12 @@ public class MediaUtilsTest {
 	public static void setup(){
 		System.setProperty("mcas.home", fakeHome);
 		tConfig = DefaultsUtils.tConfigGetDefaults();
+	}
+	
+	@After
+	public void tearDown(){
+		verifyAll();
+		resetAll();
 	}
 	
 	@Test
@@ -79,9 +86,6 @@ public class MediaUtilsTest {
 		
 		File file = MediaUtils.setInFile(fakeId, tConfig);
 		assertEquals(file.getPath(), tConfig.getInputWorkingDir() + "/" + fakeId);
-		
-		verify();
-		reset(File.class);
 	}
 	
 	@Test(expected = MCASException.class)
@@ -97,9 +101,6 @@ public class MediaUtilsTest {
 		
 		File file = MediaUtils.setInFile(fakeId, tConfig);
 		assertEquals(file.getPath(), tConfig.getInputWorkingDir() + "/" + fakeId);
-		
-		verify();
-		reset(File.class);
 	}
 	
 	@Test
@@ -112,9 +113,6 @@ public class MediaUtilsTest {
 		replayAll();
 		
 		assertTrue(MediaUtils.deleteFile(fakeId));
-		
-		verify();
-		reset(File.class);
 	}
 	
 	@Test
@@ -126,9 +124,6 @@ public class MediaUtilsTest {
 		replayAll();
 		
 		assertTrue(! MediaUtils.deleteFile(fakeId));
-		
-		verify();
-		reset(File.class);
 	}
 	
 	@Test

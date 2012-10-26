@@ -49,7 +49,6 @@ public class TranscoService {
 				return Response.status(Response.Status.BAD_REQUEST).entity("Check source and destination.").build();
 			}
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
 			return Response.status(Response.Status.BAD_REQUEST).entity("Check source and destination.").build();
 		}
 		if (transcoH.putRequest(request)){
