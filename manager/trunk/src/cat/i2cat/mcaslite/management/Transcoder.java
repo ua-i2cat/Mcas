@@ -76,8 +76,8 @@ public class Transcoder implements Runnable, Cancellable {
 	private boolean stop(boolean mayInterruptIfRunning) {
 		setCancelled(true);
 		if (this.executor != null) {
-			while (this.executor.getWatchdog().isWatching()) {
-				if (mayInterruptIfRunning) {
+			if (mayInterruptIfRunning) {
+				while (this.executor.getWatchdog().isWatching()) {
 					this.executor.getWatchdog().destroyProcess();
 				}
 			}

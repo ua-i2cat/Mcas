@@ -94,7 +94,7 @@ public class TranscoService {
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		} catch (MCASException e) {
 			e.printStackTrace();
-			throw new WebApplicationException(Response.Status.NO_CONTENT);
+			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 		}	
 	}
 	
@@ -117,7 +117,7 @@ public class TranscoService {
 			return Response.status(Response.Status.BAD_REQUEST).build();
 		} catch (MCASException e) {
 			e.printStackTrace();
-			return Response.status(Response.Status.NO_CONTENT).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 		}	
 	}
 }

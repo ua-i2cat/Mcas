@@ -36,7 +36,7 @@ public class TranscoQueue {
 		return queue.remove(r);
 	}
 
-	synchronized public TranscoRequest get(State state) throws MCASException {
+	synchronized public TranscoRequest get(State state) {
 		for (TranscoRequest r : queue) {
 			if (r.getState().equals(state)) {
 				return r;
