@@ -29,6 +29,8 @@ public class TranscoHandler implements Runnable {
 	private boolean TQBlock = false;
 	private boolean TTBlock = false;
 	
+	private boolean run = true;
+	
 	public TranscoHandler() throws MCASException{
 		queue = TranscoQueue.getInstance();
 		if (DefaultsUtils.feedDefaultsNeeded()){
@@ -41,7 +43,7 @@ public class TranscoHandler implements Runnable {
 	@Override
 	public void run() {
 		TranscoRequest request = null;
-		while(true){
+		while(run){
 			try {
 				synchronized(queue){
 					waitCondition();
@@ -158,6 +160,10 @@ public class TranscoHandler implements Runnable {
 			return request;
 		}
 		
+	}
+	
+	public void stop(){
+		run = false;
 	}
 	
 	public TranscoRequest getRequest(UUID id) throws MCASException {

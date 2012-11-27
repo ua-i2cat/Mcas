@@ -45,7 +45,7 @@ public class TranscoQueue {
 		return null;
 	}
 	
-	synchronized public int count(State state) throws MCASException {
+	synchronized public int count(State state) {
 		int i = 0;
 		for (TranscoRequest r : queue) {
 			if (r.getState().equals(state)) {

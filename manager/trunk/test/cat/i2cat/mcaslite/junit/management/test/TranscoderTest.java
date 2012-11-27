@@ -178,6 +178,6 @@ public class TranscoderTest {
 		resetAll();
 		
 		assertEquals(State.T_TRANSCODED, requestOut.getState());
-		assertEquals(2,requestOut.getTranscoded().size());
+		assertEquals(2, requestOut.getTranscoded().size());
 	}
 }

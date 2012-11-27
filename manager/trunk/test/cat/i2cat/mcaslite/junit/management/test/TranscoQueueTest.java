@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -127,12 +128,64 @@ public class TranscoQueueTest {
 	}
 	
 	@Test
-	public void getStateTest() throws MCASException {
+	public void getStateTest() {
 		assertEquals(State.MOVING,queue.getState(request3rd));
 	}
 	
 	@Test
-	public void getStateNotFoundTest() throws MCASException {
+	public void getStateNotFoundTest() {
 		assertNull(queue.getState(TranscoRequest.getEqualRequest(UUID.randomUUID())));
+	}
+	
+	@Test
+	public void getRequestNotFoundTest() {
+		assertNull(queue.getRequest(TranscoRequest.getEqualRequest(UUID.randomUUID())));
+	}
+	
+	@Test
+	public void getRequestTest() {
+		assertEquals(request1st, queue.getRequest(request1st));
+	}
+	
+	@Test
+	public void clearTest(){
+		assertEquals(5, queue.size());
+		queue.clearQueue();
+		assertEquals(0,queue.size());
+	}
+	
+	@Test
+	public void containsTest(){
+		assertTrue(queue.contains(request1st));
+	}
+	
+	@Test
+	public void containsNotFoundTest(){
+		assertTrue(! queue.contains(TranscoRequest.getEqualRequest(UUID.randomUUID())));
+	}	
+	
+	@Test
+	public void isEmptyTest(){
+		assertTrue(! queue.isEmpty());
+		queue.clearQueue();
+		assertTrue(queue.isEmpty());
+	}
+	
+	@Test
+	public void sizeTest(){
+		assertEquals(5,queue.size());
+	}
+	
+	@Test
+	public void isEmptyStateTest(){
+		assertTrue(queue.isEmpty(State.T_QUEUED));
+		assertTrue(! queue.isEmpty(State.MOVING));
+	}
+	
+	@Test
+	public void getListTest(){
+		List<TranscoRequest> list = queue.getElements();
+		assertEquals(5,list.size());
+		assertTrue(list.get(0) instanceof TranscoRequest);
 	}
 }

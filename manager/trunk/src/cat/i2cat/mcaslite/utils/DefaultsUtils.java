@@ -65,7 +65,7 @@ public class DefaultsUtils {
 		transcoConfigDao.save(tConfigGetDefaults());
 	}
 	
-	private static ApplicationConfig applicationGetDefaults(){
+	public static ApplicationConfig applicationGetDefaults(){
 		ApplicationConfig appConf = new ApplicationConfig();
 		
 		appConf.setMaxInMediaH(4);
