@@ -4,7 +4,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import cat.i2cat.mcaslite.junit.management.test.MediaHandlerTest;
-import cat.i2cat.mcaslite.junit.management.test.TranscoHandlerTest;
 import cat.i2cat.mcaslite.junit.management.test.TranscoQueueTest;
 import cat.i2cat.mcaslite.junit.management.test.TranscoderTest;
 import cat.i2cat.mcaslite.junit.service.test.TranscoServiceTest;
@@ -24,7 +23,6 @@ import cat.i2cat.mcaslite.junit.utils.test.UploaderTest;
 	TranscoServiceTest.class,
 	MediaHandlerTest.class,
 	TranscoderTest.class,
-	TranscoQueueTest.class,
-	TranscoHandlerTest.class
+	TranscoQueueTest.class
 })
 public class TestSuite {}
