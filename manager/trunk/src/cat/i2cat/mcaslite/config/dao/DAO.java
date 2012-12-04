@@ -3,7 +3,7 @@ package cat.i2cat.mcaslite.config.dao;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
@@ -21,12 +21,11 @@ public class DAO<T> {
     	return em;
     }
     
-    @SuppressWarnings("unchecked")
 	public T findByName(String name) throws MCASException{
 		try {
-			Query query = getEntityManager().createQuery("select t from " + type.getName() + " t where t.name = :name");
+			TypedQuery<T> query = getEntityManager().createQuery("select t from " + type.getName() + " t where t.name = :name", type);
 			query.setParameter("name", name);
-			return (T) query.getSingleResult();
+			return query.getSingleResult();
 		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();
