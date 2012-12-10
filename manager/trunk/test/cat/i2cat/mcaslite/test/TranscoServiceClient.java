@@ -15,7 +15,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class TranscoServiceClient {
 	
-	public static final String uri = "http://localhost:8080/MCASlite";
+	public static final String uri = "http://localhost/MCASlite";
 	
 	public static void main(String[] args){
 		BufferedReader br;

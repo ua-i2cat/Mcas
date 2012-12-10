@@ -6,6 +6,9 @@ import java.net.URI;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
@@ -63,15 +66,21 @@ public class RequestUtils {
 		return true;
 	}
 	
-	public static String destinationJSONbuilder(TranscoRequest request) throws MCASException{
+	public static String destinationJSONbuilder(TranscoRequest request) throws MCASException {
 		if (!request.getState().equals(State.DONE) && !request.getState().equals(State.PARTIAL_ERROR)){
 			throw new MCASException();
 		}
-		String json = "{\n \"destinationUris\": [\n";
-		for(Transco transco : request.getTranscoded()){
-			json += "{\"uri\":\"" + transco.getDestinationUri() + "\"}\n";
+		JSONArray jsonAr = new JSONArray();
+		try {
+			for(Transco transco : request.getTranscoded()){
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("uri", transco.getDestinationUri());
+				jsonAr.put(jsonObj);
+			}
+			return (new JSONObject()).put("destinationUris", jsonAr).toString();
+		} catch (JSONException e){
+			e.printStackTrace();
+			throw new MCASException();
 		}
-		json += "]\n}";
-		return json;
 	}
 }
