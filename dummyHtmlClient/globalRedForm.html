@@ -18,6 +18,8 @@ $(function(){
     
     $('#process').click(function(){
         var mydata = {config: "default", usr: "default", dst: $('#dst_file').val(), src: $('#src_file').val()};
+        $('#destination_uris').hide();
+        $('#destination_uris').empty();
         $.ajax({
             url: "/MCASlite/transco",
             type: "POST",
@@ -38,8 +40,6 @@ $(function(){
                 503 : function(){  
                     alert('System overloaded');
                 }
-            }, error : function() {
-                $('#t_status p').html('Something went wrong, unknown problem!');
             }
         });
     });
@@ -61,6 +61,7 @@ $(function(){
                         $('#video_file').val(' ');
                         $('#src_file').prop('disabled', false);
                         $('#dst_file').prop('disabled', false);
+                        $('#cancel').hide();
                         $.ajax({
                             type: 'GET',
                             url: '/MCASlite/transco/uris?id=' + $('#req_id').val(),
@@ -72,6 +73,11 @@ $(function(){
                                 $('#destination_uris').slideDown('slow');
                             }            
                         });
+                    } else if (data == 'ERROR' || data == 'PARTIAL_ERROR' || data == 'CANCELLED') {
+                        $('#cancel').hide();
+                        $('#process').prop('disabled',false);
+                        $('#src_file').prop('disabled', false);
+                        $('#dst_file').prop('disabled', false);
                     }
                 }
             });
