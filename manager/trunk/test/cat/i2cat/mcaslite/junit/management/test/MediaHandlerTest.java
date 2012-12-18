@@ -173,6 +173,14 @@ public class MediaHandlerTest {
 		
 		replay(MediaUtils.class);
 		
+		File goodFileMock = createMock(File.class);
+		expectNew(File.class, (new URI(requestOut.getDst())).getPath()).andReturn(goodFileMock).times(3);
+		expect(goodFileMock.exists()).andReturn(true).times(3);
+		expect(goodFileMock.isDirectory()).andReturn(true).times(3);
+		expect(goodFileMock.canWrite()).andReturn(true).times(3);
+		
+		replay(goodFileMock, File.class);
+		
 		requestOut.setTranscoded(TranscoderUtils.transcoBuilder(requestOut.getTConfig(), requestOut.getIdStr(), requestOut.getDst()));
 		
 		expect(queueMock.removeRequest(requestOut)).andReturn(true).once();

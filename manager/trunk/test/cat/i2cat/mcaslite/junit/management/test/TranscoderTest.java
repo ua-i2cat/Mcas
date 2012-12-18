@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.junit.management.test;
 
+import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.resetAll;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.createMock;
@@ -10,6 +11,8 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.anyObject;
 import static org.junit.Assert.assertEquals;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,6 +24,7 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -45,14 +49,29 @@ public class TranscoderTest {
 	
 	private static TranscoRequest requestOut;
 	private List<Transco> transcos = new ArrayList<Transco>();
+	private static String FAKEDST = "fakeDst";
 	private static TranscoQueue queueMock;
 	private DAO<TranscoRequest> requestDaoMock;
 	private DefaultExecutor executorMock;
 
+	@BeforeClass
+	public static void setUp() throws Exception{
+		System.setProperty("mcas.home", "/This/Is/Fake/Home");
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Before
 	public void setup() throws Exception{
-		List<Transco> transcosTmp = TranscoderUtils.transcoBuilder(DefaultsUtils.tConfigGetDefaults(), "notImportantAtAll", "notImportantAtAll");
+		File goodFileMock = createMock(File.class);
+		expectNew(File.class, new Class<?>[]{ String.class },(String) anyObject()).andReturn(goodFileMock).anyTimes();
+		expect(goodFileMock.exists()).andReturn(true).anyTimes();
+		expect(goodFileMock.isDirectory()).andReturn(true).anyTimes();
+		expect(goodFileMock.canWrite()).andReturn(true).anyTimes();
+		expect(goodFileMock.isAbsolute()).andReturn(false).anyTimes();
+		
+		replay(goodFileMock, File.class);
+		
+		List<Transco> transcosTmp = TranscoderUtils.transcoBuilder(DefaultsUtils.tConfigGetDefaults(), "notImportantAtAll", FAKEDST);
 		Iterator<Transco> it = transcosTmp.iterator();
 		while(it.hasNext()){
 			Transco transco = it.next();

@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.junit.utils.test;
 
+import java.io.File;
 import java.util.List;
 
 import org.junit.After;
@@ -21,6 +22,7 @@ import cat.i2cat.mcaslite.utils.TranscoderUtils;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replayAll;
+import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.resetAll;
 import static org.powermock.api.easymock.PowerMock.verifyAll;
 import static org.easymock.EasyMock.expect;
@@ -50,6 +52,7 @@ public class TranscoderUtilsTest {
 		expectNew(DAO.class, TranscoderConfig.class).andReturn(tConfigDaoMock);
 		expect(tConfigDaoMock.findByName(DEFAULT)).andReturn(DefaultsUtils.tConfigGetDefaults());
 		expect(tConfigDaoMock.findByName(FAKECONFIG)).andThrow(new MCASException());
+		
 		replayAll();
 	}
 	
@@ -66,14 +69,30 @@ public class TranscoderUtilsTest {
 	}
 	
 	@Test
-	public void testTranscoBuilder_1st() throws MCASException{
+	public void testTranscoBuilder_1st() throws Exception{
+		File goodFileMock = createMock(File.class);
+		expectNew(File.class, FAKEDST).andReturn(goodFileMock).times(3);
+		expect(goodFileMock.exists()).andReturn(true).times(3);
+		expect(goodFileMock.isDirectory()).andReturn(true).times(3);
+		expect(goodFileMock.canWrite()).andReturn(true).times(3);
+		
+		replay(goodFileMock, File.class);
+		
 		TranscoderConfig tConfig = TranscoderUtils.loadConfig(FAKECONFIG);
 		List<Transco> transcos = TranscoderUtils.transcoBuilder(tConfig, FAKEREQ, FAKEDST);
 		assertTrue(tConfig.getNumOutputs() == transcos.size());
 	}
 	
 	@Test
-	public void testTranscoBuilder_2nd() throws MCASException{
+	public void testTranscoBuilder_2nd() throws Exception{
+		File goodFileMock = createMock(File.class);
+		expectNew(File.class, FAKEDST).andReturn(goodFileMock).times(3);
+		expect(goodFileMock.exists()).andReturn(true).times(3);
+		expect(goodFileMock.isDirectory()).andReturn(true).times(3);
+		expect(goodFileMock.canWrite()).andReturn(true).times(3);
+		
+		replay(goodFileMock, File.class);
+		
 		TranscoderConfig tConfig = TranscoderUtils.loadConfig(FAKECONFIG);
 		List<Transco> transcos = TranscoderUtils.transcoBuilder(tConfig, FAKEREQ, FAKEDST);
 		assertEquals("ffmpeg -i /This/Is/Fake/Home/input/fakeRequestId -s 1280x720 -b:v 1024k  -ac 2 -b:a 128k  -f mp4 -codec:v libx264 -codec:a libfaac -y /This/Is/Fake/Home/output/fakeRequestIddefault.mp4",transcos.get(0).getCommand().trim());

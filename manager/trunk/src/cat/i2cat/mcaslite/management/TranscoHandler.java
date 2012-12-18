@@ -61,12 +61,13 @@ public class TranscoHandler implements Runnable {
 					mediaHandle(request);
 				} 
 			} catch (MCASException e) {
-				if (request != null && request.getState().equals(State.CANCELLED)){
-					synchronized(queue){
-						if (queue.removeRequest(request)){
-							requestDao.save(request);
-							queue.notifyAll();
-						}
+				if (request != null && ! request.getState().equals(State.CANCELLED)){
+					request.setError();
+				}
+				synchronized(queue){
+					if (queue.removeRequest(request)){
+						requestDao.save(request);
+						queue.notifyAll();
 					}
 				}
 				e.printStackTrace();
