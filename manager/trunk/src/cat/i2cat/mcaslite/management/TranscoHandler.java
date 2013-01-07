@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutionException;
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.ApplicationConfig;
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
-import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
+import cat.i2cat.mcaslite.config.model.TranscoStatus;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.DefaultsUtils;
 import cat.i2cat.mcaslite.utils.MediaUtils;
@@ -18,8 +18,6 @@ public class TranscoHandler implements Runnable {
 	private static final int MAX_REQUESTS = 1000;
 	
 	private TranscoQueue queue;
-	private int maxInMedia;
-	private int maxOutMedia;
 	private int maxTransco;
 	private DAO<ApplicationConfig> applicationDao = new DAO<ApplicationConfig>(ApplicationConfig.class);
 	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class);
@@ -48,20 +46,20 @@ public class TranscoHandler implements Runnable {
 				synchronized(queue){
 					waitCondition();
 				}
-				if (! MQBlock){
-					request = queue.get(State.M_QUEUED);
-					mediaHandle(request);
-				} 
+//				if (! MQBlock){
+//					request = queue.get(State.M_QUEUED);
+//					mediaHandle(request);
+//				} 
 				if (! TQBlock) {
-					request = queue.get(State.T_QUEUED);
+					request = queue.get(Status.T_QUEUED);
 					transcode(request);
 				} 
-				if (! TTBlock) {
-					request = queue.get(State.T_TRANSCODED);
-					mediaHandle(request);
-				} 
+//				if (! TTBlock) {
+//					request = queue.get(State.T_TRANSCODED);
+//					mediaHandle(request);
+//				} 
 			} catch (MCASException e) {
-				if (request != null && ! request.getState().equals(State.CANCELLED)){
+				if (request != null && ! request.getState().equals(Status.CANCELLED)){
 					request.setError();
 				}
 				synchronized(queue){
@@ -88,8 +86,6 @@ public class TranscoHandler implements Runnable {
 		ApplicationConfig config;
 		try {
 			config = applicationDao.findById(id);
-			maxInMedia = config.getMaxInMediaH();
-			maxOutMedia = config.getMaxOutMediaH();
 			maxTransco = config.getMaxTransco();
 		} catch (MCASException e) {
 			loadDefaults();
@@ -101,9 +97,9 @@ public class TranscoHandler implements Runnable {
 		synchronized(queue){
 			request = queue.getRequest(request);
 			if (request != null){
-				if (request.getState().equals(State.M_PROCESS) || 
-					request.getState().equals(State.T_PROCESS) ||
-					request.getState().equals(State.MOVING)) {
+				if (request.getState().equals(Status.M_PROCESS) || 
+					request.getState().equals(Status.T_PROCESS) ||
+					request.getState().equals(Status.MOVING)) {
 					try {
 						if (! cancelWorker(request.getIdStr(), mayInterruptIfRunning)){
 							MediaUtils.clean(request);
@@ -172,7 +168,7 @@ public class TranscoHandler implements Runnable {
 	}
 	
 	public String getState(TranscoRequest r) throws MCASException {
-		State state = queue.getState(r);
+		Status state = queue.getState(r);
 		if (state != null){
 			return state.getName();
 		} else {
@@ -235,24 +231,24 @@ public class TranscoHandler implements Runnable {
 	}
 	
 	private void waitCondition() throws MCASException, InterruptedException{
-		if(conditionMQ() & conditionTQ() & conditionTT()){
+		if(queue.isEmpty() || queue.count(Status.T_PROCESS) >= maxTransco){
 			queue.wait();
 			waitCondition();
 		}
 	}
 	
 	private boolean conditionMQ() throws MCASException {
-		MQBlock = queue.isEmpty(State.M_QUEUED) || queue.count(State.M_PROCESS) >= maxInMedia || queue.count(State.T_QUEUED) >= maxInMedia;
+		MQBlock = queue.isEmpty(Status.M_QUEUED) || queue.count(Status.M_PROCESS) >= maxInMedia || queue.count(Status.T_QUEUED) >= maxInMedia;
 		return MQBlock;
 	}
 	
 	private boolean conditionTQ() throws MCASException {
-		TQBlock = queue.isEmpty(State.T_QUEUED) || queue.count(State.T_PROCESS) >= maxTransco || queue.count(State.T_TRANSCODED) >= maxOutMedia;
+		TQBlock = queue.isEmpty(Status.T_QUEUED) || queue.count(Status.T_PROCESS) >= maxTransco || queue.count(Status.T_TRANSCODED) >= maxOutMedia;
 		return TQBlock;
 	}
 	
 	private boolean conditionTT() throws MCASException {
-		TTBlock = queue.isEmpty(State.T_TRANSCODED) || queue.count(State.MOVING) >= maxOutMedia;
+		TTBlock = queue.isEmpty(Status.T_TRANSCODED) || queue.count(Status.MOVING) >= maxOutMedia;
 		return TTBlock;
 	}
 }

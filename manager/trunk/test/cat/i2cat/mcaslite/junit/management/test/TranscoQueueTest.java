@@ -33,13 +33,13 @@ public class TranscoQueueTest {
 		queue = TranscoQueue.getInstance();
 		
 		request1st = TranscoRequest.getEqualRequest(UUID.randomUUID());
-		request1st.setState(State.T_PROCESS);
+		request1st.setState(Status.T_PROCESS);
 		
 		request2nd = TranscoRequest.getEqualRequest(UUID.randomUUID());
-		request2nd.setState(State.M_PROCESS);
+		request2nd.setState(Status.M_PROCESS);
 		
 		request3rd = TranscoRequest.getEqualRequest(UUID.randomUUID());
-		request3rd.setState(State.MOVING);
+		request3rd.setState(Status.MOVING);
 	}
 
 	@Before
@@ -78,19 +78,19 @@ public class TranscoQueueTest {
 	public void updateTest() throws MCASException {
 		TranscoRequest request = TranscoRequest.getEqualRequest(UUID.randomUUID());
 		queue.put(request);
-		assertEquals(State.CREATED, queue.getRequest(request).getState());
+		assertEquals(Status.CREATED, queue.getRequest(request).getState());
 		request.increaseState();
 		queue.update(request);
-		assertTrue(! State.CREATED.equals(queue.getRequest(request).getState()));
+		assertTrue(! Status.CREATED.equals(queue.getRequest(request).getState()));
 	}
 	
 	@Test
 	public void updateNoChangeTest() throws MCASException {
 		TranscoRequest request = TranscoRequest.getEqualRequest(UUID.randomUUID());
 		queue.put(request);
-		assertEquals(State.CREATED, queue.getRequest(request).getState());
+		assertEquals(Status.CREATED, queue.getRequest(request).getState());
 		request.increaseState();
-		assertTrue(State.M_QUEUED.equals(queue.getRequest(request).getState()));
+		assertTrue(Status.M_QUEUED.equals(queue.getRequest(request).getState()));
 	}
 	
 	@Test
@@ -107,29 +107,29 @@ public class TranscoQueueTest {
 	
 	@Test
 	public void getTest()  {
-		TranscoRequest request = queue.get(State.T_PROCESS);
+		TranscoRequest request = queue.get(Status.T_PROCESS);
 		assertEquals(request1st, request);
 		assertEquals(5, queue.size());
 	}
 	
 	@Test
 	public void getNoneTest()  {
-		assertNull(queue.get(State.M_QUEUED));
+		assertNull(queue.get(Status.M_QUEUED));
 	}
 	
 	@Test
 	public void countNoneTest() throws MCASException {
-		assertEquals(0,queue.count(State.M_QUEUED));
+		assertEquals(0,queue.count(Status.M_QUEUED));
 	}
 	
 	@Test
 	public void countTest() throws MCASException {
-		assertEquals(2,queue.count(State.CREATED));
+		assertEquals(2,queue.count(Status.CREATED));
 	}
 	
 	@Test
 	public void getStateTest() {
-		assertEquals(State.MOVING,queue.getState(request3rd));
+		assertEquals(Status.MOVING,queue.getState(request3rd));
 	}
 	
 	@Test
@@ -178,8 +178,8 @@ public class TranscoQueueTest {
 	
 	@Test
 	public void isEmptyStateTest(){
-		assertTrue(queue.isEmpty(State.T_QUEUED));
-		assertTrue(! queue.isEmpty(State.MOVING));
+		assertTrue(queue.isEmpty(Status.T_QUEUED));
+		assertTrue(! queue.isEmpty(Status.MOVING));
 	}
 	
 	@Test

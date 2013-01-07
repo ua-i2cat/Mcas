@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cat.i2cat.mcaslite.config.model.TranscoRequest;
-import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
+import cat.i2cat.mcaslite.config.model.TranscoStatus;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class TranscoQueue {
@@ -36,28 +36,28 @@ public class TranscoQueue {
 		return queue.remove(r);
 	}
 
-	synchronized public TranscoRequest get(State state) {
+	synchronized public TranscoRequest get(TranscoStatus status) {
 		for (TranscoRequest r : queue) {
-			if (r.getState().equals(state)) {
+			if (r.getStatus().equals(status)) {
 				return r;
 			}
 		}
 		return null;
 	}
 	
-	synchronized public int count(State state) {
+	synchronized public int count(TranscoStatus state) {
 		int i = 0;
 		for (TranscoRequest r : queue) {
-			if (r.getState().equals(state)) {
+			if (r.getStatus().equals(state)) {
 				i++;
 			}
 		}
 		return i;
 	}
 	
-	synchronized public State getState(TranscoRequest r) {
+	synchronized public TranscoStatus getState(TranscoRequest r) {
 		if (queue.contains(r)){
-			return queue.get(queue.indexOf(r)).getState();
+			return queue.get(queue.indexOf(r)).getStatus();
 		}
 		return null;
 	}
@@ -93,12 +93,12 @@ public class TranscoQueue {
 		return this.queue.size();
 	}
 	
-	synchronized public boolean isEmpty(State state) {
+	synchronized public boolean isEmpty(TranscoStatus status) {
 		if (queue.isEmpty()) {
 			return true;
 		} else {
 			for (TranscoRequest r : queue) {
-				if (r.getState().equals(state)) {
+				if (r.getStatus().equals(status)) {
 					return false;
 				}
 			}

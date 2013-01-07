@@ -169,13 +169,13 @@ public class TranscoServiceTest {
 	public void getStateTest() throws Exception {
 		TranscoHandler transcoHMock = createMock(TranscoHandler.class);
 		expectNew(TranscoHandler.class).andReturn(transcoHMock);
-		expect(transcoHMock.getState(requestOK1.getId())).andReturn(State.CREATED.getName()).once();
+		expect(transcoHMock.getState(requestOK1.getId())).andReturn(Status.CREATED.getName()).once();
 		
 		replayAll();
 		
 		TranscoService service = new TranscoService();
 		String state = service.getStatus(requestOK1.getIdStr());
-		assertEquals(state, State.CREATED.getName());
+		assertEquals(state, Status.CREATED.getName());
 	}
 	
 	@Test(expected = WebApplicationException.class)

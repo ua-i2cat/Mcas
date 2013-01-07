@@ -67,7 +67,7 @@ public class RequestUtils {
 	}
 	
 	public static String destinationJSONbuilder(TranscoRequest request) throws MCASException {
-		if (!request.getState().equals(State.DONE) && !request.getState().equals(State.PARTIAL_ERROR)){
+		if (!request.getState().equals(Status.DONE) && !request.getState().equals(Status.PARTIAL_ERROR)){
 			throw new MCASException();
 		}
 		JSONArray jsonAr = new JSONArray();

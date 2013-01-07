@@ -57,12 +57,12 @@ public class MediaHandlerTest {
 	@BeforeClass
 	public static void setup() throws MCASException{
 		requestIn = TranscoRequest.getEqualRequest(UUID.randomUUID());
-		requestIn.setState(State.M_PROCESS);
+		requestIn.setState(Status.M_PROCESS);
 		requestIn.setSrc("file:///this/is/fake/source");
 		requestIn.setTConfig(DefaultsUtils.tConfigGetDefaults());
 		
 		requestOut = TranscoRequest.getEqualRequest(UUID.randomUUID());
-		requestOut.setState(State.MOVING);
+		requestOut.setState(Status.MOVING);
 		requestOut.setSrc("file:///this/is/fake/source");
 		requestOut.setDst("file:///this/is/fake/destination");
 		requestOut.setTConfig(DefaultsUtils.tConfigGetDefaults());
@@ -107,12 +107,12 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestIn.getState().equals(State.T_QUEUED));
+		assertTrue(requestIn.getState().equals(Status.T_QUEUED));
 	}
 	
 	@Test
 	public void testRunBadrequestState() throws URISyntaxException, Exception {
-		requestIn.setState(State.CREATED);
+		requestIn.setState(Status.CREATED);
 		mockStatic(MediaUtils.class);
 		MediaUtils.clean(requestIn);
 		expectLastCall().once();
@@ -128,12 +128,12 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestIn.getState().equals(State.ERROR));
+		assertTrue(requestIn.getState().equals(Status.ERROR));
 	}
 	
 	@Test
 	public void testRunException() throws URISyntaxException, Exception {
-		requestIn.setState(State.M_PROCESS);
+		requestIn.setState(Status.M_PROCESS);
 		mockStatic(MediaUtils.class);
 		expect(MediaUtils.setInFile(requestIn.getIdStr(), requestIn.getTConfig())).andReturn(fakeFile).times(2);
 		expect(MediaUtils.deleteInputFile(requestIn.getIdStr(), requestIn.getTConfig().getInputWorkingDir())).andReturn(false).once();
@@ -155,7 +155,7 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestIn.getState().equals(State.ERROR));
+		assertTrue(requestIn.getState().equals(Status.ERROR));
 	}
 	
 	@Test
@@ -196,12 +196,12 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestOut.getState().equals(State.DONE));
+		assertTrue(requestOut.getState().equals(Status.DONE));
 	}
 	
 	@Test
 	public void testRunOutputError() throws URISyntaxException, Exception {
-		requestOut.setState(State.MOVING);
+		requestOut.setState(Status.MOVING);
 		mockStatic(MediaUtils.class);
 		expect(MediaUtils.deleteInputFile(requestOut.getIdStr(), requestOut.getTConfig().getInputWorkingDir())).andReturn(false).once();
 		MediaUtils.clean(requestOut);
@@ -224,12 +224,12 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestOut.getState().equals(State.ERROR));
+		assertTrue(requestOut.getState().equals(Status.ERROR));
 	}
 	
 	@Test
 	public void testRunOutputPartialError() throws URISyntaxException, Exception {
-		requestOut.setState(State.MOVING);
+		requestOut.setState(Status.MOVING);
 		mockStatic(MediaUtils.class);
 		expect(MediaUtils.getWorkDir(requestOut.getTConfig().getInputWorkingDir())).andReturn("file:///fake/input").times(6);
 		expect(MediaUtils.getWorkDir(requestOut.getTConfig().getOutputWorkingDir())).andReturn("file:///fake/output").times(6);
@@ -254,7 +254,7 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestOut.getState().equals(State.PARTIAL_ERROR));
+		assertTrue(requestOut.getState().equals(Status.PARTIAL_ERROR));
 	}
 
 	//TODO: cancel test

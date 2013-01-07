@@ -55,7 +55,7 @@ public class MediaHandler implements Runnable, Cancellable {
 		} 
 	}
 	
-	private void inputHandle() throws MCASException {
+	public void inputHandle() throws MCASException {
 		try {
 			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getIdStr(), request.getTConfig()));
 			downloader.toWorkingDir();
@@ -74,7 +74,7 @@ public class MediaHandler implements Runnable, Cancellable {
 		}
 	}
 	
-	private void outputHandle() throws MCASException {
+	public void outputHandle() throws MCASException {
 		Iterator<Transco> i = request.getTranscoded().iterator();
 		while(i.hasNext()){
 			Transco transco = i.next();

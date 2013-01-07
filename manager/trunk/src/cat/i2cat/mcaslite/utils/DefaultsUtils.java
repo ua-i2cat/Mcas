@@ -42,12 +42,12 @@ public class DefaultsUtils {
 		profile.setvCodec("libx264");
 		profiles.add(profile);
 		
-		profile = new TProfile();
-		profile.setaCodec("libvorbis");
-		profile.setFormat("ogg");
-		profile.setName(DEFAULT + "ogg");
-		profile.setvCodec("libtheora");
-		profiles.add(profile);
+//		profile = new TProfile();
+//		profile.setaCodec("libvorbis");
+//		profile.setFormat("ogg");
+//		profile.setName(DEFAULT + "ogg");
+//		profile.setvCodec("libtheora");
+//		profiles.add(profile);
 
 		profile = new TProfile();
 		profile.setaCodec("libvorbis");

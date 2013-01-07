@@ -84,7 +84,7 @@ public class TranscoderTest {
 		expectNew(DAO.class, TranscoRequest.class).andReturn(requestDaoMock).once();
 		
 		requestOut = TranscoRequest.getEqualRequest(UUID.randomUUID());
-		requestOut.setState(State.T_PROCESS);
+		requestOut.setState(Status.T_PROCESS);
 		requestOut.setSrc("file:///this/is/fake/source");
 		requestOut.setDst("file:///this/is/fake/destination");
 		requestOut.setTConfig(DefaultsUtils.tConfigGetDefaults());
@@ -116,7 +116,7 @@ public class TranscoderTest {
 		verifyAll();
 		resetAll();
 		
-		assertEquals(State.T_TRANSCODED, requestOut.getState());
+		assertEquals(Status.T_TRANSCODED, requestOut.getState());
 	}
 	
 	@Test(timeout = 1000)
@@ -137,7 +137,7 @@ public class TranscoderTest {
 		verifyAll();
 		resetAll();
 		
-		assertEquals(State.T_PROCESS, requestOut.getState());
+		assertEquals(Status.T_PROCESS, requestOut.getState());
 	}
 	
 	@Test
@@ -168,7 +168,7 @@ public class TranscoderTest {
 		verifyAll();
 		resetAll();
 		
-		assertEquals(State.ERROR, requestOut.getState());
+		assertEquals(Status.ERROR, requestOut.getState());
 	}
 	
 	@Test
@@ -196,7 +196,7 @@ public class TranscoderTest {
 		verifyAll();
 		resetAll();
 		
-		assertEquals(State.T_TRANSCODED, requestOut.getState());
+		assertEquals(Status.T_TRANSCODED, requestOut.getState());
 		assertEquals(2, requestOut.getTranscoded().size());
 	}
 }

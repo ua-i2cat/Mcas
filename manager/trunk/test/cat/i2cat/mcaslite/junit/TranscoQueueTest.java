@@ -55,7 +55,7 @@ public class TranscoQueueTest {
 		TranscoRequest req1 = new TranscoRequest();
 		queue.put(req1);
 		assertTrue(!queue.isEmpty());
-		TranscoRequest req2 = queue.get(State.CREATED);
+		TranscoRequest req2 = queue.get(Status.CREATED);
 		assertNotNull(req1);
 		assertEquals(req2, req1);
 		assertEquals(0, queue.indexOf(req1));
@@ -68,16 +68,16 @@ public class TranscoQueueTest {
 		TranscoRequest req1 = new TranscoRequest();
 		queue.put(req1);
 		assertTrue(!queue.isEmpty());
-		TranscoRequest req2 = queue.get(State.CREATED);
+		TranscoRequest req2 = queue.get(Status.CREATED);
 		assertNotNull(req1);
 		assertEquals(req2, req1);
 		req2.increaseState();
 		assertEquals(req2, req1);
 		queue.update(req2);
-		req1 = queue.get(State.CREATED);
+		req1 = queue.get(Status.CREATED);
 		assertNull(req1);
 		assertEquals(0, queue.indexOf(req2));
-		req1 = queue.get(State.M_QUEUED);
+		req1 = queue.get(Status.M_QUEUED);
 		assertNotNull(req1);
 		assertEquals(req2, req1);
 	}
@@ -101,11 +101,11 @@ public class TranscoQueueTest {
 				synchronized (queue) {
 					waitCondition();
 					str = countStates();
-					ntq = queue.count(State.T_QUEUED);
-					ntt = queue.count(State.T_TRANSCODED);
+					ntq = queue.count(Status.T_QUEUED);
+					ntt = queue.count(Status.T_TRANSCODED);
 				}
 				if (! MQBlock) {
-					request = queue.get(State.M_QUEUED);
+					request = queue.get(Status.M_QUEUED);
 					if (ntq >= maxInMedia){
 						System.out.println(MQBlock + " " + TPBlock + " " + TTBlock);
 						System.out.println("M_QUEUED FAIL: \n" + str);
@@ -118,7 +118,7 @@ public class TranscoQueueTest {
 					(new Thread(new mThread(queue, request))).start();
 				} 
 				if (! TPBlock) {
-					request = queue.get(State.T_QUEUED);
+					request = queue.get(Status.T_QUEUED);
 					if (ntt >= maxOutMedia){
 						System.out.println(MQBlock + " " + TPBlock + " " + TTBlock);
 						System.out.println("T_TRANSCODED FAIL: \n" + str);
@@ -131,7 +131,7 @@ public class TranscoQueueTest {
 					(new Thread(new mThread(queue, request))).start();
 				} 
 				if (! TTBlock) {
-					request = queue.get(State.T_TRANSCODED);
+					request = queue.get(Status.T_TRANSCODED);
 					assertEquals(((Integer) q).toString(),
 					request.getSrc());
 					q++;
@@ -162,39 +162,39 @@ public class TranscoQueueTest {
 	}
 
 	private boolean conditionMQ() throws MCASException {
-		return (queue.isEmpty(State.M_QUEUED) || queue.count(State.M_PROCESS) >= maxInMedia || queue.count(State.T_QUEUED) >= maxInMedia);
+		return (queue.isEmpty(Status.M_QUEUED) || queue.count(Status.M_PROCESS) >= maxInMedia || queue.count(Status.T_QUEUED) >= maxInMedia);
 	}
 	
 	private boolean conditionTQ() throws MCASException {
-		return (queue.isEmpty(State.T_QUEUED) || queue.count(State.T_PROCESS) >= maxTransco || queue.count(State.T_TRANSCODED) >= maxOutMedia);
+		return (queue.isEmpty(Status.T_QUEUED) || queue.count(Status.T_PROCESS) >= maxTransco || queue.count(Status.T_TRANSCODED) >= maxOutMedia);
 	}
 	
 	private boolean conditionTT() throws MCASException {
-		return (queue.isEmpty(State.T_TRANSCODED) || queue.count(State.MOVING) >= maxOutMedia);
+		return (queue.isEmpty(Status.T_TRANSCODED) || queue.count(Status.MOVING) >= maxOutMedia);
 	}
 
 	private String countStates() throws MCASException {
 		synchronized (queue) {
 			String str = "";
-			str += State.CREATED.getName() + ": " + queue.count(State.CREATED)
+			str += Status.CREATED.getName() + ": " + queue.count(Status.CREATED)
 					+ "\n";
-			str += State.M_QUEUED.getName() + ": "
-					+ queue.count(State.M_QUEUED) + "\n";
-			str += State.M_PROCESS.getName() + ": "
-					+ queue.count(State.M_PROCESS) + "\n";
-			str += State.T_QUEUED.getName() + ": "
-					+ queue.count(State.T_QUEUED) + "\n";
-			str += State.T_PROCESS.getName() + ": "
-					+ queue.count(State.T_PROCESS) + "\n";
-			str += State.T_TRANSCODED.getName() + ": "
-					+ queue.count(State.T_TRANSCODED) + "\n";
-			str += State.MOVING.getName() + ": " + queue.count(State.MOVING)
+			str += Status.M_QUEUED.getName() + ": "
+					+ queue.count(Status.M_QUEUED) + "\n";
+			str += Status.M_PROCESS.getName() + ": "
+					+ queue.count(Status.M_PROCESS) + "\n";
+			str += Status.T_QUEUED.getName() + ": "
+					+ queue.count(Status.T_QUEUED) + "\n";
+			str += Status.T_PROCESS.getName() + ": "
+					+ queue.count(Status.T_PROCESS) + "\n";
+			str += Status.T_TRANSCODED.getName() + ": "
+					+ queue.count(Status.T_TRANSCODED) + "\n";
+			str += Status.MOVING.getName() + ": " + queue.count(Status.MOVING)
 					+ "\n";
-			str += State.DONE.getName() + ": " + queue.count(State.DONE) + "\n";
-			str += State.ERROR.getName() + ": " + queue.count(State.ERROR)
+			str += Status.DONE.getName() + ": " + queue.count(Status.DONE) + "\n";
+			str += Status.ERROR.getName() + ": " + queue.count(Status.ERROR)
 					+ "\n";
-			str += State.PARTIAL_ERROR.getName() + ": "
-					+ queue.count(State.PARTIAL_ERROR) + "\n";
+			str += Status.PARTIAL_ERROR.getName() + ": "
+					+ queue.count(Status.PARTIAL_ERROR) + "\n";
 			return str;
 		}
 	}
