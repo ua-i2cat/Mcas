@@ -10,7 +10,7 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 public class TranscoQueue {
 
 	private List<TranscoRequest> queue;
-	private static final TranscoQueue INSTANCE = new TranscoQueue();
+	private final static TranscoQueue INSTANCE = new TranscoQueue();
 
 	public static TranscoQueue getInstance(){
 		return INSTANCE;
