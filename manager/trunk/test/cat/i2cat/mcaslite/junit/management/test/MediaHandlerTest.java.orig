@@ -56,12 +56,20 @@ public class MediaHandlerTest {
 	
 	@BeforeClass
 	public static void setup() throws MCASException{
+<<<<<<< HEAD
+		requestIn = TranscoRequest.getEqualRequest(UUID.randomUUID());
+=======
 		requestIn = TranscoRequestV.getEqualRequest(UUID.randomUUID());
+>>>>>>> MCASLive2
 		requestIn.setState(Status.M_PROCESS);
 		requestIn.setSrc("file:///this/is/fake/source");
 		requestIn.setTConfig(DefaultsUtils.tConfigGetDefaults());
 		
+<<<<<<< HEAD
+		requestOut = TranscoRequest.getEqualRequest(UUID.randomUUID());
+=======
 		requestOut = TranscoRequestV.getEqualRequest(UUID.randomUUID());
+>>>>>>> MCASLive2
 		requestOut.setState(Status.MOVING);
 		requestOut.setSrc("file:///this/is/fake/source");
 		requestOut.setDst("file:///this/is/fake/destination");

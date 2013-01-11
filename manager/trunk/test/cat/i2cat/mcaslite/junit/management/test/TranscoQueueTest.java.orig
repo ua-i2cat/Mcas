@@ -32,6 +32,15 @@ public class TranscoQueueTest {
 	public static void setUp(){
 		queue = TranscoQueue.getInstance();
 		
+<<<<<<< HEAD
+		request1st = TranscoRequest.getEqualRequest(UUID.randomUUID());
+		request1st.setState(Status.T_PROCESS);
+		
+		request2nd = TranscoRequest.getEqualRequest(UUID.randomUUID());
+		request2nd.setState(Status.M_PROCESS);
+		
+		request3rd = TranscoRequest.getEqualRequest(UUID.randomUUID());
+=======
 		request1st = TranscoRequestV.getEqualRequest(UUID.randomUUID());
 		request1st.setState(Status.T_PROCESS);
 		
@@ -39,6 +48,7 @@ public class TranscoQueueTest {
 		request2nd.setState(Status.M_PROCESS);
 		
 		request3rd = TranscoRequestV.getEqualRequest(UUID.randomUUID());
+>>>>>>> MCASLive2
 		request3rd.setState(Status.MOVING);
 	}
 
@@ -107,7 +117,11 @@ public class TranscoQueueTest {
 	
 	@Test
 	public void getTest()  {
+<<<<<<< HEAD
+		TranscoRequest request = queue.get(Status.T_PROCESS);
+=======
 		TranscoRequestV request = queue.get(Status.T_PROCESS);
+>>>>>>> MCASLive2
 		assertEquals(request1st, request);
 		assertEquals(5, queue.size());
 	}

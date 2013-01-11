@@ -5,9 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+<<<<<<< HEAD:manager/trunk/src/cat/i2cat/mcaslite/config/model/TranscoRequest.java
 import javax.persistence.CascadeType;
+=======
+>>>>>>> MCASLive2:manager/trunk/src/cat/i2cat/mcaslite/config/model/TRequest.java
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -19,14 +23,24 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.FileStatus;
+import cat.i2cat.mcaslite.management.Status;
+import cat.i2cat.mcaslite.utils.DefaultsUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
 @Table(name = "requests")
+<<<<<<< HEAD:manager/trunk/src/cat/i2cat/mcaslite/config/model/TranscoRequest.java
 public class TranscoRequest implements Serializable{
 
 	private static final long serialVersionUID = 4636926585290770053L;
 
+=======
+public class TRequest implements Serializable {
+	
+	private static final long serialVersionUID = 4594851791163577128L;
+	
+>>>>>>> MCASLive2:manager/trunk/src/cat/i2cat/mcaslite/config/model/TRequest.java
 	@Column(nullable = false, length = 255)
 	private String src;
 	@Column(nullable = false, length = 255)
@@ -35,7 +49,6 @@ public class TranscoRequest implements Serializable{
 	private String usr;
 	@Transient
 	private String config;
-	//TODO: switch to optional true and fetch eager in order to be able to delete configurations safely
 	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name="tConfig", referencedColumnName="id")
 	private TranscoderConfig tConfig;
@@ -45,9 +58,25 @@ public class TranscoRequest implements Serializable{
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="request", referencedColumnName="id")
 	private List<Transco> transcoded = new ArrayList<Transco>();
+<<<<<<< HEAD:manager/trunk/src/cat/i2cat/mcaslite/config/model/TranscoRequest.java
 	@Column(nullable = false)
 	private TranscoStatus status;
 				
+=======
+	@Transient
+	private Status status;
+	@Column
+	private int iStatus;
+	
+	public void setIStatus(int iStatus){
+		this.iStatus = iStatus;
+	}
+	
+	public int getIStatus(){
+		return iStatus;
+	}
+			
+>>>>>>> MCASLive2:manager/trunk/src/cat/i2cat/mcaslite/config/model/TRequest.java
 	public void addTrancoded(Transco transco){
 		transcoded.add(transco);
 	}
@@ -74,6 +103,45 @@ public class TranscoRequest implements Serializable{
 		return tConfig.getNumOutputs();
 	}
 
+<<<<<<< HEAD:manager/trunk/src/cat/i2cat/mcaslite/config/model/TranscoRequest.java
+=======
+	public void increaseStatus() throws MCASException {
+		status.increaseStatus();
+		iStatus = status.getInt();
+	}
+	
+	@Transient
+	public void setCancelled() {
+		status.setCancelled();
+		iStatus = status.getInt();
+	}
+	
+	@Transient
+	public void setError() {
+		status.setError();
+		iStatus = status.getInt();
+	}
+	
+	@Transient
+	public void setPartialError() {
+		status.setPartialError();
+		iStatus = status.getInt();
+	}
+
+	public Status getStatus() {
+		return status.getStatus();
+	}
+	
+	public void setStatus(Status status) {
+		this.status = status;
+		iStatus = status.getInt();
+	}
+	
+	@Transient
+	public void initFileRequest(){
+		status = new FileStatus();
+	}
+>>>>>>> MCASLive2:manager/trunk/src/cat/i2cat/mcaslite/config/model/TRequest.java
 	public String getSrc() {
 		return src;
 	}
@@ -91,7 +159,14 @@ public class TranscoRequest implements Serializable{
 	}
 
 	public TranscoderConfig getTConfig() {
-		return tConfig;
+		try {
+			if (tConfig == null){
+				this.initTConf();
+			}
+			return tConfig;
+		} catch (MCASException e) {
+			return null;
+		}
 	}
 
 	public void setTConfig(TranscoderConfig config) {
@@ -135,20 +210,40 @@ public class TranscoRequest implements Serializable{
 		return id.toString();
 	}
 	
-	public static TranscoRequest getEqualRequest(UUID id){
-		TranscoRequest req = new TranscoRequest();
+	public static TRequest getEqualRequest(UUID id){
+		TRequest req = new TRequest();
 		req.id = id;
 		return req;
 	}
 
 	@Override 
 	public boolean equals(Object o){
-		TranscoRequest req = (TranscoRequest) o;
+		TRequest req = (TRequest) o;
 		return this.id.equals(req.getId());
 	}
 	
 	@Transient
-	public void initTConf() throws MCASException{
-		setTConfig(TranscoderUtils.loadConfig(config));
+	public void initTConf() throws MCASException {
+		try {
+			setTConfig(TranscoderUtils.loadConfig(config));
+		} catch (MCASException e){
+			setTConfig(TranscoderUtils.loadConfig(DefaultsUtils.DEFAULT));
+		}
+	}
+
+	@Transient
+	public boolean isWaiting() {
+		if (status.getInt() <= Status.QUEUED){
+			return true;
+		}
+		return false;
+	}
+
+	@Transient
+	public boolean isProcessing() {
+		if (status.getInt() > Status.QUEUED && status.getInt() < Status.DONE){
+			return true;
+		}
+		return false;
 	}
 }

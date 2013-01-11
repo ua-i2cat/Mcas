@@ -5,55 +5,55 @@ import java.net.URI;
 import java.util.Iterator;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
+import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 import cat.i2cat.mcaslite.utils.Uploader;
 
-public class MediaHandler implements Runnable, Cancellable {
+public class MediaHandler implements Cancellable {
 
-	private TranscoQueue queue;
-	private TranscoRequest request;
-	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class); 
+	private ProcessQueue queue;
+	private TRequest request;
+	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class); 
 	private Downloader downloader;
 	private Uploader uploader;
 	private boolean cancelled = false;
 	private boolean done = false;
 	
-	public MediaHandler(TranscoQueue queue, TranscoRequest request) throws MCASException {
+	public MediaHandler(ProcessQueue queue, TRequest request) throws MCASException {
 		this.queue = queue;
 		this.request = request;
 	}
 	
-	@Override
-	public void run() {
-		try {
-			switch (request.getState()) {
-				case M_PROCESS:
-					inputHandle();
-					break;
-				case MOVING:
-					outputHandle();
-					break;
-				default: 
-					throw new MCASException();
-			}
-			setDone(true);
-		} catch (MCASException e) {
-			request.setError();
-			MediaUtils.clean(request);
-			synchronized(queue){
-				if (queue.removeRequest(request)){
-					requestDao.save(request);
-					queue.notifyAll();
-				}
-			}
-			e.printStackTrace();
-			setDone(true);
-		} 
-	}
+//	@Override
+//	public void run() {
+//		try {
+//			switch (request.getState()) {
+//				case M_PROCESS:
+//					inputHandle();
+//					break;
+//				case MOVING:
+//					outputHandle();
+//					break;
+//				default: 
+//					throw new MCASException();
+//			}
+//			setDone(true);
+//		} catch (MCASException e) {
+//			request.setError();
+//			MediaUtils.clean(request);
+//			synchronized(queue){
+//				if (queue.removeRequest(request)){
+//					requestDao.save(request);
+//					queue.notifyAll();
+//				}
+//			}
+//			e.printStackTrace();
+//			setDone(true);
+//		} 
+//	}
 	
 	public void inputHandle() throws MCASException {
 		try {
@@ -61,16 +61,18 @@ public class MediaHandler implements Runnable, Cancellable {
 			downloader.toWorkingDir();
 		} catch (Exception e) {
 			e.printStackTrace();
-			MediaUtils.deleteInputFile(request.getIdStr(), request.getTConfig().getInputWorkingDir());
+			request.setError();
+			MediaUtils.clean(request);
+			if (queue.remove(request)){
+				requestDao.save(request);
+			}
+			setDone(true);
 			throw new MCASException();
 		}
 		setDone(true);
 		if (! isCancelled()) {
-			request.increaseState();
-			synchronized(queue){
-				queue.update(request);
-				queue.notifyAll();
-			}
+			request.increaseStatus();
+			queue.update(request);
 		}
 	}
 	
@@ -98,13 +100,10 @@ public class MediaHandler implements Runnable, Cancellable {
 						request.setPartialError();
 					}
 				} else {
-					request.increaseState();
+					request.increaseStatus();
 				}
-				synchronized(queue){
-					if (queue.removeRequest(request)) {
-						requestDao.save(request);
-						queue.notifyAll();
-					}
+				if (queue.remove(request)) {
+					requestDao.save(request);
 				}
 			}
 		} finally {
@@ -129,11 +128,11 @@ public class MediaHandler implements Runnable, Cancellable {
 	@Override
 	public boolean cancel(boolean mayInterruptIfRunning) {
 		if (! isDone()){
-			switch (request.getState()) {
-				case M_PROCESS:
+			switch (request.getStatus().getInt()) {
+				case Status.PROCESS_M:
 					setCancelled(cancelDownload(mayInterruptIfRunning));
 					break;
-				case MOVING:
+				case Status.PROCESS_MO:
 					setCancelled(cancelUpload(mayInterruptIfRunning));
 					break;
 				default:

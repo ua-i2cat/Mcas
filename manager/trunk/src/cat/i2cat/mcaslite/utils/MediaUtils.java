@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
+import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
@@ -64,7 +64,7 @@ public class MediaUtils {
 		}
 	}
 	
-	public static synchronized void clean(TranscoRequest request){
+	public static synchronized void clean(TRequest request){
 		if (request.getTranscoded().size() > 0){
 			cleanTranscos(request.getTranscoded());
 		} else {

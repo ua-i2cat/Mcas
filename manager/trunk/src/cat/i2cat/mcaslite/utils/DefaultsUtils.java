@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.ApplicationConfig;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
@@ -12,6 +11,7 @@ import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 public class DefaultsUtils {
 	
 	public static final String DEFAULT = "default";
+	public static final int MAX_PROCESS = 2;
 	
 	public static TranscoderConfig tConfigGetDefaults(){
 		TranscoderConfig tConfig = new TranscoderConfig();
@@ -65,29 +65,9 @@ public class DefaultsUtils {
 		transcoConfigDao.save(tConfigGetDefaults());
 	}
 	
-	public static ApplicationConfig applicationGetDefaults(){
-		ApplicationConfig appConf = new ApplicationConfig();
-		
-		appConf.setMaxInMediaH(4);
-		appConf.setMaxOutMediaH(4);
-		appConf.setMaxTransco(2);
-		appConf.setName(DEFAULT);
-		
-		return appConf;
-	}
-	
-	public static void applicationFeedDefaults(){
-		DAO<ApplicationConfig> appConfDao = new DAO<ApplicationConfig>(ApplicationConfig.class);
-		appConfDao.save(applicationGetDefaults());
-	}
-	
 	public static boolean feedDefaultsNeeded(){
-		DAO<ApplicationConfig> appConfDao = new DAO<ApplicationConfig>(ApplicationConfig.class);
 		DAO<TranscoderConfig> transcoConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class); 
 		try {
-			if (appConfDao.findByName(DEFAULT) == null){
-				return true;
-			}
 			if (transcoConfigDao.findByName(DEFAULT) == null){
 				return true;
 			}

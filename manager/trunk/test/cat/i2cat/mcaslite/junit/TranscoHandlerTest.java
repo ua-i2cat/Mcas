@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import cat.i2cat.mcaslite.config.model.TranscoRequest;
+import cat.i2cat.mcaslite.config.model.TranscoRequestV;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.TranscoHandler;
 import static org.powermock.api.easymock.PowerMock.*;
@@ -37,6 +37,6 @@ public class TranscoHandlerTest {
 	
 	@Test
 	public void testPutEmptyQueue() throws MCASException{
-		assertTrue((new TranscoHandler()).putRequest(new TranscoRequest()));
+		assertTrue((new TranscoHandler()).putRequest(new TranscoRequestV()));
 	}
 }

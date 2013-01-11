@@ -55,7 +55,11 @@ public class TranscoQueueTest {
 		TranscoRequestV req1 = new TranscoRequestV();
 		queue.put(req1);
 		assertTrue(!queue.isEmpty());
+<<<<<<< HEAD
+		TranscoRequest req2 = queue.get(Status.CREATED);
+=======
 		TranscoRequestV req2 = queue.get(Status.CREATED);
+>>>>>>> MCASLive2
 		assertNotNull(req1);
 		assertEquals(req2, req1);
 		assertEquals(0, queue.indexOf(req1));
@@ -68,7 +72,11 @@ public class TranscoQueueTest {
 		TranscoRequestV req1 = new TranscoRequestV();
 		queue.put(req1);
 		assertTrue(!queue.isEmpty());
+<<<<<<< HEAD
+		TranscoRequest req2 = queue.get(Status.CREATED);
+=======
 		TranscoRequestV req2 = queue.get(Status.CREATED);
+>>>>>>> MCASLive2
 		assertNotNull(req1);
 		assertEquals(req2, req1);
 		req2.increaseState();

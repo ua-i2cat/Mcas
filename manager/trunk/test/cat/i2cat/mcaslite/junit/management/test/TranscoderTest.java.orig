@@ -83,7 +83,11 @@ public class TranscoderTest {
 		this.requestDaoMock = (DAO<TranscoRequestV>) createMock(DAO.class);
 		expectNew(DAO.class, TranscoRequestV.class).andReturn(requestDaoMock).once();
 		
+<<<<<<< HEAD
+		requestOut = TranscoRequest.getEqualRequest(UUID.randomUUID());
+=======
 		requestOut = TranscoRequestV.getEqualRequest(UUID.randomUUID());
+>>>>>>> MCASLive2
 		requestOut.setState(Status.T_PROCESS);
 		requestOut.setSrc("file:///this/is/fake/source");
 		requestOut.setDst("file:///this/is/fake/destination");

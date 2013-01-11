@@ -7,7 +7,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import cat.i2cat.mcaslite.config.dao.DAO;
+<<<<<<< HEAD
+import cat.i2cat.mcaslite.config.model.ApplicationConfig;
+import cat.i2cat.mcaslite.config.model.TranscoRequest;
+import cat.i2cat.mcaslite.config.model.TranscoStatus;
+=======
 import cat.i2cat.mcaslite.config.model.TRequest;
+>>>>>>> MCASLive2
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.DefaultsUtils;
 
@@ -15,9 +21,21 @@ public class TranscoHandler implements Runnable {
 
 	private static final int MAX_REQUESTS = 1000;
 	
+<<<<<<< HEAD
+	private TranscoQueue queue;
+	private int maxTransco;
+	private DAO<ApplicationConfig> applicationDao = new DAO<ApplicationConfig>(ApplicationConfig.class);
+	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class);
+	private Stack<SimpleEntry<String, Cancellable>> workers = new Stack<SimpleEntry<String, Cancellable>>();
+	
+	private boolean MQBlock = false;
+	private boolean TQBlock = false;
+	private boolean TTBlock = false;
+=======
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
 	private List<SimpleEntry<String, Cancellable>> workers = new ArrayList<SimpleEntry<String, Cancellable>>();
+>>>>>>> MCASLive2
 	
 	private boolean run = true;
 	
@@ -34,10 +52,30 @@ public class TranscoHandler implements Runnable {
 		TRequest request = null;
 		while(run){
 			try {
+<<<<<<< HEAD
+				synchronized(queue){
+					waitCondition();
+				}
+//				if (! MQBlock){
+//					request = queue.get(State.M_QUEUED);
+//					mediaHandle(request);
+//				} 
+				if (! TQBlock) {
+					request = queue.get(Status.T_QUEUED);
+					transcode(request);
+				} 
+//				if (! TTBlock) {
+//					request = queue.get(State.T_TRANSCODED);
+//					mediaHandle(request);
+//				} 
+			} catch (MCASException e) {
+				if (request != null && ! request.getState().equals(Status.CANCELLED)){
+=======
 				request = queue.getAndProcess();
 				transcode(request);
 			} catch (MCASException e) {
 				if (request != null && ! request.getStatus().equals(Status.CANCELLED)){
+>>>>>>> MCASLive2
 					request.setError();
 				}
 				if (queue.remove(request)){
@@ -50,12 +88,45 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 	
+<<<<<<< HEAD
+	private void loadDefaults() throws MCASException {
+		ApplicationConfig config = applicationDao.findByName(DefaultsUtils.DEFAULT);
+		maxInMedia = config.getMaxInMediaH();
+		maxOutMedia = config.getMaxOutMediaH();
+		maxTransco = config.getMaxTransco();
+	}
+	
+	public void loadConfig(Integer id) throws MCASException {
+		ApplicationConfig config;
+		try {
+			config = applicationDao.findById(id);
+			maxTransco = config.getMaxTransco();
+		} catch (MCASException e) {
+			loadDefaults();
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean cancelRequest(TranscoRequest request, boolean mayInterruptIfRunning) {
+		synchronized(queue){
+			request = queue.getRequest(request);
+			if (request != null){
+				if (request.getState().equals(Status.M_PROCESS) || 
+					request.getState().equals(Status.T_PROCESS) ||
+					request.getState().equals(Status.MOVING)) {
+					try {
+						if (! cancelWorker(request.getIdStr(), mayInterruptIfRunning)){
+							MediaUtils.clean(request);
+						}
+					} catch (Exception e) {
+=======
 	public boolean cancelRequest(TRequest request, boolean mayInterruptIfRunning) {
 		synchronized(queue){
 			request = queue.getProcessObject(request);
 			if (request != null && (request.isProcessing() || request.isWaiting())){
 				try {
 					if (request.isProcessing() && ! cancelWorker(request.getIdStr(), mayInterruptIfRunning)){
+>>>>>>> MCASLive2
 						return false;
 					}
 				} catch (Exception e) {
@@ -90,10 +161,21 @@ public class TranscoHandler implements Runnable {
 		run = false;
 	}
 	
+<<<<<<< HEAD
+	public TranscoRequest getRequest(UUID id) throws MCASException {
+		return getRequest(TranscoRequest.getEqualRequest(id));
+	}
+	
+	public String getState(TranscoRequest r) throws MCASException {
+		Status state = queue.getState(r);
+		if (state != null){
+			return state.getName();
+=======
 	public TRequest getRequest(UUID id) throws MCASException {
 		TRequest request = queue.getProcessObject(TRequest.getEqualRequest(id));
 		if (request != null){
 			return request;
+>>>>>>> MCASLive2
 		} else {
 			request = requestDao.findById(id);
 			if (request != null){
@@ -157,4 +239,29 @@ public class TranscoHandler implements Runnable {
 			workers.remove(0);
 		}
 	}
+<<<<<<< HEAD
+	
+	private void waitCondition() throws MCASException, InterruptedException{
+		if(queue.isEmpty() || queue.count(Status.T_PROCESS) >= maxTransco){
+			queue.wait();
+			waitCondition();
+		}
+	}
+	
+	private boolean conditionMQ() throws MCASException {
+		MQBlock = queue.isEmpty(Status.M_QUEUED) || queue.count(Status.M_PROCESS) >= maxInMedia || queue.count(Status.T_QUEUED) >= maxInMedia;
+		return MQBlock;
+	}
+	
+	private boolean conditionTQ() throws MCASException {
+		TQBlock = queue.isEmpty(Status.T_QUEUED) || queue.count(Status.T_PROCESS) >= maxTransco || queue.count(Status.T_TRANSCODED) >= maxOutMedia;
+		return TQBlock;
+	}
+	
+	private boolean conditionTT() throws MCASException {
+		TTBlock = queue.isEmpty(Status.T_TRANSCODED) || queue.count(Status.MOVING) >= maxOutMedia;
+		return TTBlock;
+	}
+=======
+>>>>>>> MCASLive2
 }

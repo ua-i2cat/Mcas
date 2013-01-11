@@ -164,6 +164,20 @@ public class TranscoServiceTest {
 		service.getStatus(requestOK1.getIdStr());
 	}
 	
+<<<<<<< HEAD
+	@Test
+	public void getStateTest() throws Exception {
+		TranscoHandler transcoHMock = createMock(TranscoHandler.class);
+		expectNew(TranscoHandler.class).andReturn(transcoHMock);
+		expect(transcoHMock.getState(requestOK1.getId())).andReturn(Status.CREATED.getName()).once();
+		
+		replayAll();
+		
+		TranscoService service = new TranscoService();
+		String state = service.getStatus(requestOK1.getIdStr());
+		assertEquals(state, Status.CREATED.getName());
+	}
+=======
 //	@Test
 //	public void getStateTest() throws Exception {
 //		TranscoHandler transcoHMock = createMock(TranscoHandler.class);
@@ -176,6 +190,7 @@ public class TranscoServiceTest {
 //		String state = service.getStatus(requestOK1.getIdStr());
 //		assertEquals(state, Status.CREATED.getName());
 //	}
+>>>>>>> MCASLive2
 	
 	@Test(expected = WebApplicationException.class)
 	public void getUrisSearchFailTest() throws Exception {
