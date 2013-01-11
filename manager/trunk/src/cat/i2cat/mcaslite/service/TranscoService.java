@@ -18,8 +18,9 @@ import javax.ws.rs.core.Response;
 
 import com.sun.jersey.spi.resource.Singleton;
 
-import cat.i2cat.mcaslite.config.model.TranscoRequest;
+import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.management.TranscoHandler;
 import cat.i2cat.mcaslite.utils.RequestUtils;
 
@@ -43,7 +44,7 @@ public class TranscoService {
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addTransco(TranscoRequest request) throws MCASException {
+	public Response addTransco(TRequest request) throws MCASException {
 		try {
 			if (!RequestUtils.isValidSrcUri(new URI(request.getSrc())) || !RequestUtils.isValidDestination(new URI(request.getDst()))) {
 				return Response.status(Response.Status.BAD_REQUEST).entity("Check source and destination.").build();
@@ -51,6 +52,7 @@ public class TranscoService {
 		} catch (URISyntaxException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("Check source and destination.").build();
 		}
+		request.initFileRequest();
 		if (transcoH.putRequest(request)){
 			return Response.status(Response.Status.CREATED).entity(request.getIdStr()).build();
 		} else {
@@ -63,11 +65,11 @@ public class TranscoService {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getStatus(@QueryParam("id") String idStr){
 		try {
-			String state = transcoH.getState(UUID.fromString(idStr));
-			if (state == null){
+			Status status = transcoH.getStatus(UUID.fromString(idStr));
+			if (status == null){
 				throw new WebApplicationException(Response.Status.NOT_FOUND);
 			} else {
-				return state;
+				return status.toString();
 			}
 		} catch (IllegalArgumentException e){
 			e.printStackTrace();
@@ -83,7 +85,7 @@ public class TranscoService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getDestinationUris(@QueryParam("id") String idStr){
 		try {
-			TranscoRequest request = transcoH.getRequest(UUID.fromString(idStr));
+			TRequest request = transcoH.getRequest(UUID.fromString(idStr));
 			if (request == null){
 				throw new WebApplicationException(Response.Status.NOT_FOUND);
 			} else {
@@ -102,7 +104,7 @@ public class TranscoService {
 	@Path("cancel")
 	public Response cancelTransco(@QueryParam("id") String idStr, @DefaultValue("true") @QueryParam("interrupt") boolean interrupt) {
 		try {
-			TranscoRequest request = transcoH.getRequest(UUID.fromString(idStr));
+			TRequest request = transcoH.getRequest(UUID.fromString(idStr));
 			if (request == null){
 				return Response.status(Response.Status.NOT_FOUND).build();
 			} else {
@@ -118,6 +120,6 @@ public class TranscoService {
 		} catch (MCASException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-		}	
+		}
 	}
 }

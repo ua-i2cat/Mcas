@@ -18,8 +18,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.config.model.TranscoRequest;
-import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
+import cat.i2cat.mcaslite.config.model.TranscoRequestV;
+import cat.i2cat.mcaslite.config.model.TranscoRequestV.Status;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.MediaHandler;
 import cat.i2cat.mcaslite.management.TranscoQueue;
@@ -47,22 +47,22 @@ import static org.junit.Assert.assertTrue;
 public class MediaHandlerTest {
 
 	private static TranscoQueue queue;
-	private static TranscoRequest requestIn;
-	private static TranscoRequest requestOut;
+	private static TranscoRequestV requestIn;
+	private static TranscoRequestV requestOut;
 	private MediaHandler mediaH;
 	private static File fakeFile = new File("fakeFile");
 	private TranscoQueue queueMock;
-	private DAO<TranscoRequest> requestDaoMock;
+	private DAO<TranscoRequestV> requestDaoMock;
 	
 	@BeforeClass
 	public static void setup() throws MCASException{
-		requestIn = TranscoRequest.getEqualRequest(UUID.randomUUID());
-		requestIn.setState(State.M_PROCESS);
+		requestIn = TranscoRequestV.getEqualRequest(UUID.randomUUID());
+		requestIn.setState(Status.M_PROCESS);
 		requestIn.setSrc("file:///this/is/fake/source");
 		requestIn.setTConfig(DefaultsUtils.tConfigGetDefaults());
 		
-		requestOut = TranscoRequest.getEqualRequest(UUID.randomUUID());
-		requestOut.setState(State.MOVING);
+		requestOut = TranscoRequestV.getEqualRequest(UUID.randomUUID());
+		requestOut.setState(Status.MOVING);
 		requestOut.setSrc("file:///this/is/fake/source");
 		requestOut.setDst("file:///this/is/fake/destination");
 		requestOut.setTConfig(DefaultsUtils.tConfigGetDefaults());
@@ -74,8 +74,8 @@ public class MediaHandlerTest {
 		mockStatic(TranscoQueue.class);
 		queueMock = createMock(TranscoQueue.class);
 		expect(TranscoQueue.getInstance()).andReturn(queueMock).once();
-		this.requestDaoMock = (DAO<TranscoRequest>) createMock(DAO.class);
-		expectNew(DAO.class, TranscoRequest.class).andReturn(requestDaoMock).once();
+		this.requestDaoMock = (DAO<TranscoRequestV>) createMock(DAO.class);
+		expectNew(DAO.class, TranscoRequestV.class).andReturn(requestDaoMock).once();
 	}
 	
 	@After()
@@ -107,12 +107,12 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestIn.getState().equals(State.T_QUEUED));
+		assertTrue(requestIn.getState().equals(Status.T_QUEUED));
 	}
 	
 	@Test
 	public void testRunBadrequestState() throws URISyntaxException, Exception {
-		requestIn.setState(State.CREATED);
+		requestIn.setState(Status.CREATED);
 		mockStatic(MediaUtils.class);
 		MediaUtils.clean(requestIn);
 		expectLastCall().once();
@@ -128,12 +128,12 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestIn.getState().equals(State.ERROR));
+		assertTrue(requestIn.getState().equals(Status.ERROR));
 	}
 	
 	@Test
 	public void testRunException() throws URISyntaxException, Exception {
-		requestIn.setState(State.M_PROCESS);
+		requestIn.setState(Status.M_PROCESS);
 		mockStatic(MediaUtils.class);
 		expect(MediaUtils.setInFile(requestIn.getIdStr(), requestIn.getTConfig())).andReturn(fakeFile).times(2);
 		expect(MediaUtils.deleteInputFile(requestIn.getIdStr(), requestIn.getTConfig().getInputWorkingDir())).andReturn(false).once();
@@ -155,7 +155,7 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestIn.getState().equals(State.ERROR));
+		assertTrue(requestIn.getState().equals(Status.ERROR));
 	}
 	
 	@Test
@@ -184,7 +184,7 @@ public class MediaHandlerTest {
 		requestOut.setTranscoded(TranscoderUtils.transcoBuilder(requestOut.getTConfig(), requestOut.getIdStr(), requestOut.getDst()));
 		
 		expect(queueMock.removeRequest(requestOut)).andReturn(true).once();
-		requestDaoMock.save((TranscoRequest) anyObject());
+		requestDaoMock.save((TranscoRequestV) anyObject());
 		expectLastCall().once();
 		queueMock.notifyAll();
 		expectLastCall().once();
@@ -196,12 +196,12 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestOut.getState().equals(State.DONE));
+		assertTrue(requestOut.getState().equals(Status.DONE));
 	}
 	
 	@Test
 	public void testRunOutputError() throws URISyntaxException, Exception {
-		requestOut.setState(State.MOVING);
+		requestOut.setState(Status.MOVING);
 		mockStatic(MediaUtils.class);
 		expect(MediaUtils.deleteInputFile(requestOut.getIdStr(), requestOut.getTConfig().getInputWorkingDir())).andReturn(false).once();
 		MediaUtils.clean(requestOut);
@@ -212,7 +212,7 @@ public class MediaHandlerTest {
 		requestOut.setTranscoded(transcos);
 		
 		expect(queueMock.removeRequest(requestOut)).andReturn(true).once();
-		requestDaoMock.save((TranscoRequest) anyObject());
+		requestDaoMock.save((TranscoRequestV) anyObject());
 		expectLastCall().once();
 		queueMock.notifyAll();
 		expectLastCall().once();
@@ -224,12 +224,12 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestOut.getState().equals(State.ERROR));
+		assertTrue(requestOut.getState().equals(Status.ERROR));
 	}
 	
 	@Test
 	public void testRunOutputPartialError() throws URISyntaxException, Exception {
-		requestOut.setState(State.MOVING);
+		requestOut.setState(Status.MOVING);
 		mockStatic(MediaUtils.class);
 		expect(MediaUtils.getWorkDir(requestOut.getTConfig().getInputWorkingDir())).andReturn("file:///fake/input").times(6);
 		expect(MediaUtils.getWorkDir(requestOut.getTConfig().getOutputWorkingDir())).andReturn("file:///fake/output").times(6);
@@ -242,7 +242,7 @@ public class MediaHandlerTest {
 		requestOut.setTranscoded(transcos);
 		
 		expect(queueMock.removeRequest(requestOut)).andReturn(true).once();
-		requestDaoMock.save((TranscoRequest) anyObject());
+		requestDaoMock.save((TranscoRequestV) anyObject());
 		expectLastCall().once();
 		queueMock.notifyAll();
 		expectLastCall().once();
@@ -254,7 +254,7 @@ public class MediaHandlerTest {
 		Thread th = new Thread(mediaH);
 		th.start();
 		th.join();
-		assertTrue(requestOut.getState().equals(State.PARTIAL_ERROR));
+		assertTrue(requestOut.getState().equals(Status.PARTIAL_ERROR));
 	}
 
 	//TODO: cancel test

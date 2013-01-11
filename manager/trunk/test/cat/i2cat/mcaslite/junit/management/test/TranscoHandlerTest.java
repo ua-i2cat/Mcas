@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.ApplicationConfig;
-import cat.i2cat.mcaslite.config.model.TranscoRequest;
+import cat.i2cat.mcaslite.config.model.TranscoRequestV;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.TranscoHandler;
@@ -58,8 +58,8 @@ public class TranscoHandlerTest {
 		expect(applicactionDaoMock.findById((Integer) anyObject())).andReturn(DefaultsUtils.applicationGetDefaults()).anyTimes();
 		expect(applicactionDaoMock.findByName((String) anyObject())).andReturn(DefaultsUtils.applicationGetDefaults()).anyTimes();
 		
-		DAO<TranscoRequest> requestDaoMock = (DAO<TranscoRequest>) createMock(DAO.class);
-		expectNew(DAO.class, TranscoRequest.class).andReturn(requestDaoMock).anyTimes();
+		DAO<TranscoRequestV> requestDaoMock = (DAO<TranscoRequestV>) createMock(DAO.class);
+		expectNew(DAO.class, TranscoRequestV.class).andReturn(requestDaoMock).anyTimes();
 		
 		DAO<TranscoderConfig> tConfigDaoMock = (DAO<TranscoderConfig>) createMock(DAO.class);
 		expectNew(DAO.class, TranscoderConfig.class).andReturn(tConfigDaoMock).anyTimes();
@@ -132,7 +132,7 @@ class PThread implements Runnable {
 		Random r = new Random();
 		for (int i = 0; i < nReq; i++) {
 			try {
-				TranscoRequest req = new TranscoRequest();
+				TranscoRequestV req = new TranscoRequestV();
 				req.setSrc("file:///" + ((Integer) i).toString());
 				req.setDst("file:///" + ((Integer) i).toString());
 				req.setConfig(DefaultsUtils.DEFAULT);

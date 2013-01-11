@@ -13,8 +13,8 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.config.model.TranscoRequest;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.DefaultsUtils;
@@ -129,7 +129,7 @@ public class MediaUtilsTest {
 	@Test
 	public void testCleanWithOut(){
 		suppress(method(MediaUtils.class, "cleanTranscos"));
-		TranscoRequest request = TranscoRequest.getEqualRequest(UUID.randomUUID());
+		TRequest request = TRequest.getEqualRequest(UUID.randomUUID());
 		Transco transco = new Transco();
 		request.addTrancoded(transco);
 		MediaUtils.clean(request);
@@ -138,7 +138,7 @@ public class MediaUtilsTest {
 	@Test
 	public void testCleanWithoutOut(){
 		suppress(method(MediaUtils.class, "deleteInputFile"));
-		TranscoRequest request = TranscoRequest.getEqualRequest(UUID.randomUUID());
+		TRequest request = TRequest.getEqualRequest(UUID.randomUUID());
 		request.setTConfig(tConfig);
 		MediaUtils.clean(request);
 	}

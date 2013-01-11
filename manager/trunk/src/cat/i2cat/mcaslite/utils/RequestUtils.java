@@ -10,10 +10,10 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.config.model.TranscoRequest;
-import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.Status;
 
 
 public class RequestUtils {
@@ -66,8 +66,8 @@ public class RequestUtils {
 		return true;
 	}
 	
-	public static String destinationJSONbuilder(TranscoRequest request) throws MCASException {
-		if (!request.getState().equals(State.DONE) && !request.getState().equals(State.PARTIAL_ERROR)){
+	public static String destinationJSONbuilder(TRequest request) throws MCASException {
+		if (!(request.getStatus().getInt() == Status.DONE)  && !(request.getStatus().getInt() == Status.P_ERROR)){
 			throw new MCASException();
 		}
 		JSONArray jsonAr = new JSONArray();

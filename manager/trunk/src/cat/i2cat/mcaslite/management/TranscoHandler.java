@@ -1,74 +1,52 @@
 package cat.i2cat.mcaslite.management;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.ApplicationConfig;
-import cat.i2cat.mcaslite.config.model.TranscoRequest;
-import cat.i2cat.mcaslite.config.model.TranscoRequest.State;
+import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.DefaultsUtils;
-import cat.i2cat.mcaslite.utils.MediaUtils;
 
 public class TranscoHandler implements Runnable {
 
 	private static final int MAX_REQUESTS = 1000;
 	
-	private TranscoQueue queue;
-	private int maxInMedia;
-	private int maxOutMedia;
-	private int maxTransco;
-	private DAO<ApplicationConfig> applicationDao = new DAO<ApplicationConfig>(ApplicationConfig.class);
-	private DAO<TranscoRequest> requestDao = new DAO<TranscoRequest>(TranscoRequest.class);
-	private Stack<SimpleEntry<String, Cancellable>> workers = new Stack<SimpleEntry<String, Cancellable>>();
+	private ProcessQueue queue;
+	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
+	private List<SimpleEntry<String, Cancellable>> workers = new ArrayList<SimpleEntry<String, Cancellable>>();
 	
-	private boolean MQBlock = false;
-	private boolean TQBlock = false;
-	private boolean TTBlock = false;
+//	private boolean MQBlock = false;
+//	private boolean TQBlock = false;
+//	private boolean TTBlock = false;
 	
 	private boolean run = true;
 	
 	public TranscoHandler() throws MCASException{
-		queue = TranscoQueue.getInstance();
+		queue = ProcessQueue.getInstance();
+		queue.setMaxProcess(DefaultsUtils.MAX_PROCESS);
 		if (DefaultsUtils.feedDefaultsNeeded()){
-			DefaultsUtils.applicationFeedDefaults();
 			DefaultsUtils.tConfigFeedDefaults();
 		}
-		loadDefaults();
 	}
 	
 	@Override
 	public void run() {
-		TranscoRequest request = null;
+		TRequest request = null;
 		while(run){
 			try {
-				synchronized(queue){
-					waitCondition();
-				}
-				if (! MQBlock){
-					request = queue.get(State.M_QUEUED);
-					mediaHandle(request);
-				} 
-				if (! TQBlock) {
-					request = queue.get(State.T_QUEUED);
-					transcode(request);
-				} 
-				if (! TTBlock) {
-					request = queue.get(State.T_TRANSCODED);
-					mediaHandle(request);
-				} 
+				request = queue.getAndProcess();
+				transcode(request);
 			} catch (MCASException e) {
-				if (request != null && ! request.getState().equals(State.CANCELLED)){
+				if (request != null && ! request.getStatus().equals(Status.CANCELLED)){
 					request.setError();
 				}
-				synchronized(queue){
-					if (queue.removeRequest(request)){
+				if (queue.remove(request)){
 						requestDao.save(request);
-						queue.notifyAll();
-					}
 				}
 				e.printStackTrace();
 			} catch (InterruptedException e) {
@@ -77,126 +55,70 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 	
-	private void loadDefaults() throws MCASException {
-		ApplicationConfig config = applicationDao.findByName(DefaultsUtils.DEFAULT);
-		maxInMedia = config.getMaxInMediaH();
-		maxOutMedia = config.getMaxOutMediaH();
-		maxTransco = config.getMaxTransco();
-	}
-	
-	public void loadConfig(Integer id) throws MCASException {
-		ApplicationConfig config;
-		try {
-			config = applicationDao.findById(id);
-			maxInMedia = config.getMaxInMediaH();
-			maxOutMedia = config.getMaxOutMediaH();
-			maxTransco = config.getMaxTransco();
-		} catch (MCASException e) {
-			loadDefaults();
-			e.printStackTrace();
-		}
-	}
-	
-	public boolean cancelRequest(TranscoRequest request, boolean mayInterruptIfRunning) {
-		synchronized(queue){
-			request = queue.getRequest(request);
-			if (request != null){
-				if (request.getState().equals(State.M_PROCESS) || 
-					request.getState().equals(State.T_PROCESS) ||
-					request.getState().equals(State.MOVING)) {
-					try {
-						if (! cancelWorker(request.getIdStr(), mayInterruptIfRunning)){
-							MediaUtils.clean(request);
-						}
-					} catch (Exception e) {
-						return false;
-					}
-				} else {
-					MediaUtils.clean(request);
+	public boolean cancelRequest(TRequest request, boolean mayInterruptIfRunning) {
+		request = queue.getProcessObject(request);
+		if (request != null && (request.isProcessing() || request.isWaiting())){
+			try {
+				if (request.isProcessing() && ! cancelWorker(request.getIdStr(), mayInterruptIfRunning)){
+					return false;
 				}
-				request.setCancelled();
-				if (queue.removeRequest(request)) {
-					requestDao.save(request);
-					queue.notifyAll();
-				}
-				return true;
+			} catch (Exception e) {
+				return false;
 			}
+			request.setCancelled();
+			if (queue.remove(request)) {
+				requestDao.save(request);
+			}
+			return true;
 		}
 		return false;
 	}
 
-	public boolean putRequest(TranscoRequest request) throws MCASException {
+	public boolean putRequest(TRequest request) throws MCASException {
 		if (queue.size() < MAX_REQUESTS) {
-			request.initTConf();
-			request.increaseState();
-			synchronized(queue){
-				queue.put(request);
-				queue.notifyAll();
-			}
+			request.increaseStatus();
+			queue.put(request);
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	private void increaseRequestState(TranscoRequest request) throws MCASException {
-		request.increaseState();
-		synchronized(queue){
-			queue.update(request);
-			queue.notifyAll();
-		}
-	}
-	
-	public TranscoRequest getRequest(TranscoRequest r) throws MCASException {
-		TranscoRequest request = queue.getRequest(r);
-		if (request == null)
-		{
-			request = requestDao.findById(r.getId());
-			if (request == null){
-				return null;
-			} else {
-				return request;
-			}
-		} else {
-			return request;
-		}
-		
+	private void increaseRequestState(TRequest request) throws MCASException {
+		request.increaseStatus();
+		queue.update(request);
 	}
 	
 	public void stop(){
 		run = false;
 	}
 	
-	public TranscoRequest getRequest(UUID id) throws MCASException {
-		return getRequest(TranscoRequest.getEqualRequest(id));
-	}
-	
-	public String getState(TranscoRequest r) throws MCASException {
-		State state = queue.getState(r);
-		if (state != null){
-			return state.getName();
+	public TRequest getRequest(UUID id) throws MCASException {
+		TRequest request = queue.getProcessObject(TRequest.getEqualRequest(id));
+		if (request != null){
+			return request;
 		} else {
-			TranscoRequest req = requestDao.findById(r.getId());
-			if (req == null){
-				return null;
+			request = requestDao.findById(id);
+			if (request != null){
+				return request;
 			} else {
-				return req.getState().getName();
+				throw new MCASException();
 			}
 		}
 	}
 	
-	public String getState(UUID id) throws MCASException{
-		return getState(TranscoRequest.getEqualRequest(id));
+	public Status getStatus(UUID id) throws MCASException {
+		return getRequest(id).getStatus();
 	}
 	
-	private void mediaHandle(TranscoRequest request) throws MCASException{
-		increaseRequestState(request);
-		MediaHandler mediaTh = new MediaHandler(queue, request);
-		(new Thread(mediaTh)).start();
-		addWorkerInStack(mediaTh, request.getIdStr());
-	}
-	
-	private void transcode(TranscoRequest request) throws MCASException{
+//	private void mediaHandle(ProcessObject request) throws MCASException{
+//		increaseRequestState(request);
+//		MediaHandler mediaTh = new MediaHandler(queue, request);
+//		(new Thread(mediaTh)).start();
+//		addWorkerInStack(mediaTh, request.getIdStr());
+//	}
+
+	private void transcode(TRequest request) throws MCASException{
 		increaseRequestState(request);
 		Transcoder transTh = new Transcoder(queue, request);
 		(new Thread(transTh)).start();
@@ -208,7 +130,12 @@ public class TranscoHandler implements Runnable {
 		while(it.hasNext()){
 			SimpleEntry<String, Cancellable> worker = it.next();
 			if (worker.getKey().equals(id)) {
-				return worker.getValue().cancel(mayInterruptIfRunning);
+				if (worker.getValue().cancel(mayInterruptIfRunning)) {
+					it.remove();
+					return true;
+				} else {
+					return false;
+				}
 			} 
 		}
 		return false;
@@ -224,35 +151,13 @@ public class TranscoHandler implements Runnable {
 				return;
 			} 
 		}
-		workers.push(new SimpleEntry<String, Cancellable>(id, thread));
+		workers.add(new SimpleEntry<String, Cancellable>(id, thread));
 		cleanWorkers();
 	}
 	
 	private void cleanWorkers(){
-		if (workers.size() >= maxInMedia + maxOutMedia + maxTransco){
-			workers.pop();
+		if (workers.size() > queue.getMaxProcess()){
+			workers.remove(0);
 		}
-	}
-	
-	private void waitCondition() throws MCASException, InterruptedException{
-		if(conditionMQ() & conditionTQ() & conditionTT()){
-			queue.wait();
-			waitCondition();
-		}
-	}
-	
-	private boolean conditionMQ() throws MCASException {
-		MQBlock = queue.isEmpty(State.M_QUEUED) || queue.count(State.M_PROCESS) >= maxInMedia || queue.count(State.T_QUEUED) >= maxInMedia;
-		return MQBlock;
-	}
-	
-	private boolean conditionTQ() throws MCASException {
-		TQBlock = queue.isEmpty(State.T_QUEUED) || queue.count(State.T_PROCESS) >= maxTransco || queue.count(State.T_TRANSCODED) >= maxOutMedia;
-		return TQBlock;
-	}
-	
-	private boolean conditionTT() throws MCASException {
-		TTBlock = queue.isEmpty(State.T_TRANSCODED) || queue.count(State.MOVING) >= maxOutMedia;
-		return TTBlock;
 	}
 }
