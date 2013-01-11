@@ -4,7 +4,6 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import cat.i2cat.mcaslite.config.dao.DAO;
@@ -19,10 +18,6 @@ public class TranscoHandler implements Runnable {
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
 	private List<SimpleEntry<String, Cancellable>> workers = new ArrayList<SimpleEntry<String, Cancellable>>();
-	
-//	private boolean MQBlock = false;
-//	private boolean TQBlock = false;
-//	private boolean TTBlock = false;
 	
 	private boolean run = true;
 	
@@ -56,22 +51,24 @@ public class TranscoHandler implements Runnable {
 	}
 	
 	public boolean cancelRequest(TRequest request, boolean mayInterruptIfRunning) {
-		request = queue.getProcessObject(request);
-		if (request != null && (request.isProcessing() || request.isWaiting())){
-			try {
-				if (request.isProcessing() && ! cancelWorker(request.getIdStr(), mayInterruptIfRunning)){
+		synchronized(queue){
+			request = queue.getProcessObject(request);
+			if (request != null && (request.isProcessing() || request.isWaiting())){
+				try {
+					if (request.isProcessing() && ! cancelWorker(request.getIdStr(), mayInterruptIfRunning)){
+						return false;
+					}
+				} catch (Exception e) {
 					return false;
 				}
-			} catch (Exception e) {
-				return false;
+				request.setCancelled();
+				if (queue.remove(request)) {
+					requestDao.save(request);
+				}
+				return true;
 			}
-			request.setCancelled();
-			if (queue.remove(request)) {
-				requestDao.save(request);
-			}
-			return true;
+			return false;
 		}
-		return false;
 	}
 
 	public boolean putRequest(TRequest request) throws MCASException {

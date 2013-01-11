@@ -94,16 +94,19 @@ public class TRequest implements Serializable {
 	@Transient
 	public void setCancelled() {
 		status.setCancelled();
+		iStatus = status.getInt();
 	}
 	
 	@Transient
 	public void setError() {
 		status.setError();
+		iStatus = status.getInt();
 	}
 	
 	@Transient
 	public void setPartialError() {
 		status.setPartialError();
+		iStatus = status.getInt();
 	}
 
 	public Status getStatus() {
@@ -112,6 +115,7 @@ public class TRequest implements Serializable {
 	
 	public void setStatus(Status status) {
 		this.status = status;
+		iStatus = status.getInt();
 	}
 	
 	@Transient
