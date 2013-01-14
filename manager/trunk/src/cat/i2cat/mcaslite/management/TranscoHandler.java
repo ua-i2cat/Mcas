@@ -61,11 +61,11 @@ public class TranscoHandler implements Runnable {
 				} catch (Exception e) {
 					return false;
 				}
-				request.setCancelled();
 				if (queue.remove(request)) {
+					request.setCancelled();
 					requestDao.save(request);
+					return true;
 				}
-				return true;
 			}
 			return false;
 		}
@@ -95,12 +95,7 @@ public class TranscoHandler implements Runnable {
 		if (request != null){
 			return request;
 		} else {
-			request = requestDao.findById(id);
-			if (request != null){
-				return request;
-			} else {
-				throw new MCASException();
-			}
+			return requestDao.findById(id);
 		}
 	}
 	
@@ -108,13 +103,6 @@ public class TranscoHandler implements Runnable {
 		return getRequest(id).getStatus();
 	}
 	
-//	private void mediaHandle(ProcessObject request) throws MCASException{
-//		increaseRequestState(request);
-//		MediaHandler mediaTh = new MediaHandler(queue, request);
-//		(new Thread(mediaTh)).start();
-//		addWorkerInStack(mediaTh, request.getIdStr());
-//	}
-
 	private void transcode(TRequest request) throws MCASException{
 		increaseRequestState(request);
 		Transcoder transTh = new Transcoder(queue, request);

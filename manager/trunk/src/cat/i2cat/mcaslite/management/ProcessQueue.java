@@ -115,13 +115,5 @@ public class ProcessQueue {
 		return this.queue.size();
 	}
 	
-//	synchronized public List<ProcessObject> getElements() {
-//		List<ProcessObject> list = new ArrayList<ProcessObject>();
-//		for (ProcessObject r : queue) {
-//			list.add(r);
-//		}
-//		return list;
-//	}
-	
 }
 

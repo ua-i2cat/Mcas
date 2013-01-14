@@ -26,35 +26,7 @@ public class MediaHandler implements Cancellable {
 		this.queue = queue;
 		this.request = request;
 	}
-	
-//	@Override
-//	public void run() {
-//		try {
-//			switch (request.getState()) {
-//				case M_PROCESS:
-//					inputHandle();
-//					break;
-//				case MOVING:
-//					outputHandle();
-//					break;
-//				default: 
-//					throw new MCASException();
-//			}
-//			setDone(true);
-//		} catch (MCASException e) {
-//			request.setError();
-//			MediaUtils.clean(request);
-//			synchronized(queue){
-//				if (queue.removeRequest(request)){
-//					requestDao.save(request);
-//					queue.notifyAll();
-//				}
-//			}
-//			e.printStackTrace();
-//			setDone(true);
-//		} 
-//	}
-	
+
 	public void inputHandle() throws MCASException {
 		try {
 			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getIdStr(), request.getTConfig()));
