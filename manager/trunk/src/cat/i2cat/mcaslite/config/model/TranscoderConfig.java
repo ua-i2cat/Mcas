@@ -45,9 +45,8 @@ public class TranscoderConfig implements Serializable {
 	@JoinColumn(name="tConfig", referencedColumnName="id")
 	private List<TLevel> levels;
 	
-	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="tLiveOptions", referencedColumnName="id")
-	private List<TLiveOptions> liveOptions;
+	@Column
+	private TLiveOptions liveOptions;
 	
 	
 	
@@ -100,11 +99,11 @@ public class TranscoderConfig implements Serializable {
 		return levels;
 	}
 	
-	public List<TLiveOptions> getLiveOptions() {
+	public TLiveOptions getLiveOptions() {
 		return liveOptions;
 	}
 
-	public void setLiveOptions(List<TLiveOptions> liveOptions) {
+	public void setLiveOptions(TLiveOptions liveOptions) {
 		this.liveOptions = liveOptions;
 	}
 	

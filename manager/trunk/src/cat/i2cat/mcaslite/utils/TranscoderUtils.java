@@ -9,6 +9,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TLevel;
+import cat.i2cat.mcaslite.config.model.TLiveOptions;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
@@ -33,6 +34,18 @@ public class TranscoderUtils {
 			}
 		}
 		return commands;
+	}
+	
+	public static List<Transco> dashBuilder (TranscoderConfig config, String id, String dstUri, String input) throws MCASException{
+		List<Transco> dashCommands = new ArrayList<Transco>();
+		String cmd = null;
+		TLiveOptions liveOptions = config.getLiveOptions();
+		String output = dstUri + id + ".mpd";
+		String segmentName = id;
+		cmd = dashCommandBuilder(liveOptions,segmentName, input, output);
+		dashCommands.add(new Transco(cmd, output, dstUri, input));
+		
+		return dashCommands;
 	}
 	
 	private static String getDestination(String dstUri, String levelId, String extension, String id) throws MCASException {
@@ -74,6 +87,16 @@ public class TranscoderUtils {
 		cmd += " -s " + level.getScreenx() + "x" + level.getScreeny() + " -b:v " + level.getvBitrate() + "k " + " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 		cmd += " -f " + profile.getFormat() + " -codec:v " + profile.getvCodec() + " -codec:a " + profile.getaCodec();
 		cmd += " -y " + output;
+		return cmd;
+	}
+	
+	private static String dashCommandBuilder(TLiveOptions liveOptions, String segmentName, String input, String output){
+		
+		String cmd = "MP4Box -rap -frag-rap -url-template -dash-profile " + liveOptions.getDash_profile();
+		cmd += " -dash " + liveOptions.getSeg_duration() + " -frag " + liveOptions.getFrag_duration();
+		cmd += " -segment-name " + segmentName + " -out " + output;
+		cmd += " " + input;
+		
 		return cmd;
 	}
 

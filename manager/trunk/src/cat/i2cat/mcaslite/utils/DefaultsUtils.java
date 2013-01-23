@@ -5,6 +5,7 @@ import java.util.List;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TLevel;
+import cat.i2cat.mcaslite.config.model.TLiveOptions;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 
@@ -19,6 +20,7 @@ public class DefaultsUtils {
 		List<TProfile> profiles = new ArrayList<TProfile>();
 		TLevel level = new TLevel();
 		TProfile profile = new TProfile();
+		TLiveOptions liveOptions = new TLiveOptions();
 		
 		tConfig.setInputWorkingDir("input");
 		tConfig.setOutputWorkingDir("output");
@@ -56,6 +58,11 @@ public class DefaultsUtils {
 		profile.setvCodec("libvpx");
 		profiles.add(profile);
 		tConfig.setProfiles(profiles);
+		
+		liveOptions.setDash_profile("onDemand");
+		liveOptions.setSeg_duration(5000);
+		liveOptions.setFrag_duration(1000);
+		tConfig.setLiveOptions(liveOptions);
 		
 		return tConfig;
 	}
