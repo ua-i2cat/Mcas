@@ -37,18 +37,8 @@ public class Transcoder implements Runnable, Cancellable {
 	@Override
 	public void run() {
 		try {
-			mediaH.inputHandle();
-			Iterator<Transco> it = transcos.iterator();
-			while(! isCancelled() && it.hasNext()){
-				Transco transco = it.next();
-				try {
-					executeCommand(transco.getCommand().trim());				
-					request.addTrancoded(transco);
-				} catch (MCASException e) {
-					e.printStackTrace();
-					MediaUtils.deleteFile(transco.getOutputFile());
-				}
-			}
+			//mediaH.inputHandle();
+			transcodify();
 			setDone(true);
 			if (isCancelled()) {
 				MediaUtils.clean(request);
@@ -59,11 +49,25 @@ public class Transcoder implements Runnable, Cancellable {
 			}
 			request.increaseStatus();
 			queue.update(request);
-			mediaH.outputHandle();
+			//mediaH.outputHandle();
 		} catch (MCASException e){
 			manageError();
 			setDone(true);
 			e.printStackTrace();
+		}
+	}
+	
+	private void transcodify(){
+		Iterator<Transco> it = transcos.iterator();
+		while(! isCancelled() && it.hasNext()){
+			Transco transco = it.next();
+			try {
+				executeCommand(transco.getCommand().trim());				
+				request.addTrancoded(transco);
+			} catch (MCASException e) {
+				e.printStackTrace();
+				MediaUtils.deleteFile(transco.getOutputFile());
+			}
 		}
 	}
 	

@@ -29,26 +29,36 @@ public class DefaultsUtils {
 		
 		level.setaBitrate(128);
 		level.setaChannels(2);
+		level.setName(DEFAULT + "_1080");
+		level.setWidth(1080);
+		level.setQuality(23);
+		levels.add(level);
+		tConfig.setLevels(levels);
+		
+		level = new TLevel();
+		level.setaBitrate(128);
+		level.setaChannels(2);
 		level.setName(DEFAULT);
-		level.setScreenx(1280);
-		level.setScreeny(720);
-		level.setvBitrate(1024);
+		level.setWidth(-1);
+		level.setQuality(23);
+		levels.add(level);
+		tConfig.setLevels(levels);
+		
+		level = new TLevel();
+		level.setaBitrate(128);
+		level.setaChannels(2);
+		level.setName(DEFAULT + "_640");
+		level.setWidth(640);
+		level.setQuality(33);
 		levels.add(level);
 		tConfig.setLevels(levels);
 		
 		profile.setaCodec("libfaac");
 		profile.setFormat("mp4");
 		profile.setName(DEFAULT + "mp4");
-		profile.setvCodec("libx264");
+		profile.setvCodec("libx264 -profile:v baseline");
 		profiles.add(profile);
 		
-//		profile = new TProfile();
-//		profile.setaCodec("libvorbis");
-//		profile.setFormat("ogg");
-//		profile.setName(DEFAULT + "ogg");
-//		profile.setvCodec("libtheora");
-//		profiles.add(profile);
-
 		profile = new TProfile();
 		profile.setaCodec("libvorbis");
 		profile.setFormat("webm");

@@ -10,7 +10,8 @@ public abstract class Status {
 	public static final int PROCESS_M 	= 3;
 	public static final int PROCESS_T 	= 4;
 	public static final int PROCESS_MO	= 5;
-	public static final int DONE		= 6;
+	public static final int PROCESS_L	= 6;
+	public static final int DONE		= 7;
 	public static final int ERROR		= 100;
 	public static final int CANCELLED	= 101;
 	public static final int P_ERROR 	= 102;
@@ -44,6 +45,8 @@ public abstract class Status {
 				return "PROCESS_MO";
 			case DONE:
 				return "DONE";
+			case PROCESS_L:
+				return "PROCESS_L";
 			case ERROR:
 				return "DONE";
 			case CANCELLED:

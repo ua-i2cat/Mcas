@@ -20,22 +20,28 @@ public class TLevel implements Serializable{
 	@Column(unique = true, nullable = false, length = 100)
 	private String name;
 	@Column(nullable = false)
-	private int screenx;
+	private int width;
 	@Column(nullable = false)
-	private int screeny;
-	@Column(nullable = false)
-	private int vBitrate;
+	private int quality;
 	@Column(nullable = false)
 	private int aChannels;
 	@Column(nullable = false)
 	private int aBitrate;
 	
-	public int getvBitrate() {
-		return vBitrate;
+	public int getWidth() {
+		return width;
 	}
-	
-	public void setvBitrate(int vBitrate) {
-		this.vBitrate = vBitrate;
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getQuality() {
+		return quality;
+	}
+
+	public void setQuality(int quality) {
+		this.quality = quality;
 	}
 
 	public int getaChannels() {
@@ -60,22 +66,6 @@ public class TLevel implements Serializable{
 	
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public int getScreenx() {
-		return screenx;
-	}
-
-	public void setScreenx(int screenx) {
-		this.screenx = screenx;
-	}
-
-	public int getScreeny() {
-		return screeny;
-	}
-
-	public void setScreeny(int screeny) {
-		this.screeny = screeny;
 	}
 
 	public int getId() {

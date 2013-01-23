@@ -17,6 +17,10 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 public class TranscoderUtils {
 	
 	public static List<Transco> transcoBuilder(TranscoderConfig config, String id, String dstUri) throws MCASException{
+		return videoOnDemand(config, id, dstUri);
+	}
+	
+	private static List<Transco> videoOnDemand(TranscoderConfig config, String id, String dstUri) throws MCASException{
 		List<Transco> commands = new ArrayList<Transco>();
 		String cmd = null;
 		if(config.getTranscoder() == TranscoderConfig.FFMPEG){
@@ -27,7 +31,7 @@ public class TranscoderUtils {
 							profile.getFormat(), config.getOutputWorkingDir()));
 					commands.add(new Transco(cmd, 
 							getOutput(id, level.getName(), profile.getFormat(), config.getOutputWorkingDir()), 
-							getDestination(dstUri, ((Integer) level.getId()).toString(), profile.getFormat(), id),
+							getDestination(dstUri, level.getName(), profile.getFormat(), id),
 							getInput(id, config.getInputWorkingDir())));
 				}
 			}
@@ -35,11 +39,11 @@ public class TranscoderUtils {
 		return commands;
 	}
 	
-	private static String getDestination(String dstUri, String levelId, String extension, String id) throws MCASException {
+	private static String getDestination(String dstUri, String levelName, String extension, String id) throws MCASException {
 		String name = null;
 		try {
 			URI uri = new URI(dstUri);
-			name = getDestinationBaseName(uri, id) + "_" + levelId + "." + extension;
+			name = getDestinationBaseName(uri, id) + "_" + levelName + "." + extension;
 			name = FilenameUtils.concat(FilenameUtils.getFullPath(uri.getPath()), name);
 			return uri.getScheme() + "://" + ((uri.getAuthority() == null) ? "" : uri.getAuthority())  + name;
 		} catch (URISyntaxException e) {
@@ -71,7 +75,8 @@ public class TranscoderUtils {
 	
 	private static String ffCommandBuilder(TLevel level, TProfile profile, String input, String output){
 		String cmd = "ffmpeg -i " + input;
-		cmd += " -s " + level.getScreenx() + "x" + level.getScreeny() + " -b:v " + level.getvBitrate() + "k " + " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
+		cmd += " -vf scale="+ level.getWidth() +":-1" + " -qmin " + level.getQuality() + " -qmax " + level.getQuality() + " -ac "; 
+		cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 		cmd += " -f " + profile.getFormat() + " -codec:v " + profile.getvCodec() + " -codec:a " + profile.getaCodec();
 		cmd += " -y " + output;
 		return cmd;
