@@ -2,6 +2,7 @@ package cat.i2cat.mcaslite.management;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
@@ -28,6 +29,18 @@ public class MediaHandler implements Cancellable {
 	}
 
 	public void inputHandle() throws MCASException {
+		try {
+			MediaUtils.createOutputWorkingDir(request.getIdStr(), request.getTConfig().getOutputWorkingDir());
+			MediaUtils.createDestinationDir(request.getIdStr(), (new URI(request.getDst())).getPath());
+			if (! request.isLive()) {
+				copyToWorkingDir();
+			}
+		} catch(URISyntaxException e){
+			throw new MCASException();
+		}
+	}
+	
+	private void copyToWorkingDir() throws MCASException {
 		try {
 			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getIdStr(), request.getTConfig()));
 			downloader.toWorkingDir();

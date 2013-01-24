@@ -29,22 +29,20 @@ public class DefaultsUtils {
 		tConfig.setTranscoder(1);
 		tConfig.setName(DEFAULT);
 		
-		level.setaBitrate(128);
-		level.setaChannels(2);
-		level.setName(DEFAULT + "_1080");
-		level.setWidth(1080);
-		level.setQuality(23);
-		levels.add(level);
-		tConfig.setLevels(levels);
-		
-		level = new TLevel();
-		level.setaBitrate(128);
-		level.setaChannels(2);
-		level.setName(DEFAULT);
-		level.setWidth(-1);
-		level.setQuality(23);
-		levels.add(level);
-		tConfig.setLevels(levels);
+//		level.setaBitrate(128);
+//		level.setaChannels(2);
+//		level.setName(DEFAULT + "_1080");
+//		level.setWidth(1080);
+//		level.setQuality(23);
+//		levels.add(level);		
+//		
+//		level = new TLevel();
+//		level.setaBitrate(128);
+//		level.setaChannels(2);
+//		level.setName(DEFAULT);
+//		level.setWidth(-1);
+//		level.setQuality(23);
+//		levels.add(level);
 		
 		level = new TLevel();
 		level.setaBitrate(128);
@@ -53,27 +51,33 @@ public class DefaultsUtils {
 		level.setWidth(640);
 		level.setQuality(33);
 		levels.add(level);
-		tConfig.setLevels(levels);
 		
-		profile.setaCodec("libfaac");
-		profile.setFormat("mp4");
-		profile.setName(DEFAULT + "mp4");
-		profile.setvCodec("libx264 -profile:v baseline");
-		profiles.add(profile);
+//		profile.setaCodec("libfaac");
+//		profile.setFormat("mp4");
+//		profile.setName(DEFAULT + "mp4");
+//		profile.setvCodec("libx264 -profile:v baseline");
+//		profile.setLevels(levels);
+//		profiles.add(profile);
+//		
+//		profile = new TProfile();
+//		profile.setaCodec("libvorbis");
+//		profile.setFormat("webm");
+//		profile.setName(DEFAULT + "webm");
+//		profile.setvCodec("libvpx");
+//		profile.setLevels(levels);
+//		profiles.add(profile);
 		
-		profile = new TProfile();
-		profile.setaCodec("libvorbis");
-		profile.setFormat("webm");
-		profile.setName(DEFAULT + "webm");
-		profile.setvCodec("libvpx");
-		profiles.add(profile);
+		liveOptions = new TLiveOptions();
+		liveOptions.setSeg_duration(1000);
+		liveOptions.setFrag_duration(500);
+		liveOptions.setaCodec("libvorbis");
+		liveOptions.setFormat("webm");
+		liveOptions.setName(DEFAULT + "webm");
+		liveOptions.setvCodec("libvpx");
+		liveOptions.setLevels(levels);
+		profiles.add(liveOptions);
 		tConfig.setProfiles(profiles);
-		
-		liveOptions.setDash_profile("onDemand");
-		liveOptions.setSeg_duration(5000);
-		liveOptions.setFrag_duration(1000);
-		tConfig.setLiveOptions(liveOptions);
-		
+	
 		return tConfig;
 	}
 	

@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.io.FilenameUtils;
 
+import cat.i2cat.mcaslite.utils.TranscoderUtils;
+
 @Entity
-@Table(name = "tLiveOptions")
+@DiscriminatorValue("tLiveOptions")
+
 public class TLiveOptions extends TProfile {
 
 	/**
@@ -21,10 +22,6 @@ public class TLiveOptions extends TProfile {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
-	@Column(unique = true, nullable = false, length = 100)
-	private String name;
 	@Column(length = 100)
 	private String dash_profile;
 	@Column
@@ -37,30 +34,18 @@ public class TLiveOptions extends TProfile {
 	
 	@Override
 	 public List<Transco> commandBuilder(String input, String output, String dst){
-		List<> cmds = new ArrayList<String>();
-		FilenameUtils.
-		String cmd = "MP4Box -rap -frag-rap -url-template -dash-profile " + this.dash_profile;
+		List<Transco> transcos = new ArrayList<Transco>();
+		String cmd = "MP4Box -rap -frag-rap -url-template";
 		cmd += " -dash " + this.seg_duration + " -frag " + this.frag_duration;
 		cmd += " -segment-name " + FilenameUtils.getBaseName(output);
-		cmd += " -out " + FilenameUtils.removeExtension(output)+".mpd";
+		cmd += " -out " + output +".mpd";
 		cmd += " " + input;
 		
-		cmds.add(cmd);
-		return cmds;
+		transcos.add(new Transco(cmd, output, TranscoderUtils.pathToUri(dst), input));
+		return transcos;
 	}
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
+	
 	public String getDash_profile() {
 		return dash_profile;
 	}
