@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
@@ -99,7 +100,7 @@ public class TProfile implements Serializable{
 		this.id = id;
 	}
 	
-	public List<Transco> commandBuilder(String input, String output, String dst){
+	public List<Transco> commandBuilder(String input, String output, String dst) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
 		for (TLevel level : levels){
 			String cmd = "ffmpeg -i " + input;
@@ -107,7 +108,8 @@ public class TProfile implements Serializable{
 			cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 			cmd += " -f " + getFormat() + " -codec:v " + getvCodec() + " -codec:a " + getaCodec();
 			cmd += " -y " + output + "_" + level.getName() + "." + getFormat();
-			transcos.add(new Transco(cmd, output, TranscoderUtils.pathToUri(dst + level.getName() + "." + getFormat()), input));
+			transcos.add(new Transco(cmd, output + "_" + level.getName() + "." + getFormat(), 
+					TranscoderUtils.pathToUri(dst + level.getName() + "." + getFormat()), input));
 		}
 		return transcos;
 	}

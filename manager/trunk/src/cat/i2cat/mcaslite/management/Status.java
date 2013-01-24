@@ -48,7 +48,7 @@ public abstract class Status {
 			case PROCESS_L:
 				return "PROCESS_L";
 			case ERROR:
-				return "DONE";
+				return "ERROR";
 			case CANCELLED:
 				return "CANCELLED";
 			case P_ERROR:
