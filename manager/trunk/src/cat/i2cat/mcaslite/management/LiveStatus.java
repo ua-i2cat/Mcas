@@ -2,7 +2,7 @@ package cat.i2cat.mcaslite.management;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
-public class FileStatus extends Status{
+public class LiveStatus extends Status{
 
 	private int status = CREATED;
 	
@@ -13,12 +13,8 @@ public class FileStatus extends Status{
 			case CREATED:
 				return QUEUED;
 			case QUEUED:
-				return PROCESS_M;
-			case PROCESS_M:
-				return PROCESS_T;
-			case PROCESS_T:
-				return PROCESS_MO;
-			case PROCESS_MO:
+				return PROCESS_L;
+			case PROCESS_L:
 				return DONE;
 			default:
 				throw new MCASException();

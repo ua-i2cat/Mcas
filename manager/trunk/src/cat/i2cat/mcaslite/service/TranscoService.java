@@ -52,14 +52,13 @@ public class TranscoService {
 		} catch (URISyntaxException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("Check source and destination.").build();
 		}
-		request.initFileRequest();
+		request.initRequest();
 		if (transcoH.putRequest(request)){
 			return Response.status(Response.Status.CREATED).entity(request.getIdStr()).build();
 		} else {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("System overloaded, wait and retry.").build();
 		}
 	}
-	
 
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)

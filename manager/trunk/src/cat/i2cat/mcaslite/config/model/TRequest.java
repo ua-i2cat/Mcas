@@ -20,6 +20,7 @@ import org.hibernate.annotations.Type;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileStatus;
+import cat.i2cat.mcaslite.management.LiveStatus;
 import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.utils.DefaultsUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
@@ -51,7 +52,7 @@ public class TRequest implements Serializable {
 	private Status status;
 	@Column
 	private int iStatus;
-	
+
 	public void setIStatus(int iStatus){
 		this.iStatus = iStatus;
 	}
@@ -119,9 +120,14 @@ public class TRequest implements Serializable {
 	}
 	
 	@Transient
-	public void initFileRequest(){
-		status = new FileStatus();
+	public void initRequest(){
+		if (this.isLive()){
+			status = new LiveStatus();
+		} else {
+			status = new FileStatus();
+		}
 	}
+	
 	public String getSrc() {
 		return src;
 	}

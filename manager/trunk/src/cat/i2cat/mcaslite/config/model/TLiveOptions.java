@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.config.model;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,9 +10,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.io.FilenameUtils;
+
 @Entity
 @Table(name = "tLiveOptions")
-public class TLiveOptions implements Serializable {
+public class TLiveOptions extends TProfile {
 
 	/**
 	 * 
@@ -32,6 +35,19 @@ public class TLiveOptions implements Serializable {
 	private int window_length;
 
 	
+	@Override
+	 public List<Transco> commandBuilder(String input, String output, String dst){
+		List<> cmds = new ArrayList<String>();
+		FilenameUtils.
+		String cmd = "MP4Box -rap -frag-rap -url-template -dash-profile " + this.dash_profile;
+		cmd += " -dash " + this.seg_duration + " -frag " + this.frag_duration;
+		cmd += " -segment-name " + FilenameUtils.getBaseName(output);
+		cmd += " -out " + FilenameUtils.removeExtension(output)+".mpd";
+		cmd += " " + input;
+		
+		cmds.add(cmd);
+		return cmds;
+	}
 	
 	public int getId() {
 		return id;

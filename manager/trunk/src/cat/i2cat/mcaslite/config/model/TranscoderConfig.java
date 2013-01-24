@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 
 @Entity
@@ -41,24 +40,34 @@ public class TranscoderConfig implements Serializable {
 	@JoinColumn(name="tConfig", referencedColumnName="id")
 	private List<TProfile> profiles;
 	
-	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="tConfig", referencedColumnName="id")
-	private List<TLevel> levels;
+	
 	
 	@Column
+	private boolean live = false;
+	
+	@JoinColumn(name="tLiveOptions", referencedColumnName="id")
 	private TLiveOptions liveOptions;
 	
-	
-	
+	public boolean isLive() {
+		return live;
+	}
 
-
+	public void setLive(boolean live) {
+		this.live = live;
+	}
+	
+	public void setLiveOptions(TLiveOptions liveOptions) {
+		this.liveOptions = liveOptions;
+	}
+	
+	public TLiveOptions getLiveOptions() {
+		return liveOptions;
+	}
 
 	public String getName() {
 		return name;
 	}
 	
-	
-
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -94,22 +103,6 @@ public class TranscoderConfig implements Serializable {
 	public void setProfiles(List<TProfile> profiles) {
 		this.profiles = profiles;
 	}
-	
-	public List<TLevel> getLevels() {
-		return levels;
-	}
-	
-	public TLiveOptions getLiveOptions() {
-		return liveOptions;
-	}
-
-	public void setLiveOptions(TLiveOptions liveOptions) {
-		this.liveOptions = liveOptions;
-	}
-	
-	public void setLevels(List<TLevel> levels) {
-		this.levels = levels;
-	}
 
 	public String getInputWorkingDir() {
 		return inputWorkingDir;
@@ -135,8 +128,8 @@ public class TranscoderConfig implements Serializable {
 		this.id = id;
 	}
 	
-	@Transient
-	public int getNumOutputs(){
-		return profiles.size() * levels.size();
-	}
+//	@Transient
+//	public int getNumOutputs(){
+//		return profiles.size() * profiles.ge;
+//	}
 }

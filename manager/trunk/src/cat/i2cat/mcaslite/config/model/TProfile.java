@@ -1,12 +1,17 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -25,7 +30,29 @@ public class TProfile implements Serializable{
 	private String vCodec;
 	@Column(nullable = false, length = 100)
 	private String aCodec;
+	@Column(nullable = false, length = 100)
+	private String additionalFlags;
 	
+	@OneToMany(cascade=CascadeType.ALL)
+	@JoinColumn(name="tProfiles", referencedColumnName="id")
+	private List<TLevel> levels;
+	
+	public List<TLevel> getLevels() {
+		return levels;
+	}
+
+	public void setLevels(List<TLevel> levels) {
+		this.levels = levels;
+	}
+
+	public String getAdditionalFlags() {
+		return additionalFlags;
+	}
+
+	public void setAdditionalFlags(String additionalFlags) {
+		this.additionalFlags = additionalFlags;
+	}
+
 	public String getFormat() {
 		return format;
 	}
@@ -64,5 +91,9 @@ public class TProfile implements Serializable{
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public List<String> commandBuilder(String input, String output){
+		return new ArrayList<String>();
 	}
 }
