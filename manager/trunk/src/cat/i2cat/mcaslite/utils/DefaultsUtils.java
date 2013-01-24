@@ -5,6 +5,7 @@ import java.util.List;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TLevel;
+import cat.i2cat.mcaslite.config.model.TLiveOptions;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 
@@ -19,6 +20,7 @@ public class DefaultsUtils {
 		List<TProfile> profiles = new ArrayList<TProfile>();
 		TLevel level = new TLevel();
 		TProfile profile = new TProfile();
+		TLiveOptions liveOptions = new TLiveOptions();
 		
 		tConfig.setInputWorkingDir("input");
 		tConfig.setOutputWorkingDir("output");
@@ -50,20 +52,30 @@ public class DefaultsUtils {
 		level.setQuality(33);
 		levels.add(level);
 		
-		profile.setaCodec("libfaac");
-		profile.setFormat("mp4");
-		profile.setName(DEFAULT + "mp4");
-		profile.setvCodec("libx264 -profile:v baseline");
-		profile.setLevels(levels);
-		profiles.add(profile);
+//		profile.setaCodec("libfaac");
+//		profile.setFormat("mp4");
+//		profile.setName(DEFAULT + "mp4");
+//		profile.setvCodec("libx264 -profile:v baseline");
+//		profile.setLevels(levels);
+//		profiles.add(profile);
+//		
+//		profile = new TProfile();
+//		profile.setaCodec("libvorbis");
+//		profile.setFormat("webm");
+//		profile.setName(DEFAULT + "webm");
+//		profile.setvCodec("libvpx");
+//		profile.setLevels(levels);
+//		profiles.add(profile);
 		
-		profile = new TProfile();
-		profile.setaCodec("libvorbis");
-		profile.setFormat("webm");
-		profile.setName(DEFAULT + "webm");
-		profile.setvCodec("libvpx");
-		profile.setLevels(levels);
-		profiles.add(profile);
+		liveOptions = new TLiveOptions();
+		liveOptions.setSeg_duration(1000);
+		liveOptions.setFrag_duration(500);
+		liveOptions.setaCodec("libvorbis");
+		liveOptions.setFormat("webm");
+		liveOptions.setName(DEFAULT + "webm");
+		liveOptions.setvCodec("libvpx");
+		liveOptions.setLevels(levels);
+		profiles.add(liveOptions);
 		tConfig.setProfiles(profiles);
 	
 		return tConfig;

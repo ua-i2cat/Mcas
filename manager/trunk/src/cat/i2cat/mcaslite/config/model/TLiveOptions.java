@@ -1,27 +1,27 @@
 package cat.i2cat.mcaslite.config.model;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.io.FilenameUtils;
+
+import cat.i2cat.mcaslite.utils.TranscoderUtils;
+
 @Entity
-@Table(name = "tLiveOptions")
-public class TLiveOptions implements Serializable {
+@DiscriminatorValue("tLiveOptions")
+
+public class TLiveOptions extends TProfile {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
-	@Column(unique = true, nullable = false, length = 100)
-	private String name;
 	@Column(length = 100)
 	private String dash_profile;
 	@Column
@@ -32,19 +32,20 @@ public class TLiveOptions implements Serializable {
 	private int window_length;
 
 	
+	@Override
+	 public List<Transco> commandBuilder(String input, String output, String dst){
+		List<Transco> transcos = new ArrayList<Transco>();
+		String cmd = "MP4Box -rap -frag-rap -url-template";
+		cmd += " -dash " + this.seg_duration + " -frag " + this.frag_duration;
+		cmd += " -segment-name " + FilenameUtils.getBaseName(output);
+		cmd += " -out " + output +".mpd";
+		cmd += " " + input;
+		
+		transcos.add(new Transco(cmd, output, TranscoderUtils.pathToUri(dst), input));
+		return transcos;
+	}
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
+	
 	public String getDash_profile() {
 		return dash_profile;
 	}

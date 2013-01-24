@@ -1,10 +1,9 @@
 package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.io.FilenameUtils;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
@@ -64,15 +63,7 @@ public class TranscoderUtils {
 	public static String getOutputDir(String id, String outWorkDir){
 		return FilenameUtils.concat(MediaUtils.getWorkDir(outWorkDir), id);
 	}
-	
-//	private static String ffCommandBuilder(TLevel level, TProfile profile, String input, String output){
-//		String cmd = "ffmpeg -i " + input;
-//		cmd += " -vf scale="+ level.getWidth() +":-1" + " -qmin " + level.getQuality() + " -qmax " + level.getQuality() + " -ac "; 
-//		cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
-//		cmd += " -f " + profile.getFormat() + " -codec:v " + profile.getvCodec() + " -codec:a " + profile.getaCodec();
-//		cmd += " -y " + output;
-//		return cmd;
-//	}
+
 
 	public static TranscoderConfig loadConfig(String config) throws MCASException {
 		DAO<TranscoderConfig> tConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
