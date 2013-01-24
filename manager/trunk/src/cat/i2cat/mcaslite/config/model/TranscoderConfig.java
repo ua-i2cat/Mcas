@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 @Entity
@@ -39,9 +40,6 @@ public class TranscoderConfig implements Serializable {
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="tConfig", referencedColumnName="id")
 	private List<TProfile> profiles;
-	
-	
-	
 	@Column
 	private boolean live = false;
 	
@@ -128,8 +126,12 @@ public class TranscoderConfig implements Serializable {
 		this.id = id;
 	}
 	
-//	@Transient
-//	public int getNumOutputs(){
-//		return profiles.size() * profiles.ge;
-//	}
+	@Transient
+	public int getNumOutputs(){
+		int i = 0;
+		for(TProfile profile : profiles){
+			i += profile.getNumOutputs();
+		}
+		return i;
+	}
 }

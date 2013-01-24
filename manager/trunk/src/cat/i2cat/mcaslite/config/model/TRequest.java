@@ -52,7 +52,7 @@ public class TRequest implements Serializable {
 	private Status status;
 	@Column
 	private int iStatus;
-
+	
 	public void setIStatus(int iStatus){
 		this.iStatus = iStatus;
 	}
@@ -72,6 +72,11 @@ public class TRequest implements Serializable {
 	@Transient
 	public boolean isTranscodedEmpty(){
 		return transcoded.isEmpty();
+	}
+	
+	@Transient
+	public boolean isLive(){
+		return getTConfig().isLive();
 	}
 	
 	public List<Transco> getTranscoded(){
@@ -121,7 +126,7 @@ public class TRequest implements Serializable {
 	
 	@Transient
 	public void initRequest(){
-		if (this.isLive()){
+		if (getTConfig().isLive()){
 			status = new LiveStatus();
 		} else {
 			status = new FileStatus();
@@ -145,14 +150,10 @@ public class TRequest implements Serializable {
 	}
 
 	public TranscoderConfig getTConfig() {
-		try {
-			if (tConfig == null){
-				this.initTConf();
-			}
-			return tConfig;
-		} catch (MCASException e) {
-			return null;
+		if (tConfig == null){
+			this.initTConf();
 		}
+		return tConfig;
 	}
 
 	public void setTConfig(TranscoderConfig config) {
@@ -201,11 +202,15 @@ public class TRequest implements Serializable {
 	}
 	
 	@Transient
-	public void initTConf() throws MCASException {
+	public void initTConf() {
 		try {
 			setTConfig(TranscoderUtils.loadConfig(config));
 		} catch (MCASException e){
-			setTConfig(TranscoderUtils.loadConfig(DefaultsUtils.DEFAULT));
+			try {
+				setTConfig(TranscoderUtils.loadConfig(DefaultsUtils.DEFAULT));
+			} catch (MCASException e1) {
+				setTConfig(DefaultsUtils.tConfigGetDefaults());
+			}
 		}
 	}
 

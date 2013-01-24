@@ -2,7 +2,10 @@ package cat.i2cat.mcaslite.management;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
+
+import org.apache.commons.io.FilenameUtils;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TRequest;
@@ -10,6 +13,7 @@ import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
+import cat.i2cat.mcaslite.utils.TranscoderUtils;
 import cat.i2cat.mcaslite.utils.Uploader;
 
 public class MediaHandler implements Cancellable {
@@ -28,6 +32,18 @@ public class MediaHandler implements Cancellable {
 	}
 
 	public void inputHandle() throws MCASException {
+		try {
+			MediaUtils.createOutputWorkingDir(request.getIdStr(), request.getTConfig().getOutputWorkingDir());
+			MediaUtils.createDestinationDir(request.getIdStr(), (new URI(request.getDst())).getPath());
+			if (! request.isLive()) {
+				copyToWorkingDir();
+			}
+		} catch(URISyntaxException e){
+			throw new MCASException();
+		}
+	}
+	
+	private void copyToWorkingDir() throws MCASException {
 		try {
 			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getIdStr(), request.getTConfig()));
 			downloader.toWorkingDir();

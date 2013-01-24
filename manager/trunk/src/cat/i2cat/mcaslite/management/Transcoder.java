@@ -1,5 +1,7 @@
 package cat.i2cat.mcaslite.management;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,7 +31,12 @@ public class Transcoder implements Runnable, Cancellable {
 	public Transcoder(ProcessQueue queue, TRequest request) throws MCASException{
 		this.queue = queue;
 		this.request = request;
-		this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getIdStr(), request.getDst());
+		try {
+			this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getIdStr(), 
+					(new URI(request.getDst())).getPath(), (new URI(request.getSrc())).getPath());
+		} catch (URISyntaxException e) {
+			throw new MCASException();
+		}
 		this.executor = new DefaultExecutor(); 
 		this.mediaH = new MediaHandler(queue, request);
 	}
@@ -37,7 +44,7 @@ public class Transcoder implements Runnable, Cancellable {
 	@Override
 	public void run() {
 		try {
-			//mediaH.inputHandle();
+			mediaH.inputHandle();
 			transcodify();
 			setDone(true);
 			if (isCancelled()) {
@@ -49,7 +56,7 @@ public class Transcoder implements Runnable, Cancellable {
 			}
 			request.increaseStatus();
 			queue.update(request);
-			//mediaH.outputHandle();
+			mediaH.outputHandle();
 		} catch (MCASException e){
 			manageError();
 			setDone(true);
