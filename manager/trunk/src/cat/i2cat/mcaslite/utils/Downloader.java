@@ -11,8 +11,9 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.Cancellable;
 
-public class Downloader implements Runnable {
+public class Downloader implements Cancellable {
 
 	private static final int BLOCK_SIZE 	= 1024*100;
 	private static final int HTTP_TIMEOUT 	= 30*1000;
@@ -20,7 +21,7 @@ public class Downloader implements Runnable {
 	private boolean cancelled = false;
 	private URI input;
 	private File destination;
-	private Thread th;
+	private boolean done = false;
 	
 	public Downloader(URI input, File destination){
 		this.input = input;
@@ -28,44 +29,22 @@ public class Downloader implements Runnable {
 	}
 	
 	public void toWorkingDir() throws MCASException{
-		th = new Thread(this);
-		th.start();
-		try {
-			th.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if (input.getScheme().equals("file")) {
+			fileToFile();
+		} else if (input.getScheme().equals("http")) {
+			httpToFile();
+		} else if (input.getScheme().equals("https")) {
+			//TODO
+			throw new MCASException();
+		} else if (input.getScheme().equals("ftp")) {
+			//TODO
+			throw new MCASException();
+		} else if (input.getScheme().equals("scp")) {
+			//TODO
 			throw new MCASException();
 		}
 	}
 
-	public boolean cancel(boolean mayInterruptIfRunning){
-		if (mayInterruptIfRunning){
-			setCancelled(true);
-		}
-		return true;
-	}
-	
-	@Override
-	public void run() {
-		try {
-			if (input.getScheme().equals("file")) {
-				fileToFile();
-			} else if (input.getScheme().equals("http")) {
-				httpToFile();
-			} else if (input.getScheme().equals("https")) {
-				//TODO
-				throw new MCASException();
-			} else if (input.getScheme().equals("ftp")) {
-				//TODO
-				throw new MCASException();
-			} else if (input.getScheme().equals("scp")) {
-				//TODO
-				throw new MCASException();
-			}
-		} catch (Exception e){
-			e.printStackTrace();
-		} 
-	}
 	
 	private void fileToFile() throws MCASException{
 		try {
@@ -91,7 +70,6 @@ public class Downloader implements Runnable {
 	private void inputStreamToFile(InputStream in) throws IOException {
 		FileOutputStream writer = null;
 		InputStream inStream = null;
-		boolean done = false;
 		try {
 			writer = new FileOutputStream(destination);
 			inStream = new BufferedInputStream(in);
@@ -117,18 +95,25 @@ public class Downloader implements Runnable {
 		}
 	}
 	
-	private boolean isCancelled(){
-		return cancelled;
-	}
-	
 	private void setCancelled(boolean cancelled){
 		this.cancelled = cancelled;
 	}
 	
-	public boolean isRunning(){
-		if (th != null){
-			return th.isAlive();
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	@Override
+	public boolean isDone() {
+		return done;
+	}
+	
+	@Override
+	public boolean cancel(boolean mayInterruptIfRunning){
+		if (mayInterruptIfRunning){
+			setCancelled(true);
 		}
-		return false;
+		return true;
 	}
 }

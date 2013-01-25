@@ -41,8 +41,14 @@ public class TranscoderUtils {
 		}
 	}
 	
-	public static String pathToUri(String path){
-		return (new File(path)).toURI().toString();
+	public static String pathToUri(String path) throws MCASException{
+		URI uri;
+		try {
+			uri = new URI("file", null, path, null);
+		} catch (URISyntaxException e) {
+			throw new MCASException();
+		}
+		return uri.toString();
 	}
 
 	public static String getInput(String id, String inWorkDir) throws MCASException{

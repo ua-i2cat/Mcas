@@ -9,15 +9,16 @@ import java.io.InputStream;
 import java.net.URI;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.Cancellable;
 
-public class Uploader implements Runnable {
+public class Uploader implements Cancellable {
 
 	private static final int BLOCK_SIZE 	= 1024*100;
 	
 	private boolean cancelled = false;
 	private URI destination;
 	private File origin;
-	private Thread th;
+	private boolean done = false;
 	
 	public Uploader(URI destination, File origin){
 		this.destination = destination;
@@ -25,43 +26,20 @@ public class Uploader implements Runnable {
 	}
 	
 	public void toDestinationUri() throws MCASException{
-		th = new Thread(this);
-		try {
-			th.start();
-			th.join();
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (destination.getScheme().equals("file")) {
+			fileToFile();
+		} else if (destination.getScheme().equals("http")) {
+			//TODO
 			throw new MCASException();
-		}
-	}
-
-	public boolean cancel(boolean mayInterruptIfRunning){
-		if (mayInterruptIfRunning){
-			setCancelled(true);
-		}
-		return true;
-	}
-	
-	@Override
-	public void run() {
-		try {
-			if (destination.getScheme().equals("file")) {
-				fileToFile();
-			} else if (destination.getScheme().equals("http")) {
-				//TODO
-				throw new MCASException();
-			} else if (destination.getScheme().equals("https")) {
-				//TODO
-				throw new MCASException();
-			} else if (destination.getScheme().equals("ftp")) {
-				//TODO
-				throw new MCASException();
-			} else if (destination.getScheme().equals("scp")) {
-				//TODO
-				throw new MCASException();
-			}
-		} catch (Exception e){
-			e.printStackTrace();
+		} else if (destination.getScheme().equals("https")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("ftp")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("scp")) {
+			//TODO
+			throw new MCASException();
 		}
 	}
 	
@@ -77,7 +55,6 @@ public class Uploader implements Runnable {
 	private void inputStreamToFile(InputStream in) throws IOException {
 		FileOutputStream writer = null;
 		BufferedInputStream inStream = null;
-		boolean done = false;
 		try {
 			writer = new FileOutputStream(new File(destination.getPath()));
 			inStream = new BufferedInputStream(in);
@@ -103,18 +80,25 @@ public class Uploader implements Runnable {
 		}
 	}
 	
-	public boolean isRunning(){
-		if (th != null){
-			return th.isAlive();
-		}
-		return false;
-	}
-	
 	private void setCancelled(boolean cancelled){
 		this.cancelled = cancelled;
 	}
 	
+	@Override
 	public boolean isCancelled(){
 		return cancelled;
+	}
+
+	@Override
+	public boolean isDone() {
+		return done;
+	}
+	
+	@Override
+	public boolean cancel(boolean mayInterruptIfRunning){
+		if (mayInterruptIfRunning){
+			setCancelled(true);
+		}
+		return true;
 	}
 }
