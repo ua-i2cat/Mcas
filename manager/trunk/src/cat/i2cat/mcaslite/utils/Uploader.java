@@ -27,7 +27,7 @@ public class Uploader implements Cancellable {
 	
 	public void toDestinationUri() throws MCASException{
 		if (destination.getScheme().equals("file")) {
-			fileToFile();
+			fileToFile(origin, new File(destination.getPath()));
 		} else if (destination.getScheme().equals("http")) {
 			//TODO
 			throw new MCASException();
@@ -43,20 +43,28 @@ public class Uploader implements Cancellable {
 		}
 	}
 	
-	private void fileToFile() throws MCASException{
+	private void fileToFile(File origin, File destination) throws MCASException{
 		try {
-			inputStreamToFile(new FileInputStream(origin));
+			if (origin.isDirectory() && (new File(destination.getPath())).isDirectory()){
+				for (String file : origin.list()){
+					inputStreamToFile(new FileInputStream(new File(origin, file)), new File(destination, file));
+				}
+			} else if (! destination.exists() && destination.getParentFile().canWrite()) {
+				inputStreamToFile(new FileInputStream(origin), destination);
+			} else {
+				throw new MCASException();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new MCASException();
 		}
 	}
 	
-	private void inputStreamToFile(InputStream in) throws IOException {
+	private void inputStreamToFile(InputStream in, File destination) throws IOException {
 		FileOutputStream writer = null;
 		BufferedInputStream inStream = null;
 		try {
-			writer = new FileOutputStream(new File(destination.getPath()));
+			writer = new FileOutputStream(destination);
 			inStream = new BufferedInputStream(in);
 			byte[] buffer = new byte[BLOCK_SIZE];
 			int bytesRead = 0;

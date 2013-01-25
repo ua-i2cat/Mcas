@@ -56,7 +56,9 @@ public class Transcoder implements Runnable, Cancellable {
 			}
 			request.increaseStatus();
 			queue.update(request);
-			mediaH.outputHandle();
+			if (! request.isLive()){
+				mediaH.outputHandle();
+			}
 		} catch (MCASException e){
 			manageError();
 			setDone(true);

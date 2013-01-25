@@ -15,9 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
@@ -112,8 +110,8 @@ public class TProfile implements Serializable{
 		for (TLevel level : levels){
 			String cmd = "ffmpeg -i " + input;
 			cmd += " -vf scale="+ level.getWidth() +":-1" + " -qmin " + level.getQuality() + " -qmax " + level.getQuality() + " -ac "; 
-			cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
-			cmd += " -f " + getFormat() + " -codec:v " + getvCodec() + " -codec:a " + getaCodec();
+			cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + " -f " + getFormat() + " ";
+			cmd += getAdditionalFlags() + " -codec:v " + getvCodec() + " -codec:a " + getaCodec();
 			cmd += " -y " + output + "_" + level.getName() + "." + getFormat();
 			transcos.add(new Transco(cmd, output + "_" + level.getName() + "." + getFormat(), 
 					TranscoderUtils.pathToUri(dst + level.getName() + "." + getFormat()), input));
