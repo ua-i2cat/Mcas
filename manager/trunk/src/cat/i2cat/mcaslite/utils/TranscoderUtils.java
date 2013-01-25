@@ -1,6 +1,8 @@
 package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,13 +44,11 @@ public class TranscoderUtils {
 	}
 	
 	public static String pathToUri(String path) throws MCASException{
-		URI uri;
 		try {
-			uri = new URI("file", null, path, null);
+			return (new URI("file", null, path, null)).toString();
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
-		return uri.toString();
 	}
 
 	public static String getInput(String id, String inWorkDir) throws MCASException{

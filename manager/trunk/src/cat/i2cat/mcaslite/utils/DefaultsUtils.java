@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
+import cat.i2cat.mcaslite.config.model.TDashOptions;
 import cat.i2cat.mcaslite.config.model.TLevel;
-import cat.i2cat.mcaslite.config.model.TLiveOptions;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 
@@ -20,7 +20,7 @@ public class DefaultsUtils {
 		List<TProfile> profiles = new ArrayList<TProfile>();
 		TLevel level = new TLevel();
 		TProfile profile = new TProfile();
-		TLiveOptions liveOptions = new TLiveOptions();
+		TDashOptions dashOptions = new TDashOptions();
 		
 		tConfig.setInputWorkingDir("input");
 		tConfig.setOutputWorkingDir("output");
@@ -67,15 +67,15 @@ public class DefaultsUtils {
 //		profile.setLevels(levels);
 //		profiles.add(profile);
 		
-		liveOptions = new TLiveOptions();
-		liveOptions.setSeg_duration(1000);
-		liveOptions.setFrag_duration(500);
-		liveOptions.setaCodec("libvorbis");
-		liveOptions.setFormat("webm");
-		liveOptions.setName(DEFAULT + "webm");
-		liveOptions.setvCodec("libvpx");
-		liveOptions.setLevels(levels);
-		profiles.add(liveOptions);
+		dashOptions = new TDashOptions();
+		dashOptions.setSegDuration(1000);
+		dashOptions.setFragDuration(500);
+		dashOptions.setaCodec("libvorbis");
+		dashOptions.setFormat("webm");
+		dashOptions.setName(DEFAULT + "webm");
+		dashOptions.setvCodec("libvpx");
+		dashOptions.setLevels(levels);
+		profiles.add(dashOptions);
 		tConfig.setProfiles(profiles);
 	
 		return tConfig;
