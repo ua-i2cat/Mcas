@@ -115,7 +115,7 @@ public class Transcoder implements Runnable, Cancellable {
 	}
 
 	@Override
-	public boolean cancel(boolean mayInterruptIfRunning) {
+	public boolean cancel(boolean mayInterruptIfRunning){
 		synchronized(queue){
 			switch(request.getStatus().getInt()){
 				case Status.PROCESS_M:

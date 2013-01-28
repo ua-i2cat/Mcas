@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -26,7 +27,7 @@ public class MediaUtils {
 		}
 	}
 	
-	public static boolean deleteInputFile(String requestId, String inputWorkingDir) throws MCASException{
+	public static boolean deleteInputFile(String requestId, String inputWorkingDir){
 		return deleteFile(FilenameUtils.concat(getWorkDir(inputWorkingDir), requestId));
 	}
 	
@@ -59,14 +60,13 @@ public class MediaUtils {
 		}
 	}
 	
-	public static boolean deleteFile(String file) throws MCASException{
+	public static boolean deleteFile(String file){
 		File fd = new File(file);
 		if(fd.isDirectory() && fd.exists()){
 			try {
 				FileUtils.deleteDirectory(fd);
-			} catch (Exception e) {
+			} catch (IOException e) {
 				e.printStackTrace();
-				throw new MCASException();
 			}
 		}
 		else if (fd.exists()){
