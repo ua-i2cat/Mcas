@@ -12,16 +12,22 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class MediaUtils {
 	
-	public static void createOutputWorkingDir(String id, String outputWorkingDir) throws MCASException {
-		File file = new File(TranscoderUtils.getOutputDir(id, outputWorkingDir));
+	public static String createOutputWorkingDir(String id, String outputWorkingDir) throws MCASException {
+		String path = TranscoderUtils.getOutputDir(id, outputWorkingDir);
+		File file = new File(path);
 		if (! file.mkdirs()){
 			throw new MCASException();
+		} else {
+			return path;
 		}
 	}
 	
-	public static void createDestinationDir(String id, String dst) throws MCASException{
-		if (! (new File(TranscoderUtils.getDestinationDir(dst, id))).mkdirs()){
+	public static String createDestinationDir(String id, String dst) throws MCASException{
+		String path = TranscoderUtils.getDestinationDir(dst, id);
+		if (! (new File(path)).mkdirs()){
 			throw new MCASException();
+		} else {
+			return path;
 		}
 	}
 	

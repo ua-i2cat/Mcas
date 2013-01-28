@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import cat.i2cat.mcaslite.management.FileEventProcessor;
+
 
 @Entity
 @Table(name = "transcoConfig")
@@ -123,4 +125,10 @@ public class TranscoderConfig implements Serializable {
 		}
 		return i;
 	}
+	
+	@Transient
+	public FileEventProcessor getFileEP(){
+		return profiles.get(0).getFileEP();
+	}
+	
 }

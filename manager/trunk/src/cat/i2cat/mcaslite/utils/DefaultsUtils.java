@@ -37,27 +37,27 @@ public class DefaultsUtils {
 //		level.setQuality(23);
 //		levels.add(level);		
 //		
-//		level = new TLevel();
-//		level.setaBitrate(128);
-//		level.setaChannels(2);
-//		level.setName(DEFAULT);
-//		level.setWidth(-1);
-//		level.setQuality(23);
-//		levels.add(level);
-		
 		level = new TLevel();
 		level.setaBitrate(128);
 		level.setaChannels(2);
-		level.setName(DEFAULT + "_640");
-		level.setWidth(640);
-		level.setQuality(33);
+		level.setName(DEFAULT);
+		level.setWidth(-1);
+		level.setQuality(23);
 		levels.add(level);
+		
+//		level = new TLevel();
+//		level.setaBitrate(128);
+//		level.setaChannels(2);
+//		level.setName(DEFAULT + "_640");
+//		level.setWidth(640);
+//		level.setQuality(33);
+//		levels.add(level);
 		
 		profile.setaCodec("libfaac");
 		profile.setFormat("mpegts");
 		profile.setName(DEFAULT + "HLS");
 		profile.setvCodec("libx264");
-		profile.setAdditionalFlags("-profile:v baseline");
+		profile.setAdditionalFlags("-profile:v baseline -map 0 -flags -global_header ");
 		profile.setLevels(levels);
 		profile.setSegDuration(2);
 		profile.setWindowLength(3);
