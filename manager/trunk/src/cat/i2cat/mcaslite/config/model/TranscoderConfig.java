@@ -43,9 +43,6 @@ public class TranscoderConfig implements Serializable {
 	@Column
 	private boolean live = false;
 	
-	@JoinColumn(name="tLiveOptions", referencedColumnName="id")
-	private TLiveOptions liveOptions;
-	
 	public boolean isLive() {
 		return live;
 	}
@@ -54,14 +51,6 @@ public class TranscoderConfig implements Serializable {
 		this.live = live;
 	}
 	
-	public void setLiveOptions(TLiveOptions liveOptions) {
-		this.liveOptions = liveOptions;
-	}
-	
-	public TLiveOptions getLiveOptions() {
-		return liveOptions;
-	}
-
 	public String getName() {
 		return name;
 	}

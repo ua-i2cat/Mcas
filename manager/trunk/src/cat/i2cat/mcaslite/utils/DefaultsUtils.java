@@ -19,8 +19,9 @@ public class DefaultsUtils {
 		List<TLevel> levels = new ArrayList<TLevel>();
 		List<TProfile> profiles = new ArrayList<TProfile>();
 		TLevel level = new TLevel();
-		TProfile profile = new TProfile();
+		//TProfile profile = new TProfile();
 		TDashOptions dashOptions = new TDashOptions();
+		//THLSOptions profile = new THLSOptions(); 
 		
 		tConfig.setInputWorkingDir("input");
 		tConfig.setOutputWorkingDir("output");
@@ -53,12 +54,15 @@ public class DefaultsUtils {
 		levels.add(level);
 		
 //		profile.setaCodec("libfaac");
-//		profile.setFormat("mp4");
-//		profile.setName(DEFAULT + "mp4");
-//		profile.setvCodec("libx264 -profile:v baseline");
+//		profile.setFormat("mpegts");
+//		profile.setName(DEFAULT + "HLS");
+//		profile.setvCodec("libx264");
+//		profile.setAdditionalFlags("-profile:v baseline");
 //		profile.setLevels(levels);
+//		profile.setSegDuration(2);
+//		profile.setWindowLength(3);
 //		profiles.add(profile);
-//		
+		
 //		profile = new TProfile();
 //		profile.setaCodec("libvorbis");
 //		profile.setFormat("webm");
@@ -68,8 +72,8 @@ public class DefaultsUtils {
 //		profiles.add(profile);
 		
 		dashOptions = new TDashOptions();
-		dashOptions.setSegDuration(1000);
-		dashOptions.setFragDuration(500);
+		dashOptions.setSegDuration(10000);
+		dashOptions.setFragDuration(5000);
 		dashOptions.setaCodec("libvorbis");
 		dashOptions.setFormat("webm");
 		dashOptions.setName(DEFAULT + "webm");
