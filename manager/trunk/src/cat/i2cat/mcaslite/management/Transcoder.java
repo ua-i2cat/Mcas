@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.management;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
@@ -44,26 +45,53 @@ public class Transcoder implements Runnable, Cancellable {
 	@Override
 	public void run() {
 		try {
-			mediaH.inputHandle();
-			transcodify();
-			setDone(true);
-			if (isCancelled()) {
-				MediaUtils.clean(request);
-				return;
-			}
-			if (request.isTranscodedEmpty()){
-				manageError();
-			}
-			request.increaseStatus();
-			queue.update(request);
 			if (! request.isLive()){
-				mediaH.outputHandle();
+				videoOnDemand();
+			} else {
+				HTTPLive();
 			}
 		} catch (MCASException e){
 			manageError();
 			setDone(true);
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+	}
+	
+	private void HTTPLive() throws MCASException, IOException, URISyntaxException {
+		//TODO: test input output?
+		try {
+			mediaH.initWatcher();
+			transcodify();
+			setDone(true);
+			if (! isCancelled()) {
+				stop(true);
+				throw new MCASException();
+			}
+		} finally {
+			mediaH.cancelWatcher();
+		}
+	}
+	
+	private void videoOnDemand() throws MCASException {
+		mediaH.inputHandle();
+		transcodify();
+		setDone(true);
+		if (isCancelled()) {
+			MediaUtils.clean(request);
+			return;
+		}
+		if (request.isTranscodedEmpty()){
+			manageError();
+		}
+		request.increaseStatus();
+		queue.update(request);
+		mediaH.outputHandle();
 	}
 	
 	private void transcodify(){

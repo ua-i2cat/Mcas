@@ -9,6 +9,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.FileEventProcessor;
+import cat.i2cat.mcaslite.management.HLSManifestManager;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
@@ -28,12 +30,11 @@ public class THLSOptions extends TProfile {
 		List<Transco> transcos = new ArrayList<Transco>();
 		for (TLevel level : getLevels()){
 			String cmd = "ffmpeg -i " + input;
-			cmd += " -vf scale="+ level.getWidth() +":-1" + " -qmin " + level.getQuality() + " -qmax " + level.getQuality() + " -ac "; 
-			cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + " -f " + getFormat() + " ";
-			cmd += getAdditionalFlags() + " -codec:v " + getvCodec() + " -codec:a " + getaCodec();
-			cmd += " -y - | m3u8-segmenter -i - -d " + getSegDuration() + " -p " + output + "_" + level.getName(); 
-			cmd += " -m " + output + "_" + level.getName() + ".m3u8 -u '' -n " + getWindowLength();
-			cmd = "/bin/sh -c '" + cmd.replaceAll("'", "'\''") + "'";
+			cmd += " -vf scale="+ level.getWidth() +":-1" + " -qmin " + level.getQuality() + " -qmax " + level.getQuality(); 
+			cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
+			cmd += " -codec:v " + getvCodec() + " -codec:a " + getaCodec() + " " + getAdditionalFlags();
+			cmd += " -f segment -segment_list_flags live -segment_list " + output + "_" + level.getName() + ".m3u8"; 
+			cmd += " -segment_time " + getSegDuration() + " " + output + "_" + level.getName() + "_%d.ts";
 			transcos.add(new Transco(cmd, (new File(output)).getParent(), 
 					TranscoderUtils.pathToUri((new File(dst)).getParent()), input));
 		}
@@ -54,5 +55,10 @@ public class THLSOptions extends TProfile {
 	
 	public void setWindowLength(int windowLength) {
 		this.windowLength = windowLength;
+	}
+	
+	@Override
+	public FileEventProcessor getFileEP(){
+		return new HLSManifestManager(windowLength);
 	}
 }

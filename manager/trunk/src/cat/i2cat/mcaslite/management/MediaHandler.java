@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.management;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
@@ -22,6 +23,7 @@ public class MediaHandler implements Cancellable {
 	private Uploader uploader;
 	private boolean cancelled = false;
 	private boolean done = false;
+	private Watcher watcher;
 	
 	public MediaHandler(ProcessQueue queue, TRequest request) throws MCASException {
 		this.queue = queue;
@@ -32,11 +34,21 @@ public class MediaHandler implements Cancellable {
 		try {
 			MediaUtils.createOutputWorkingDir(request.getIdStr(), request.getTConfig().getOutputWorkingDir());
 			MediaUtils.createDestinationDir(request.getIdStr(), (new URI(request.getDst())).getPath());
-			if (! request.isLive()) {
-				copyToWorkingDir();
-			}
+			copyToWorkingDir();
 		} catch(URISyntaxException e){
 			throw new MCASException();
+		} 
+	}
+	
+	public void initWatcher() throws IOException, MCASException, URISyntaxException{
+		String path = MediaUtils.createDestinationDir(request.getIdStr(), (new URI(request.getDst())).getPath());
+		watcher = new Watcher(path, request.getTConfig());
+		(new Thread(watcher)).start();
+	}
+	
+	public void cancelWatcher(){
+		if (watcher != null){
+			watcher.cancel(true);
 		}
 	}
 	

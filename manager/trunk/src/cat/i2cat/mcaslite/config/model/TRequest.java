@@ -19,6 +19,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.management.FileStatus;
 import cat.i2cat.mcaslite.management.LiveStatus;
 import cat.i2cat.mcaslite.management.Status;
@@ -228,5 +229,10 @@ public class TRequest implements Serializable {
 			return true;
 		}
 		return false;
+	}
+	
+	@Transient
+	public FileEventProcessor getFileEP(){
+		return tConfig.getFileEP();
 	}
 }

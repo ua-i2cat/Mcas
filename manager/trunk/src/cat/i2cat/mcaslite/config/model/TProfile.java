@@ -19,6 +19,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
@@ -123,5 +124,10 @@ public class TProfile implements Serializable{
 	@Transient
 	public int getNumOutputs(){
 		return levels.size();
+	}
+	
+	@Transient
+	public FileEventProcessor getFileEP(){
+		return null;
 	}
 }
