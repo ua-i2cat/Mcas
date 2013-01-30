@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 
-import org.jdom2.Attribute;
 import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -15,7 +13,6 @@ import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.jdom2.util.IteratorIterable;
 
 public class XmlModifier {
 	
@@ -51,41 +48,15 @@ public class XmlModifier {
 			segmentBase.addContent(segmentList.getChild("Initialization", ns).clone());
 			segmentList.removeChild("Initialization", ns);
 			
-//			List<Element> listA = segmentBase.getChildren();
-//			List<Element> listB	= segmentList.getChildren();		
-//					
-//			for (Element el : listA){
-//				System.out.println(el.getName());
-//			}
-//			for (Element el : listB){
-//				System.out.println(el.getName());
-//			}
-			
-//			// update staff id attribute
-//			Element staff = rootNode.getChild("staff");
-//			staff.getAttribute("id").setValue("2");
-//	 
-//			// add new age element
-//			Element age = new Element("age").setText("28");
-//			staff.addContent(age);
-//	 
-//			// update salary value
-//			staff.getChild("salary").setText("7000");
-//	 
-//			// remove firstname element
-//			staff.removeChild("firstname");
-//	 			
+
 			XMLOutputter xmlOutput = new XMLOutputter();
 	 
 			// display nice nice
 			xmlOutput.setFormat(Format.getPrettyFormat());
 			xmlOutput.output(doc, new FileWriter(outputFile));
-			
-			
 	 
-//			// xmlOutput.output(doc, System.out);
-	 
-			System.out.println("File updated!");
+//			System.out.println("File updated!");
+			
 		  } catch (IOException io) {
 			io.printStackTrace();
 		  } catch (JDOMException e) {

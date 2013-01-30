@@ -78,6 +78,7 @@ public class MediaHandler implements Cancellable {
 		while(i.hasNext()){
 			Transco transco = i.next();
 			try {
+				request.getTConfig().getFileEP().processManifest(transco.getOutputFile());
 				uploader = new Uploader(new URI(transco.getDestinationUri()), new File(transco.getOutputFile()));
 				uploader.toDestinationUri();
 			} catch (Exception e) {
@@ -102,6 +103,14 @@ public class MediaHandler implements Cancellable {
 				if (queue.remove(request)) {
 					requestDao.save(request);
 				}
+				
+//				request.getFileEP();
+//				
+//				String idstringa = request.getIdStr();
+//				String destina = (new URI(request.getDst())).getPath();
+//				String sourceina = (new URI(request.getSrc())).getPath();
+//				String total = FilenameUtils.concat(destina, idstringa);
+				
 			}
 		} finally {
 			MediaUtils.clean(request);

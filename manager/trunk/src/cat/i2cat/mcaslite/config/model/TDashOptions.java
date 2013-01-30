@@ -7,10 +7,13 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import org.apache.commons.io.FilenameUtils;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.DashManifestManager;
+import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
@@ -51,8 +54,13 @@ public class TDashOptions extends TProfile {
 		}
 		return transcos;
 	}
-
-
+	
+	@Transient
+	@Override
+	public FileEventProcessor getFileEP(){
+		return new DashManifestManager();
+	}
+	
 	public String getDashProfile() {
 		return dashProfile;
 	}

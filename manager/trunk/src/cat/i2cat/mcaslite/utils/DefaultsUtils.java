@@ -5,7 +5,7 @@ import java.util.List;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TDashOptions;
-import cat.i2cat.mcaslive.config.model.THLSOptions;
+import cat.i2cat.mcaslite.config.model.THLSOptions;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
@@ -38,13 +38,13 @@ public class DefaultsUtils {
 //		level.setQuality(23);
 //		levels.add(level);		
 //		
-		level = new TLevel();
-		level.setaBitrate(128);
-		level.setaChannels(2);
-		level.setName(DEFAULT);
-		level.setWidth(-1);
-		level.setQuality(23);
-		levels.add(level);
+//		level = new TLevel();
+//		level.setaBitrate(128);
+//		level.setaChannels(2);
+//		level.setName(DEFAULT);
+//		level.setWidth(-1);
+//		level.setQuality(23);
+//		levels.add(level);
 		
 //		level = new TLevel();
 //		level.setaBitrate(128);
@@ -56,15 +56,15 @@ public class DefaultsUtils {
 		
 		
 		
-		profile.setaCodec("libfaac");
-		profile.setFormat("mpegts");
-		profile.setName(DEFAULT + "HLS");
-		profile.setvCodec("libx264");
-		profile.setAdditionalFlags("-profile:v baseline -map 0 -flags -global_header ");
-		profile.setLevels(levels);
-		profile.setSegDuration(2);
-		profile.setWindowLength(3);
-		profiles.add(profile);
+//		profile.setaCodec("libfaac");
+//		profile.setFormat("mpegts");
+//		profile.setName(DEFAULT + "HLS");
+//		profile.setvCodec("libx264");
+//		profile.setAdditionalFlags("-profile:v baseline -map 0 -flags -global_header ");
+//		profile.setLevels(levels);
+//		profile.setSegDuration(2);
+//		profile.setWindowLength(3);
+//		profiles.add(profile);
 		
 //		profile = new TProfile();
 //		profile.setaCodec("libvorbis");

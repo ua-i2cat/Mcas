@@ -54,4 +54,10 @@ public class HLSManifestManager implements FileEventProcessor {
 		}
 	}
 
+	@Override
+	public void processManifest(String output) throws MCASException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
