@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class THLSOptions extends TProfile {
 			cmd += " -vf scale="+ level.getWidth() +":-1" + " -qmin " + level.getQuality() + " -qmax " + level.getQuality(); 
 			cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 			cmd += " -codec:v " + getvCodec() + " -codec:a " + getaCodec() + " " + getAdditionalFlags();
-			cmd += " -f segment -segment_list_flags live -segment_list " + output + "_" + level.getName() + ".m3u8"; 
+			cmd += " -f segment -segment_list_flags live -segment_list " + output + "_" + level.getName() + ".csv";
 			cmd += " -segment_time " + getSegDuration() + " " + output + "_" + level.getName() + "_%d.ts";
 			transcos.add(new Transco(cmd, (new File(output)).getParent(), 
 					TranscoderUtils.pathToUri((new File(dst)).getParent()), input));
@@ -58,7 +59,7 @@ public class THLSOptions extends TProfile {
 	}
 	
 	@Override
-	public FileEventProcessor getFileEP(){
-		return new HLSManifestManager(windowLength);
+	public FileEventProcessor getFileEP(URI dst){
+		return new HLSManifestManager(windowLength, segDuration, dst);
 	}
 }

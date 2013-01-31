@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,7 +128,12 @@ public class TProfile implements Serializable{
 	}
 	
 	@Transient
-	public FileEventProcessor getFileEP(){
+	public FileEventProcessor getFileEP(String dst){
+		return null;
+	}
+
+	public FileEventProcessor getFileEP(URI dst) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

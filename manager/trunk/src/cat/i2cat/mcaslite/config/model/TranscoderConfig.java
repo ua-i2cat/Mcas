@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -127,8 +128,8 @@ public class TranscoderConfig implements Serializable {
 	}
 	
 	@Transient
-	public FileEventProcessor getFileEP(){
-		return profiles.get(0).getFileEP();
+	public FileEventProcessor getFileEP(URI dst){
+		return profiles.get(0).getFileEP(dst);
 	}
 	
 }

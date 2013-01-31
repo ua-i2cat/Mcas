@@ -12,6 +12,7 @@ import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
+import cat.i2cat.mcaslite.utils.TranscoderUtils;
 import cat.i2cat.mcaslite.utils.Uploader;
 
 public class MediaHandler implements Cancellable {
@@ -41,8 +42,9 @@ public class MediaHandler implements Cancellable {
 	}
 	
 	public void initWatcher() throws IOException, MCASException, URISyntaxException{
-		String path = MediaUtils.createDestinationDir(request.getIdStr(), (new URI(request.getDst())).getPath());
-		watcher = new Watcher(path, request.getTConfig());
+		String path = MediaUtils.createOutputWorkingDir(request.getIdStr(), request.getTConfig().getOutputWorkingDir());
+		String dst = MediaUtils.createDestinationDir(request.getIdStr(), (new URI(request.getDst())).getPath());
+		watcher = new Watcher(path, request.getTConfig(), new URI(TranscoderUtils.pathToUri(dst)));
 		(new Thread(watcher)).start();
 	}
 	
@@ -78,8 +80,8 @@ public class MediaHandler implements Cancellable {
 		while(i.hasNext()){
 			Transco transco = i.next();
 			try {
-				uploader = new Uploader(new URI(transco.getDestinationUri()), new File(transco.getOutputFile()));
-				uploader.toDestinationUri();
+				uploader = new Uploader(new URI(transco.getDestinationUri()));
+				uploader.toDestinationUri(new File(transco.getOutputFile()));
 			} catch (Exception e) {
 				e.printStackTrace();
 				i.remove();

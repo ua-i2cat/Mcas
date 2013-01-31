@@ -16,13 +16,13 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class TranscoderUtils {
 	
-	public static List<Transco> transcoBuilder(TranscoderConfig config, String id, String dst, String src) throws MCASException{
+	public static List<Transco> transcoBuilder(TranscoderConfig config, String id, String dst, URI src) throws MCASException{
 		List<Transco> commands = new ArrayList<Transco>();
 		for(TProfile profile : config.getProfiles()){
 			commands.addAll(profile.commandBuilder(
-				getInput(id,config.getInputWorkingDir()), 
-				getOutputFile(id, config.getOutputWorkingDir(), src),
-				getDestination(id, src, dst)));
+				(config.isLive()) ? src.toString() : getInput(id,config.getInputWorkingDir()), 
+				getOutputFile(id, config.getOutputWorkingDir(), src.getPath()),
+				getDestination(id, src.getPath(), dst)));
 		}
 		return commands;
 	}
@@ -51,7 +51,7 @@ public class TranscoderUtils {
 		}
 	}
 
-	public static String getInput(String id, String inWorkDir) throws MCASException{
+	private static String getInput(String id, String inWorkDir) throws MCASException{
 		return FilenameUtils.concat(MediaUtils.getWorkDir(inWorkDir), id);
 	}
 	

@@ -1,12 +1,15 @@
 package cat.i2cat.mcaslite.utils;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
@@ -17,15 +20,13 @@ public class Uploader implements Cancellable {
 	
 	private boolean cancelled = false;
 	private URI destination;
-	private File origin;
 	private boolean done = false;
 	
-	public Uploader(URI destination, File origin){
+	public Uploader(URI destination){
 		this.destination = destination;
-		this.origin = origin;
 	}
 	
-	public void toDestinationUri() throws MCASException{
+	public void toDestinationUri(File origin) throws MCASException{
 		if (destination.getScheme().equals("file")) {
 			fileToFile(origin, new File(destination.getPath()));
 		} else if (destination.getScheme().equals("http")) {
@@ -43,6 +44,39 @@ public class Uploader implements Cancellable {
 		}
 	}
 	
+	public void toDestinationUri(byte[] byteArray, String fileName) throws MCASException{
+		if (destination.getScheme().equals("file")) {
+			byteArrayToFile(byteArray, new File(destination.getPath()), fileName);
+		} else if (destination.getScheme().equals("http")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("https")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("ftp")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("scp")) {
+			//TODO
+			throw new MCASException();
+		}
+	}
+	
+	private void byteArrayToFile(byte[] byteArray, File dst, String fileName) throws MCASException {
+		try {
+			if (dst.exists() && dst.isDirectory() && dst.canWrite()) {
+				inputStreamToFile(new ByteArrayInputStream(byteArray), new File(destination.getPath(), fileName));
+			} else if(! dst.exists() && dst.getParentFile().canWrite()) {
+				inputStreamToFile(new ByteArrayInputStream(byteArray), new File(destination.getPath()));
+			} else {
+				throw new MCASException();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+	}
+	
 	private void fileToFile(File origin, File destination) throws MCASException{
 		try {
 			if (origin.isDirectory() && (new File(destination.getPath())).isDirectory()){
@@ -51,6 +85,8 @@ public class Uploader implements Cancellable {
 				}
 			} else if (! destination.exists() && destination.getParentFile().canWrite()) {
 				inputStreamToFile(new FileInputStream(origin), destination);
+			} else if (destination.exists() && destination.isDirectory() && destination.canWrite()){
+				inputStreamToFile(new FileInputStream(origin), new File(destination.toString(), origin.getName()));
 			} else {
 				throw new MCASException();
 			}
@@ -85,6 +121,37 @@ public class Uploader implements Cancellable {
 			if (! done){
 				MediaUtils.deleteFile(destination.getPath());
 			}
+		}
+	}
+	
+	public void deleteContent(String content) throws MCASException{
+		if (destination.getScheme().equals("file")) {
+			deleteFile(content, new File(destination.getPath()));
+		} else if (destination.getScheme().equals("http")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("https")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("ftp")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("scp")) {
+			//TODO
+			throw new MCASException();
+		}
+	}
+	
+	private void deleteFile(String fileName, File dst) throws MCASException{
+		try {
+			if (dst.isDirectory() && dst.canWrite()){
+				Files.deleteIfExists(Paths.get(dst.getPath(), fileName));
+			} else {
+				Files.deleteIfExists(Paths.get(dst.getPath()));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new MCASException();
 		}
 	}
 	

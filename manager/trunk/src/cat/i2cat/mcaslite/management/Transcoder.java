@@ -34,7 +34,7 @@ public class Transcoder implements Runnable, Cancellable {
 		this.request = request;
 		try {
 			this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getIdStr(), 
-					(new URI(request.getDst())).getPath(), (new URI(request.getSrc())).getPath());
+					(new URI(request.getDst())).getPath(), new URI(request.getSrc()));
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
@@ -71,8 +71,10 @@ public class Transcoder implements Runnable, Cancellable {
 			setDone(true);
 			if (! isCancelled()) {
 				stop(true);
-				throw new MCASException();
+				//throw new MCASException();
 			}
+			request.increaseStatus();
+			queue.update(request);
 		} finally {
 			mediaH.cancelWatcher();
 		}
@@ -151,6 +153,13 @@ public class Transcoder implements Runnable, Cancellable {
 				case Status.PROCESS_MO:
 					return mediaH.cancel(mayInterruptIfRunning);
 				case Status.PROCESS_T:
+					if (! isDone()){
+						return stop(mayInterruptIfRunning);
+					} else {
+						MediaUtils.clean(request);
+						return true;
+					}
+				case Status.PROCESS_L:
 					if (! isDone()){
 						return stop(mayInterruptIfRunning);
 					} else {
