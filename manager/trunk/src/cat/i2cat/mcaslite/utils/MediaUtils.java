@@ -1,8 +1,10 @@
 package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
@@ -66,7 +68,14 @@ public class MediaUtils {
 	
 	public static boolean deleteFile(String file){
 		File fd = new File(file);
-		if (fd.exists()){
+		if(fd.isDirectory() && fd.exists()){
+			try {
+				FileUtils.deleteDirectory(fd);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else if (fd.exists()){
 			return fd.delete();
 		}
 		return false;

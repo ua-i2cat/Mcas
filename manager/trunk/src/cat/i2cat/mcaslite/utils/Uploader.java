@@ -16,7 +16,7 @@ import cat.i2cat.mcaslite.management.Cancellable;
 
 public class Uploader implements Cancellable {
 
-	private static final int BLOCK_SIZE 	= 1024*100;
+	private static final int BLOCK_SIZE = 1024*100;
 	
 	private boolean cancelled = false;
 	private URI destination;
