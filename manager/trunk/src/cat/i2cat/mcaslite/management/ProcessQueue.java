@@ -115,5 +115,13 @@ public class ProcessQueue {
 		return this.queue.size();
 	}
 	
+	synchronized boolean hasSlot() {
+		return ((hasParallelLimit() && maxProcess <= nProcess) || nWait <= 0);
+	}
+	
+	synchronized List<TRequest> getAll(){
+		return new ArrayList<TRequest>(queue);
+	}
+	
 }
 

@@ -48,4 +48,13 @@ public class FileStatus extends Status{
 	public int getInt(){
 		return status;
 	}
+
+	public boolean hasNext() {
+		try {
+			nextStatus(status);
+		} catch (Exception e){
+			return false;
+		}
+		return true;
+	}
 }

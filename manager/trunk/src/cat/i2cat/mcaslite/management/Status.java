@@ -28,6 +28,8 @@ public abstract class Status {
 	
 	public abstract int getInt();
 	
+	public abstract boolean hasNext();;
+	
 	@Override
 	public String toString() {
 		switch(getInt()){

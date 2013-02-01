@@ -20,6 +20,7 @@ import com.sun.jersey.spi.resource.Singleton;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.CloudManager;
 import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.management.TranscoHandler;
 import cat.i2cat.mcaslite.utils.RequestUtils;
@@ -32,14 +33,22 @@ public class TranscoService {
 	private static ServletContext context;
 	
 	private TranscoHandler transcoH;
+	private CloudManager client;
 	private Thread managerTh;
+	private Thread clientTh;
 	
-	public TranscoService() throws MCASException{
-		transcoH = new TranscoHandler();
+	public TranscoService() {
+		transcoH = TranscoHandler.getInstance();
 		managerTh = new Thread(transcoH);
 		managerTh.setName("MainManager");
 		managerTh.setDaemon(true);
 		managerTh.start();
+		
+		client = CloudManager.getInstance();
+		clientTh = new Thread(client);
+		clientTh.setName("MainManager");
+		clientTh.setDaemon(true);
+		clientTh.start();
 	}
 	
 	@POST
@@ -52,7 +61,6 @@ public class TranscoService {
 		} catch (URISyntaxException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("Check source and destination.").build();
 		}
-		request.initRequest();
 		if (transcoH.putRequest(request)){
 			return Response.status(Response.Status.CREATED).entity(request.getIdStr()).build();
 		} else {
