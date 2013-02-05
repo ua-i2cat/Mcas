@@ -33,17 +33,17 @@ public class MediaHandler implements Cancellable {
 
 	public void inputHandle() throws MCASException {
 		try {
-			MediaUtils.createOutputWorkingDir(request.getIdStr(), request.getTConfig().getOutputWorkingDir());
-			MediaUtils.createDestinationDir(request.getIdStr(), (new URI(request.getDst())).getPath());
+			MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
+			Uploader.createDestinationDir(request.getId(), new URI(request.getDst()));
 			copyToWorkingDir();
 		} catch(URISyntaxException e){
 			throw new MCASException();
-		} 
+		}
 	}
 	
 	public void initWatcher() throws IOException, MCASException, URISyntaxException{
-		String path = MediaUtils.createOutputWorkingDir(request.getIdStr(), request.getTConfig().getOutputWorkingDir());
-		String dst = MediaUtils.createDestinationDir(request.getIdStr(), (new URI(request.getDst())).getPath());
+		String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
+		String dst = MediaUtils.createDestinationDir(request.getId(), new URI(request.getDst()));
 		watcher = new Watcher(path, request.getTConfig(), new URI(TranscoderUtils.pathToUri(dst)));
 		(new Thread(watcher)).start();
 	}
@@ -56,7 +56,7 @@ public class MediaHandler implements Cancellable {
 	
 	private void copyToWorkingDir() throws MCASException {
 		try {
-			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getIdStr(), request.getTConfig()));
+			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getId(), request.getTConfig()));
 			downloader.toWorkingDir();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -93,7 +93,7 @@ public class MediaHandler implements Cancellable {
 			if (! isCancelled()) {
 				if (request.getNumOutputs() > request.getTranscoded().size()){
 					if (request.isTranscodedEmpty()){
-						MediaUtils.deleteInputFile(request.getIdStr(), request.getTConfig().getInputWorkingDir());
+						MediaUtils.deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
 						request.setError();
 					} else {
 						request.setPartialError();

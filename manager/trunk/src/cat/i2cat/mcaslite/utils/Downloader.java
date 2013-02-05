@@ -9,7 +9,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Paths;
+import com.microsoft.windowsazure.services.blob.client.CloudBlob;
 
+
+import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
 
@@ -42,10 +46,22 @@ public class Downloader implements Cancellable {
 		} else if (input.getScheme().equals("scp")) {
 			//TODO
 			throw new MCASException();
+		} else if (input.getScheme().equals("blob")) {
+			blobToFile();
 		}
 	}
 
 	
+	private void blobToFile() throws MCASException {
+		try {
+			CloudBlob blob = AzureUtils.getFirstBlob(Paths.get(input.getPath()).getParent().toString(), Paths.get(input.getPath()).getFileName().toString());
+			inputStreamToFile(blob.openInputStream());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+	}
+
 	private void fileToFile() throws MCASException{
 		try {
 			inputStreamToFile(new FileInputStream(new File(input.getPath())));

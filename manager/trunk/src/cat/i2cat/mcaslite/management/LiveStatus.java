@@ -8,8 +8,6 @@ public class LiveStatus extends Status{
 	
 	private int nextStatus(int status) throws MCASException{
 		switch(status){
-			case TODO:
-				return CREATED;
 			case CREATED:
 				return QUEUED;
 			case QUEUED:

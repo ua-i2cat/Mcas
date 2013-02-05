@@ -16,7 +16,7 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class TranscoderUtils {
 	
-	public static List<Transco> transcoBuilder(TranscoderConfig config, String id, String dst, URI src) throws MCASException{
+	public static List<Transco> transcoBuilder(TranscoderConfig config, String id, URI dst, URI src) throws MCASException{
 		List<Transco> commands = new ArrayList<Transco>();
 		for(TProfile profile : config.getProfiles()){
 			commands.addAll(profile.commandBuilder(
@@ -27,21 +27,27 @@ public class TranscoderUtils {
 		return commands;
 	}
 	
-	private static String getDestination(String id, String src, String dst) throws MCASException{
+	private static String getDestination(String id, String src, URI dst) throws MCASException{
 		return FilenameUtils.concat(getDestinationDir(dst, id), FilenameUtils.getBaseName(src));
 	}
 	
-	public static String getDestinationDir(String dst, String id) throws MCASException {
-		File file = new File(dst);
-		if (! file.exists() && file.getParentFile().isDirectory() && file.getParentFile().canWrite()){
-			return file.getPath();
-		} else if (file.exists() && file.isDirectory() && file.canWrite()) {
-			file = new File(FilenameUtils.concat(dst, id));
-			return file.getPath();
+	public static String getDestinationDir(URI dst, String id) throws MCASException {
+		if (dst.getScheme().equals("file")){
+			File file = new File(dst);
+			if (! file.exists() && file.getParentFile().isDirectory() && file.getParentFile().canWrite()){
+				return file.getPath();
+			} else if (file.exists() && file.isDirectory() && file.canWrite()) {
+				file = new File(FilenameUtils.concat(dst.getPath(), id));
+				return file.getPath();
+			} else {
+				throw new MCASException();
+			}
 		} else {
-			throw new MCASException();
+			return dst.getPath();
 		}
 	}
+	
+	
 	
 	public static String pathToUri(String path) throws MCASException{
 		try {

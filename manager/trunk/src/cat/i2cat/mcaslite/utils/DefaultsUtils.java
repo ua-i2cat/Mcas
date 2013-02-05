@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.THLSOptions;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
@@ -20,16 +19,15 @@ public class DefaultsUtils {
 		List<TLevel> levels = new ArrayList<TLevel>();
 		List<TProfile> profiles = new ArrayList<TProfile>();
 		TLevel level = new TLevel();
-		//TProfile profile = new TProfile();
-		//TDashOptions liveOptions = new TDashOptions();
-		THLSOptions lProfile = new THLSOptions(); 
-		
-//		tConfig.setInputWorkingDir("input");
-//		tConfig.setOutputWorkingDir("output");
-//		tConfig.setThreads(1);
-//		tConfig.setTimeout(3600*24);
-//		tConfig.setTranscoder(1);
-//		tConfig.setName(DEFAULT);
+		TProfile profile = new TProfile();
+				
+		tConfig.setInputWorkingDir("input");
+		tConfig.setOutputWorkingDir("output");
+		tConfig.setThreads(1);
+		tConfig.setTimeout(3600*24);
+		tConfig.setTranscoder(1);
+		tConfig.setName(DEFAULT);
+		tConfig.setLive(false);
 		
 	
 //		level.setaBitrate(128);
@@ -55,43 +53,14 @@ public class DefaultsUtils {
 //		level.setQuality(33);
 //		levels.add(level);
 		
-//		profile = new TProfile();
-//		profile.setaCodec("libfaac");
-//		profile.setFormat("mp4");
-//		profile.setName(DEFAULT + "mp4");
-//		profile.setvCodec("libx264");
-//		profile.setLevels(levels);
-//		profiles.add(profile);
+		profile = new TProfile();
+		profile.setaCodec("libfaac");
+		profile.setFormat("mp4");
+		profile.setName(DEFAULT + "mp4");
+		profile.setvCodec("libx264");
+		profile.setLevels(levels);
+		profiles.add(profile);
 		
-//		liveOptions = new TDashOptions();
-//		liveOptions.setSeg_duration(1000);
-//		liveOptions.setFrag_duration(500);
-//		liveOptions.setaCodec("libvorbis");
-//		liveOptions.setFormat("webm");
-//		liveOptions.setName(DEFAULT + "webm");
-//		liveOptions.setvCodec("libvpx");
-//		liveOptions.setLevels(levels);
-//		profiles.add(liveOptions);
-//		tConfig.setProfiles(profiles);
-		
-		tConfig = new TranscoderConfig();
-		tConfig.setInputWorkingDir("input");
-		tConfig.setOutputWorkingDir("output");
-		tConfig.setThreads(1);
-		tConfig.setTimeout(3600*24);
-		tConfig.setTranscoder(1);
-		tConfig.setLive(true);
-		tConfig.setName(LIVE);
-		
-		lProfile.setaCodec("libfaac");
-		lProfile.setFormat("mpegts");
-		lProfile.setName(DEFAULT + "HLS");
-		lProfile.setvCodec("libx264");
-		lProfile.setAdditionalFlags("-profile:v baseline -map 0 -flags -global_header");
-		lProfile.setLevels(levels);
-		lProfile.setSegDuration(2);
-		lProfile.setWindowLength(3);
-		profiles.add(lProfile);
 	
 		tConfig.setProfiles(profiles);
 		

@@ -2,6 +2,7 @@ package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -24,7 +25,7 @@ public class MediaUtils {
 		}
 	}
 	
-	public static String createDestinationDir(String id, String dst) throws MCASException{
+	public static String createDestinationDir(String id, URI dst) throws MCASException{
 		String path = TranscoderUtils.getDestinationDir(dst, id);
 		if (! (new File(path)).mkdirs()){
 			throw new MCASException();
@@ -96,7 +97,7 @@ public class MediaUtils {
 		if (request.getTranscoded().size() > 0){
 			cleanTranscos(request.getTranscoded());
 		} else {
-			deleteInputFile(request.getIdStr(), request.getTConfig().getInputWorkingDir());
+			deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
 		}
 	}
 

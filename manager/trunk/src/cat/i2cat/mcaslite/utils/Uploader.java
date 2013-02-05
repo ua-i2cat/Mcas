@@ -11,6 +11,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
 
@@ -41,9 +42,11 @@ public class Uploader implements Cancellable {
 		} else if (destination.getScheme().equals("scp")) {
 			//TODO
 			throw new MCASException();
+		} else if (destination.getScheme().equals("blob")) {
+			fileToBlob(origin);
 		}
 	}
-	
+
 	public void toDestinationUri(byte[] byteArray, String fileName) throws MCASException{
 		if (destination.getScheme().equals("file")) {
 			byteArrayToFile(byteArray, new File(destination.getPath()), fileName);
@@ -59,9 +62,11 @@ public class Uploader implements Cancellable {
 		} else if (destination.getScheme().equals("scp")) {
 			//TODO
 			throw new MCASException();
+		} else if (destination.getScheme().equals("blob")) {
+			byteArrayToBlob(byteArray, fileName);
 		}
 	}
-	
+
 	private void byteArrayToFile(byte[] byteArray, File dst, String fileName) throws MCASException {
 		try {
 			if (dst.exists() && dst.isDirectory() && dst.canWrite()) {
@@ -94,6 +99,20 @@ public class Uploader implements Cancellable {
 			e.printStackTrace();
 			throw new MCASException();
 		}
+	}
+	
+	private void fileToBlob(File origin) throws MCASException {
+		if (origin.isDirectory()){
+			for (String file : origin.list()){
+				AzureUtils.fileToBlob(new File(origin, file), Paths.get(destination.getPath()).toString(), file);
+			}
+		} else {
+			throw new MCASException();
+		}
+	}
+	
+	private void byteArrayToBlob(byte[] byteArray, String fileName) throws MCASException {
+		AzureUtils.byteArrayToBlob(byteArray, Paths.get(destination.getPath()).toString(), fileName);
 	}
 	
 	private void inputStreamToFile(InputStream in, File destination) throws IOException {
@@ -139,6 +158,8 @@ public class Uploader implements Cancellable {
 		} else if (destination.getScheme().equals("scp")) {
 			//TODO
 			throw new MCASException();
+		} else if (destination.getScheme().equals("blob")) {
+			//deleteBlob(content, destination.getPath());
 		}
 	}
 	
@@ -175,5 +196,37 @@ public class Uploader implements Cancellable {
 			setCancelled(true);
 		}
 		return true;
+	}
+
+	public static String createDestinationDir(String id, URI destination) throws MCASException {
+		if (destination.getScheme().equals("file")) {
+			return makerDestinationDir(id, destination);
+		} else if (destination.getScheme().equals("http")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("https")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("ftp")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("scp")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("blob")) {
+			//deleteBlob(content, destination.getPath());
+			return AzureUtils.createContainer(destination.getPath(), true);
+		} else {
+			throw new MCASException();
+		}
+	}
+	
+	private static String makerDestinationDir(String id, URI dst) throws MCASException{
+		String path = TranscoderUtils.getDestinationDir(dst, id);
+		if (! (new File(path)).mkdirs()){
+			throw new MCASException();
+		} else {
+			return path;
+		}
 	}
 }

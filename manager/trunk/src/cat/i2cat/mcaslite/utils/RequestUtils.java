@@ -3,13 +3,13 @@ package cat.i2cat.mcaslite.utils;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URI;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
@@ -69,9 +69,14 @@ public class RequestUtils {
 	}
 	
 	public static String destinationJSONbuilder(TRequest request) throws MCASException {
-		if (!(request.getStatus().getInt() == Status.DONE)  && !(request.getStatus().getInt() == Status.P_ERROR)){
+		if (!(request.getStatus().getInt() == Status.DONE)  && !(request.getStatus().getInt() == Status.P_ERROR)
+				&& !(request.getStatus().getInt() == Status.PROCESS_L)){
 			throw new MCASException();
 		}
+		return destinationJSON(request).toString();
+	}
+	
+	private static JSONObject destinationJSON(TRequest request) throws MCASException{
 		JSONArray jsonAr = new JSONArray();
 		try {
 			for(Transco transco : request.getTranscoded()){
@@ -79,8 +84,18 @@ public class RequestUtils {
 				jsonObj.put("uri", transco.getDestinationUri());
 				jsonAr.put(jsonObj);
 			}
-			return (new JSONObject()).put("destinationUris", jsonAr).toString();
+			return (new JSONObject()).put("destinationUris", jsonAr);
 		} catch (JSONException e){
+			e.printStackTrace();
+			throw new MCASException();
+		}
+	}
+	
+
+	public static void callback(TRequest request) throws MCASException {
+		try {
+			AzureUtils.updateRequest(request);
+		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();
 		}
