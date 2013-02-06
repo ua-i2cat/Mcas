@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- config.xml -->
+<config>
+    <maxreq>1000</maxreq>
+    <maxproc>2</maxproc>
+    <downloader>
+    	<dblocksize>102400</dblocksize>
+    	<httptimeout>30000</httptimeout>
+    </downloader>
+    <uploader>
+    	<ublocksize>102400</ublocksize>
+    </uploader>
+    <ublocksize>102400</ublocksize>
+    <cloud>
+    
+    </cloud>
+    <callback>
+    
+    </callback>
+</config>
