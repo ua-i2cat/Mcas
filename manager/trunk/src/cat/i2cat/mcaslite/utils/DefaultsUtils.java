@@ -9,11 +9,12 @@ import cat.i2cat.mcaslite.config.model.THLSOptions;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
+import cat.i2cat.mcaslite.management.ConfigReader;
 
 public class DefaultsUtils {
 	
 	public static final String DEFAULT = "default";
-	public static final int MAX_PROCESS = 2;
+	public static final int MAX_PROCESS = Integer.parseInt(ConfigReader.configGetter("maxproc"));
 	
 	public static TranscoderConfig tConfigGetDefaults(){
 		TranscoderConfig tConfig = new TranscoderConfig();

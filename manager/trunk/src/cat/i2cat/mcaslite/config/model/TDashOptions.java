@@ -39,7 +39,7 @@ public class TDashOptions extends TProfile {
 	@Override
 	 public List<Transco> commandBuilder(String input, String output, String dst){
 		List<Transco> transcos = new ArrayList<Transco>();
-		String cmd = "MP4Box -rap -frag-rap ";
+		String cmd = "MP4Box -rap -frag-rap";
 		cmd += " -dash " + this.segDuration + " -frag " + this.fragDuration;
 		cmd += " -segment-name " + FilenameUtils.getBaseName(output);
 		cmd += " -out " + output +".mpd";

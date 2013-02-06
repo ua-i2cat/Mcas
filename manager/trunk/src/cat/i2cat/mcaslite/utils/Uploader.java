@@ -10,10 +10,11 @@ import java.net.URI;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
+import cat.i2cat.mcaslite.management.ConfigReader;
 
 public class Uploader implements Cancellable {
 
-	private static final int BLOCK_SIZE = 1024*100;
+	private static final int BLOCK_SIZE = Integer.parseInt(ConfigReader.configGetter("uploader.ublocksize"));
 	
 	private boolean cancelled = false;
 	private URI destination;

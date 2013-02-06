@@ -13,7 +13,7 @@ import cat.i2cat.mcaslite.utils.DefaultsUtils;
 
 public class TranscoHandler implements Runnable {
 
-	private static final int MAX_REQUESTS = 1000;
+	private static final int MAX_REQUESTS = Integer.parseInt(ConfigReader.configGetter("maxreq"));
 	
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);

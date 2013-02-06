@@ -12,11 +12,12 @@ import java.net.URLConnection;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
+import cat.i2cat.mcaslite.management.ConfigReader;
 
 public class Downloader implements Cancellable {
 
-	private static final int BLOCK_SIZE 	= 1024*100;
-	private static final int HTTP_TIMEOUT 	= 30*1000;
+	private static final int BLOCK_SIZE 	= Integer.parseInt(ConfigReader.configGetter("downloader.dblocksize"));
+	private static final int HTTP_TIMEOUT 	= Integer.parseInt(ConfigReader.configGetter("downloader.httptimeout"));
 	
 	private boolean cancelled = false;
 	private URI input;

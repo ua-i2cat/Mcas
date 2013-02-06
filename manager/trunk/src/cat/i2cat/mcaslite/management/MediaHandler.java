@@ -104,13 +104,6 @@ public class MediaHandler implements Cancellable {
 					requestDao.save(request);
 				}
 				
-//				request.getFileEP();
-//				
-//				String idstringa = request.getIdStr();
-//				String destina = (new URI(request.getDst())).getPath();
-//				String sourceina = (new URI(request.getSrc())).getPath();
-//				String total = FilenameUtils.concat(destina, idstringa);
-				
 			}
 		} finally {
 			MediaUtils.clean(request);
