@@ -18,16 +18,13 @@ public class CloudManager implements Runnable, Cancellable {
 	private boolean cancelled = false;
 	private ProcessQueue queue;
 	//TODO: configuration
-	private int pollInterval = 30;
+	private int pollInterval = 20;
 	private int pollFactor = 2;
 	// End of configuration
 	private Map<String, CloudQueueMessage> messages = new ConcurrentHashMap<String, CloudQueueMessage>();
 
 	private CloudManager(){
 		queue = ProcessQueue.getInstance();
-		//TODO: get connectionString
-		//TODO: get pollInterval
-		//TODO
 	}
 	
 	public static CloudManager getInstance(){
@@ -41,13 +38,11 @@ public class CloudManager implements Runnable, Cancellable {
 				if (queue.hasSlot()){
 					processMessage(AzureUtils.retrieveMessage(pollFactor*pollInterval));
 				}
+				Thread.sleep(pollInterval*1000);
 				updateStatus();
-				Thread.sleep(pollInterval);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (MCASException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -95,6 +90,13 @@ public class CloudManager implements Runnable, Cancellable {
 	public CloudQueueMessage getCloudMessage(String requestId) throws MCASException{
 		if (messages.containsKey(requestId)) {
 			return messages.get(requestId);
+		}
+		throw new MCASException();
+	}
+	
+	public CloudQueueMessage popCloudMessage(String requestId) throws MCASException{
+		if (messages.containsKey(requestId)) {
+			return messages.remove(requestId);
 		}
 		throw new MCASException();
 	}

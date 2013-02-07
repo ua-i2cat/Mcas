@@ -2,7 +2,6 @@ package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -19,15 +18,6 @@ public class MediaUtils {
 		String path = TranscoderUtils.getOutputDir(id, outputWorkingDir);
 		File file = new File(path);
 		if (! file.mkdirs()){
-			throw new MCASException();
-		} else {
-			return path;
-		}
-	}
-	
-	public static String createDestinationDir(String id, URI dst) throws MCASException{
-		String path = TranscoderUtils.getDestinationDir(dst, id);
-		if (! (new File(path)).mkdirs()){
 			throw new MCASException();
 		} else {
 			return path;

@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.management.HLSManifestManager;
-import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
 @DiscriminatorValue("tHLSOptions")
@@ -36,8 +35,7 @@ public class THLSOptions extends TProfile {
 			cmd += " -codec:v " + getvCodec() + " -codec:a " + getaCodec() + " " + getAdditionalFlags();
 			cmd += " -f segment -segment_list_flags live -segment_list " + output + "_" + level.getName() + ".csv";
 			cmd += " -segment_time " + getSegDuration() + " " + output + "_" + level.getName() + "_%d.ts";
-			transcos.add(new Transco(cmd, (new File(output)).getParent(), 
-					TranscoderUtils.pathToUri((new File(dst)).getParent()), input));
+			transcos.add(new Transco(cmd, (new File(output)).getParent(), dst, input));
 		}
 		return transcos;
 	}

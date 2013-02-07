@@ -12,7 +12,6 @@ import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.TranscoderUtils;
 import cat.i2cat.mcaslite.utils.Uploader;
 
 public class MediaHandler implements Cancellable {
@@ -32,19 +31,14 @@ public class MediaHandler implements Cancellable {
 	}
 
 	public void inputHandle() throws MCASException {
-		try {
-			MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
-			Uploader.createDestinationDir(request.getId(), new URI(request.getDst()));
-			copyToWorkingDir();
-		} catch(URISyntaxException e){
-			throw new MCASException();
-		}
+		MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
+		copyToWorkingDir();
 	}
 	
 	public void initWatcher() throws IOException, MCASException, URISyntaxException{
 		String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
-		String dst = MediaUtils.createDestinationDir(request.getId(), new URI(request.getDst()));
-		watcher = new Watcher(path, request.getTConfig(), new URI(TranscoderUtils.pathToUri(dst)));
+		URI dst = Uploader.createDestinationDir(request.getId(), new URI(request.getDst()));
+		watcher = new Watcher(path, request.getTConfig(), dst);
 		(new Thread(watcher)).start();
 	}
 	
@@ -77,6 +71,12 @@ public class MediaHandler implements Cancellable {
 	
 	public void outputHandle() throws MCASException {
 		Iterator<Transco> i = request.getTranscoded().iterator();
+		try {
+			Uploader.createDestinationDir(request.getId(), new URI(request.getDst()));
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
 		while(i.hasNext()){
 			Transco transco = i.next();
 			try {
@@ -94,6 +94,7 @@ public class MediaHandler implements Cancellable {
 				if (request.getNumOutputs() > request.getTranscoded().size()){
 					if (request.isTranscodedEmpty()){
 						MediaUtils.deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
+						Uploader.deleteDestination(request.getDst());
 						request.setError();
 					} else {
 						request.setPartialError();

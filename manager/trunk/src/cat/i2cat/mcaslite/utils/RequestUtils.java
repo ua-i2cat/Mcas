@@ -10,6 +10,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import cat.i2cat.mcaslite.cloud.AzureUtils;
+import cat.i2cat.mcaslite.cloud.CloudManager;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
@@ -94,7 +95,12 @@ public class RequestUtils {
 
 	public static void callback(TRequest request) throws MCASException {
 		try {
-			AzureUtils.updateRequest(request);
+			if (! request.getStatus().hasNext()) {
+				if (AzureUtils.updateVideoEntity(request)) {
+					//AzureUtils.deleteQueueMessage(CloudManager.getInstance().popCloudMessage(request.getId()));
+					System.out.println("deleted");
+				}
+			}
 		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();

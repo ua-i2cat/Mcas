@@ -226,10 +226,10 @@ public class TRequest implements Serializable {
 
 	@Transient
 	public void callback() {
-		try {
-			RequestUtils.callback(this);
-		} catch (MCASException e){
-			e.printStackTrace();
-		}
+//		try {
+//			RequestUtils.callback(this);
+//		} catch (MCASException e){
+//			e.printStackTrace();
+//		}
 	}
 }

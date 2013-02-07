@@ -118,7 +118,8 @@ public class ProcessQueue {
 	}
 	
 	synchronized public boolean hasSlot() {
-		return ((hasParallelLimit() && maxProcess <= nProcess) || nWait <= 0);
+		boolean hasSlot = (nProcess < maxProcess) && nWait < (maxProcess - nProcess);
+		return hasSlot;
 	}
 	
 	synchronized List<TRequest> getAll(){

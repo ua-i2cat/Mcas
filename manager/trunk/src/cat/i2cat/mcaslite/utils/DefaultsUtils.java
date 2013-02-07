@@ -59,6 +59,7 @@ public class DefaultsUtils {
 		profile.setName(DEFAULT + "mp4");
 		profile.setvCodec("libx264");
 		profile.setLevels(levels);
+		profile.setAdditionalFlags("");
 		profiles.add(profile);
 		
 	

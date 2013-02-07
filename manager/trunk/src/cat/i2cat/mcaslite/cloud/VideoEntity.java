@@ -14,6 +14,9 @@ public class VideoEntity extends TableServiceEntity {
     //TODO: ensure it is not saved
     private TRequest request;
     private String scheme;
+    private String fileName;
+    private String description;
+    private String category;
     
     public VideoEntity() {
     	request = new TRequest();
@@ -23,12 +26,6 @@ public class VideoEntity extends TableServiceEntity {
         this.partitionKey = partitionKey;
         this.rowKey = rowKey;
         this.request = new TRequest();
-    }
-    
-    public VideoEntity(TRequest request, String partitionKey, String rowKey) {
-    	this.request = request;
-    	this.partitionKey = partitionKey;
-        this.rowKey = rowKey;
     }
 
 	public String getTitle() {
@@ -54,7 +51,7 @@ public class VideoEntity extends TableServiceEntity {
 			URI src = new URI(videoUploadedUrl);
 			scheme = src.getScheme();
 			request.setSrc((new URI("blob", src.getHost(), src.getPath(), null)).toString());
-			request.setDst((new URI("blob", src.getHost(), Paths.get("/output", request.getId()).toString(), null)).toString());
+			request.setDst((new URI("blob", src.getHost(), Paths.get("/",request.getId()).toString(), null)).toString());
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
@@ -69,14 +66,9 @@ public class VideoEntity extends TableServiceEntity {
 		}
 	}
 	
-//	public void setVideoConvertedUrl(String videoConvertedUrl) {
-//		try {
-//			URI src = new URI(videoConvertedUrl);
-//			request.setDst((new URI("blob", src.getHost(), Paths.get("output", request.getId()).toString(), null)).toString());
-//		} catch (URISyntaxException e) {
-//			
-//		}
-//	}
+	public void setTRequest(TRequest request){
+		this.request = request;
+	}
 
 	public String getConfig() {
 		return request.getConfig();
@@ -90,8 +82,27 @@ public class VideoEntity extends TableServiceEntity {
 		return request;
 	}
 
-	public static String tableName(){
-		//TODO: get it from configuration
-		return "";
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
 	}
 }
