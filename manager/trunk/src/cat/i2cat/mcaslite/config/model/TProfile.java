@@ -21,7 +21,6 @@ import javax.persistence.Transient;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
-import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -44,7 +43,7 @@ public class TProfile implements Serializable{
 	private String vCodec;
 	@Column(nullable = false, length = 100)
 	private String aCodec;
-	@Column(nullable = true, length = 100)
+	@Column(nullable = false, length = 100)
 	private String additionalFlags;
 	
 	@OneToMany(cascade=CascadeType.ALL)
@@ -116,7 +115,7 @@ public class TProfile implements Serializable{
 			cmd += getAdditionalFlags() + " -codec:v " + getvCodec() + " -codec:a " + getaCodec();
 			cmd += " -y " + output + "_" + level.getName() + "." + getFormat();
 			transcos.add(new Transco(cmd, output + "_" + level.getName() + "." + getFormat(), 
-					TranscoderUtils.pathToUri(dst + level.getName() + "." + getFormat()), input));
+					dst + level.getName() + "." + getFormat(), input));
 		}
 		return transcos;
 	}

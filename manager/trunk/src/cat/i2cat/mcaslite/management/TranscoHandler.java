@@ -4,7 +4,6 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TRequest;
@@ -13,6 +12,8 @@ import cat.i2cat.mcaslite.utils.DefaultsUtils;
 
 public class TranscoHandler implements Runnable {
 
+	private static final TranscoHandler INSTANCE = new TranscoHandler();
+	
 	private static final int MAX_REQUESTS = 1000;
 	
 	private ProcessQueue queue;
@@ -21,12 +22,16 @@ public class TranscoHandler implements Runnable {
 	
 	private boolean run = true;
 	
-	public TranscoHandler() throws MCASException{
+	private TranscoHandler() {
 		queue = ProcessQueue.getInstance();
 		queue.setMaxProcess(DefaultsUtils.MAX_PROCESS);
 		if (DefaultsUtils.feedDefaultsNeeded()){
 			DefaultsUtils.tConfigFeedDefaults();
 		}
+	}
+	
+	public static TranscoHandler getInstance(){
+		return INSTANCE;
 	}
 	
 	@Override
@@ -50,12 +55,12 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 	
-	public boolean cancelRequest(TRequest request, boolean mayInterruptIfRunning) {
-		synchronized(queue){
+	public synchronized boolean cancelRequest(TRequest request, boolean mayInterruptIfRunning) {
+		synchronized(queue){//TODO: is is needed?
 			request = queue.getProcessObject(request);
 			if (request != null && (request.isProcessing() || request.isWaiting())){
 				try {
-					if (request.isProcessing() && ! cancelWorker(request.getIdStr(), mayInterruptIfRunning)){
+					if (request.isProcessing() && ! cancelWorker(request.getId(), mayInterruptIfRunning)){
 						return false;
 					}
 				} catch (Exception e) {
@@ -71,8 +76,9 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 
-	public boolean putRequest(TRequest request) throws MCASException {
+	public synchronized boolean putRequest(TRequest request) throws MCASException {
 		if (queue.size() < MAX_REQUESTS) {
+			request.initRequest();
 			request.increaseStatus();
 			queue.put(request);
 			return true;
@@ -90,7 +96,7 @@ public class TranscoHandler implements Runnable {
 		run = false;
 	}
 	
-	public TRequest getRequest(UUID id) throws MCASException {
+	public synchronized TRequest getRequest(String id) throws MCASException {
 		TRequest request = queue.getProcessObject(TRequest.getEqualRequest(id));
 		if (request != null){
 			return request;
@@ -99,7 +105,7 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 	
-	public Status getStatus(UUID id) throws MCASException {
+	public synchronized Status getStatus(String id) throws MCASException {
 		return getRequest(id).getStatus();
 	}
 	
@@ -107,7 +113,7 @@ public class TranscoHandler implements Runnable {
 		increaseRequestState(request);
 		Transcoder transTh = new Transcoder(queue, request);
 		(new Thread(transTh)).start();
-		addWorkerInStack(transTh, request.getIdStr());
+		addWorkerInStack(transTh, request.getId());
 	}
 	
 	private boolean cancelWorker(String id, boolean mayInterruptIfRunning) throws InterruptedException, ExecutionException{

@@ -3,7 +3,6 @@ package cat.i2cat.mcaslite.utils;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URI;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codehaus.jettison.json.JSONArray;
@@ -69,7 +68,8 @@ public class RequestUtils {
 	}
 	
 	public static String destinationJSONbuilder(TRequest request) throws MCASException {
-		if (!(request.getStatus().getInt() == Status.DONE)  && !(request.getStatus().getInt() == Status.P_ERROR)){
+		if (!(request.getStatus().getInt() == Status.DONE)  && !(request.getStatus().getInt() == Status.P_ERROR)
+				&& !(request.getStatus().getInt() == Status.PROCESS_L)){
 			throw new MCASException();
 		}
 		JSONArray jsonAr = new JSONArray();

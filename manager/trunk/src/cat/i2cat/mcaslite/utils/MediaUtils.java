@@ -24,15 +24,6 @@ public class MediaUtils {
 		}
 	}
 	
-	public static String createDestinationDir(String id, String dst) throws MCASException{
-		String path = TranscoderUtils.getDestinationDir(dst, id);
-		if (! (new File(path)).mkdirs()){
-			throw new MCASException();
-		} else {
-			return path;
-		}
-	}
-	
 	public static boolean deleteInputFile(String requestId, String inputWorkingDir){
 		return deleteFile(FilenameUtils.concat(getWorkDir(inputWorkingDir), requestId));
 	}
@@ -96,7 +87,7 @@ public class MediaUtils {
 		if (request.getTranscoded().size() > 0){
 			cleanTranscos(request.getTranscoded());
 		} else {
-			deleteInputFile(request.getIdStr(), request.getTConfig().getInputWorkingDir());
+			deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
 		}
 	}
 

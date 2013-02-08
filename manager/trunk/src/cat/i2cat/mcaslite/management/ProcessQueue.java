@@ -54,6 +54,7 @@ public class ProcessQueue {
 		if (index >= 0){
 			queue.remove(index);
 			queue.add(index, r);
+//			r.callback();
 		}
 	}
 	
@@ -65,6 +66,7 @@ public class ProcessQueue {
 				nProcess--;
 			}
 			notifyAll();
+//			r.callback();
 			return true;
 		} else {
 			return false;
@@ -113,6 +115,15 @@ public class ProcessQueue {
 	
 	synchronized public int size() {
 		return this.queue.size();
+	}
+	
+	synchronized public boolean hasSlot() {
+		boolean hasSlot = (nProcess < maxProcess) && nWait < (maxProcess - nProcess);
+		return hasSlot;
+	}
+	
+	synchronized List<TRequest> getAll(){
+		return new ArrayList<TRequest>(queue);
 	}
 	
 }
