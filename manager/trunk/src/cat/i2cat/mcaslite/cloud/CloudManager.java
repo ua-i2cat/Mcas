@@ -18,7 +18,7 @@ public class CloudManager implements Runnable, Cancellable {
 	private boolean cancelled = false;
 	private ProcessQueue queue;
 	//TODO: configuration
-	private int pollInterval = 20;
+	private int pollInterval = 10;
 	private int pollFactor = 2;
 	// End of configuration
 	private Map<String, CloudQueueMessage> messages = new ConcurrentHashMap<String, CloudQueueMessage>();
@@ -65,15 +65,17 @@ public class CloudManager implements Runnable, Cancellable {
 	}
 	
 	private void processMessage(CloudQueueMessage msg) throws MCASException{
-		try {
-			String[] keys = msg.getMessageContentAsString().split("\\*");
-			VideoEntity video = AzureUtils.getEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), VideoEntity.class);
-			if (TranscoHandler.getInstance().putRequest(video.videoEntityToTrequest())){
-				messages.put(video.videoEntityToTrequest().getId(), msg);
+		if (msg != null){
+			try {
+				String[] keys = msg.getMessageContentAsString().split("\\*");
+				VideoEntity video = AzureUtils.getEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), VideoEntity.class);
+				if (TranscoHandler.getInstance().putRequest(video.videoEntityToTrequest())){
+					messages.put(video.videoEntityToTrequest().getId(), msg);
+				}
+			} catch (Exception e){
+				e.printStackTrace();
+				throw new MCASException();
 			}
-		} catch (Exception e){
-			e.printStackTrace();
-			throw new MCASException();
 		}
 	}
 	

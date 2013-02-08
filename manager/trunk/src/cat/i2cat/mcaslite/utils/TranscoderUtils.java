@@ -3,6 +3,7 @@ package cat.i2cat.mcaslite.utils;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class TranscoderUtils {
 					throw new MCASException();
 				}
 			} else {
-				return dst;
+				return new URI(dst.getScheme(), dst.getHost() , Paths.get(dst.getPath(), id).toString(), null);
 			}
 		} catch (URISyntaxException e){
 			e.printStackTrace();

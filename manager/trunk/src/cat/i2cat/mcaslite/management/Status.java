@@ -27,6 +27,8 @@ public abstract class Status {
 	
 	public abstract int getInt();
 	
+	public abstract boolean isDone();
+	
 	public abstract boolean hasNext();;
 	
 	@Override

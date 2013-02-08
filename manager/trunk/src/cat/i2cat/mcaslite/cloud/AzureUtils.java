@@ -2,6 +2,7 @@ package cat.i2cat.mcaslite.cloud;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.EnumSet;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
@@ -31,6 +32,8 @@ public class AzureUtils {
 	   	    "AccountName=storagevideos;" + 
 	  	    "AccountKey=qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==";
 	private static final String cloudQueue = "videoqueue";
+	private static final String inputCont = "input";
+	private static final String outputCont = "output";
 
 	public static CloudQueueMessage retrieveMessage(int timeout) throws MCASException {
 		try {
@@ -112,11 +115,11 @@ public class AzureUtils {
 	}
 
 		
-	public static CloudBlob getFirstBlob(String containerName, String fileName) throws MCASException {
+	public static CloudBlob getFirstBlob(boolean input, String fileName) throws MCASException {
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference(containerName);
+			CloudBlobContainer container = blobClient.getContainerReference((input) ? inputCont : outputCont);
 			for (ListBlobItem blobItem : container.listBlobs(fileName)) {
 				if (blobItem instanceof CloudBlob) {
 					return (CloudBlob) blobItem;
@@ -129,13 +132,13 @@ public class AzureUtils {
 		throw new MCASException();
 	}
 	
-	public static BlobOutputStream fileToOutputStream(File file, String containerName, String fileName) throws MCASException{
+	public static BlobOutputStream fileToOutputStream(File file, boolean input, String fileName) throws MCASException{
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference(containerName);
+			CloudBlobContainer container = blobClient.getContainerReference((input) ? inputCont : outputCont);
 			if (container.exists()){
-				CloudBlockBlob blob = container.getBlockBlobReference(fileName);
+				CloudBlockBlob blob = container.getBlockBlobReference(trimBottomDir(fileName));
 				return blob.openOutputStream();
 			} else {
 				throw new MCASException();
@@ -146,13 +149,13 @@ public class AzureUtils {
 		}
 	}
 	
-	public static void byteArrayToBlob(byte[] byteArray, String containerName, String fileName) throws MCASException{
+	public static void byteArrayToBlob(byte[] byteArray, boolean input, String fileName) throws MCASException{
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference(containerName);
+			CloudBlobContainer container = blobClient.getContainerReference((input) ? inputCont : outputCont);
 			if (container.exists()){
-				CloudBlockBlob blob = container.getBlockBlobReference(fileName);
+				CloudBlockBlob blob = container.getBlockBlobReference(trimBottomDir(fileName));
 				blob.upload(new ByteArrayInputStream(byteArray), byteArray.length);
 			} else {
 				throw new MCASException();
@@ -192,13 +195,26 @@ public class AzureUtils {
 		}
 	}
 	
-	public static boolean deleteContainer(String containerName) throws MCASException {
-		try{
+	public static boolean deleteBlob(String blobName, boolean input) {
+		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			return blobClient.getContainerReference(containerName).deleteIfExists();
+			CloudBlobContainer container = blobClient.getContainerReference((input) ? inputCont : outputCont);
+			for (ListBlobItem blobItem : container.listBlobs(blobName)) {
+				if (blobItem instanceof CloudBlob) {
+					((CloudBlob) blobItem).delete();
+				} 
+			}
+			return true;
 		} catch (Exception e){
-			throw new MCASException();
+			return false;
 		}
+	}
+	
+	private static String trimBottomDir(String fileName) {
+		String emaNelif = (new StringBuilder(fileName)).reverse().toString();
+		emaNelif = Paths.get(emaNelif).getParent().toString();
+		fileName = (new StringBuilder(emaNelif)).reverse().toString();
+		return fileName;
 	}
 }

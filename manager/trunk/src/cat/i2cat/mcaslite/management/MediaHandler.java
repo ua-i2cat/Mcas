@@ -71,12 +71,6 @@ public class MediaHandler implements Cancellable {
 	
 	public void outputHandle() throws MCASException {
 		Iterator<Transco> i = request.getTranscoded().iterator();
-		try {
-			Uploader.createDestinationDir(request.getId(), new URI(request.getDst()));
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			throw new MCASException();
-		}
 		while(i.hasNext()){
 			Transco transco = i.next();
 			try {

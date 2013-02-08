@@ -18,6 +18,8 @@ public class VideoEntity extends TableServiceEntity {
     private String description;
     private String category;
     
+    private static final String OUTPUT = "output";
+    
     public VideoEntity() {
     	request = new TRequest();
     }
@@ -51,7 +53,7 @@ public class VideoEntity extends TableServiceEntity {
 			URI src = new URI(videoUploadedUrl);
 			scheme = src.getScheme();
 			request.setSrc((new URI("blob", src.getHost(), src.getPath(), null)).toString());
-			request.setDst((new URI("blob", src.getHost(), Paths.get("/",request.getId()).toString(), null)).toString());
+			request.setDst((new URI("blob", src.getHost(), Paths.get("/", OUTPUT).toString(), null)).toString());
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}

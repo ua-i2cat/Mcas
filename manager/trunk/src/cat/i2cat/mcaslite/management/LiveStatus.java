@@ -51,4 +51,11 @@ public class LiveStatus extends Status{
 		}
 		return true;
 	}
+	
+	public boolean isDone() {
+		if (status == DONE){
+			return true;
+		}
+		return false;
+	}
 }

@@ -54,7 +54,7 @@ public class Downloader implements Cancellable {
 	
 	private void blobToFile() throws MCASException {
 		try {
-			CloudBlob blob = AzureUtils.getFirstBlob(Paths.get(input.getPath()).getParent().toString(), Paths.get(input.getPath()).getFileName().toString());
+			CloudBlob blob = AzureUtils.getFirstBlob(true, Paths.get(input.getPath()).getFileName().toString());
 			inputStreamToFile(blob.openInputStream());
 		} catch (Exception e) {
 			e.printStackTrace();

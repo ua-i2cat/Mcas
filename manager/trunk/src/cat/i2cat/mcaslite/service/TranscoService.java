@@ -43,11 +43,11 @@ public class TranscoService {
 		managerTh.setDaemon(true);
 		managerTh.start();
 		
-//		client = CloudManager.getInstance();
-//		clientTh = new Thread(client);
-//		clientTh.setName("MainManager");
-//		clientTh.setDaemon(true);
-//		clientTh.start();
+		client = CloudManager.getInstance();
+		clientTh = new Thread(client);
+		clientTh.setName("MainManager");
+		clientTh.setDaemon(true);
+		clientTh.start();
 	}
 	
 	@POST
