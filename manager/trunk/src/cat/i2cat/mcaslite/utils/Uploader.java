@@ -86,6 +86,10 @@ public class Uploader implements Cancellable {
 				}
 			} else if (! destination.exists() && destination.getParentFile().canWrite()) {
 				inputStreamToFile(new FileInputStream(origin), destination);
+			} else if (! destination.exists() && ! destination.getParentFile().exists()) {
+				if (destination.getParentFile().getParentFile().canWrite() && destination.getParentFile().mkdirs()) {
+					inputStreamToFile(new FileInputStream(origin), destination);
+				}
 			} else if (destination.exists() && destination.isDirectory() && destination.canWrite()){
 				inputStreamToFile(new FileInputStream(origin), new File(destination.toString(), origin.getName()));
 			} else {

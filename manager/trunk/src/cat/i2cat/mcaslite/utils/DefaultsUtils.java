@@ -28,7 +28,6 @@ public class DefaultsUtils {
 		tConfig.setTranscoder(1);
 		tConfig.setName(DEFAULT);
 		tConfig.setLive(false);
-		
 	
 //		level.setaBitrate(128);
 //		level.setaChannels(2);
