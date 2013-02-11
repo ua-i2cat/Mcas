@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
+import cat.i2cat.mcaslite.config.model.THLSOptions;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
@@ -19,15 +20,16 @@ public class DefaultsUtils {
 		List<TLevel> levels = new ArrayList<TLevel>();
 		List<TProfile> profiles = new ArrayList<TProfile>();
 		TLevel level = new TLevel();
-		TProfile profile = new TProfile();
+		//TProfile profile = new TProfile();
+		THLSOptions lProfile = new THLSOptions(); 
 				
 		tConfig.setInputWorkingDir("input");
 		tConfig.setOutputWorkingDir("output");
 		tConfig.setThreads(1);
 		tConfig.setTimeout(3600*24);
 		tConfig.setTranscoder(1);
-		tConfig.setName(DEFAULT);
-		tConfig.setLive(false);
+		tConfig.setName(LIVE);
+		tConfig.setLive(true);
 	
 //		level.setaBitrate(128);
 //		level.setaChannels(2);
@@ -51,15 +53,17 @@ public class DefaultsUtils {
 //		level.setWidth(640);
 //		level.setQuality(33);
 //		levels.add(level);
+
 		
-		profile = new TProfile();
-		profile.setaCodec("libfaac");
-		profile.setFormat("mp4");
-		profile.setName(DEFAULT + "mp4");
-		profile.setvCodec("libx264");
-		profile.setLevels(levels);
-		profile.setAdditionalFlags("");
-		profiles.add(profile);
+		lProfile.setaCodec("libfaac");
+		lProfile.setFormat("mp4");
+		lProfile.setName(DEFAULT + "mp4");
+		lProfile.setvCodec("libx264");
+		lProfile.setLevels(levels);
+		lProfile.setAdditionalFlags("-profile:v baseline -map 0 -flags -global_header");
+		lProfile.setSegDuration(2);
+		lProfile.setWindowLength(3);
+		profiles.add(lProfile);
 		
 	
 		tConfig.setProfiles(profiles);

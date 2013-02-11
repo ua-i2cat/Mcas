@@ -9,6 +9,10 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
@@ -16,6 +20,8 @@ import cat.i2cat.mcaslite.management.Status;
 
 
 public class RequestUtils {
+	
+	public static final String CALLBACK = "http://localhost:8080/mcasWeb";
 
 	public static boolean isValidSrcUri(URI uri) {
 		try {
@@ -53,8 +59,12 @@ public class RequestUtils {
 			return false;
 		} else if (uri.getScheme().equals("ftp")) {
 			return false;
-		} else if (uri.getScheme().equals("scp")) {
-			return false;
+		} else if (uri.getScheme().equals("rtp")) {
+			if (uri.getPort() > 1024) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 		
 		return false;
@@ -79,10 +89,16 @@ public class RequestUtils {
 				jsonObj.put("uri", transco.getDestinationUri());
 				jsonAr.put(jsonObj);
 			}
-			return (new JSONObject()).put("destinationUris", jsonAr).toString();
+			return (new JSONObject()).put("uris", jsonAr).toString();
 		} catch (JSONException e){
 			e.printStackTrace();
 			throw new MCASException();
 		}
+	}
+
+	public static void callback(TRequest request) throws MCASException{
+		Client client = Client.create();
+		WebResource service = client.resource(CALLBACK);
+		service.path("/transco/update").type("application/json").post(ClientResponse.class, request.toJSON());
 	}
 }
