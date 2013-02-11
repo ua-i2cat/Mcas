@@ -12,7 +12,6 @@ import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.TranscoderUtils;
 import cat.i2cat.mcaslite.utils.Uploader;
 
 public class MediaHandler implements Cancellable {
@@ -32,19 +31,14 @@ public class MediaHandler implements Cancellable {
 	}
 
 	public void inputHandle() throws MCASException {
-		try {
-			MediaUtils.createOutputWorkingDir(request.getIdStr(), request.getTConfig().getOutputWorkingDir());
-			MediaUtils.createDestinationDir(request.getIdStr(), (new URI(request.getDst())).getPath());
-			copyToWorkingDir();
-		} catch(URISyntaxException e){
-			throw new MCASException();
-		} 
+		MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
+		copyToWorkingDir();
 	}
 	
 	public void initWatcher() throws IOException, MCASException, URISyntaxException{
-		String path = MediaUtils.createOutputWorkingDir(request.getIdStr(), request.getTConfig().getOutputWorkingDir());
-		String dst = MediaUtils.createDestinationDir(request.getIdStr(), (new URI(request.getDst())).getPath());
-		watcher = new Watcher(path, request.getTConfig(), new URI(TranscoderUtils.pathToUri(dst)));
+		String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
+		URI dst = Uploader.createDestinationDir(request.getId(), new URI(request.getDst()));
+		watcher = new Watcher(path, request.getTConfig(), dst);
 		(new Thread(watcher)).start();
 	}
 	
@@ -56,7 +50,7 @@ public class MediaHandler implements Cancellable {
 	
 	private void copyToWorkingDir() throws MCASException {
 		try {
-			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getIdStr(), request.getTConfig()));
+			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getId(), request.getTConfig()));
 			downloader.toWorkingDir();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -94,7 +88,8 @@ public class MediaHandler implements Cancellable {
 			if (! isCancelled()) {
 				if (request.getNumOutputs() > request.getTranscoded().size()){
 					if (request.isTranscodedEmpty()){
-						MediaUtils.deleteInputFile(request.getIdStr(), request.getTConfig().getInputWorkingDir());
+						MediaUtils.deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
+						Uploader.deleteDestination(request.getDst());
 						request.setError();
 					} else {
 						request.setPartialError();

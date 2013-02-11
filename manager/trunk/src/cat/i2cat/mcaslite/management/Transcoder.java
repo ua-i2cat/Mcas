@@ -33,8 +33,8 @@ public class Transcoder implements Runnable, Cancellable {
 		this.queue = queue;
 		this.request = request;
 		try {
-			this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getIdStr(), 
-					(new URI(request.getDst())).getPath(), new URI(request.getSrc()));
+			this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getId(), 
+					new URI(request.getDst()), new URI(request.getSrc()));
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}

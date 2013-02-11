@@ -16,8 +16,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Type;
-
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileStatus;
 import cat.i2cat.mcaslite.management.LiveStatus;
@@ -36,15 +34,14 @@ public class TRequest implements Serializable {
 	@Column(nullable = false, length = 255)
 	private String dst;
 	@Column(length = 100)
-	private String usr;
+	private String title;
 	@Transient
 	private String config;
 	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name="tConfig", referencedColumnName="id")
 	private TranscoderConfig tConfig;
 	@Id
-	@Type(type="uuid-char")
-	private UUID id = UUID.randomUUID();
+	private String id = UUID.randomUUID().toString();
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="request", referencedColumnName="id")
 	private List<Transco> transcoded = new ArrayList<Transco>();
@@ -168,28 +165,24 @@ public class TRequest implements Serializable {
 		this.config = config;
 	}
 
-	public String getUsr() {
-		return usr;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setUsr(String usr) {
-		this.usr = usr;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
-	public UUID getId() {
+	public String getId() {
 		return id;
 	}
 	
-	public void setId(UUID id){
+	public void setId(String id){
 		this.id = id;
 	}
 
-	@Transient
-	public String getIdStr() {
-		return id.toString();
-	}
-	
-	public static TRequest getEqualRequest(UUID id){
+
+	public static TRequest getEqualRequest(String id){
 		TRequest req = new TRequest();
 		req.id = id;
 		return req;
@@ -229,4 +222,13 @@ public class TRequest implements Serializable {
 		}
 		return false;
 	}
+
+//	@Transient
+//	public void callback() {
+//		try {
+//			RequestUtils.callback(this);
+//		} catch (MCASException e){
+//			e.printStackTrace();
+//		}
+//	}
 }

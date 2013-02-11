@@ -4,7 +4,6 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public abstract class Status {
 	
-	public static final int TODO 		= 0;
 	public static final int CREATED 	= 1;
 	public static final int QUEUED 		= 2;
 	public static final int PROCESS_M 	= 3;
@@ -28,11 +27,13 @@ public abstract class Status {
 	
 	public abstract int getInt();
 	
+	public abstract boolean isDone();
+	
+	public abstract boolean hasNext();;
+	
 	@Override
 	public String toString() {
 		switch(getInt()){
-			case TODO:
-				return "TODO";
 			case CREATED:
 				return "CREATED";
 			case QUEUED:

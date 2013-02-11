@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -62,7 +63,7 @@ public class Uploader implements Cancellable {
 			throw new MCASException();
 		}
 	}
-	
+
 	private void byteArrayToFile(byte[] byteArray, File dst, String fileName) throws MCASException {
 		try {
 			if (dst.exists() && dst.isDirectory() && dst.canWrite()) {
@@ -86,6 +87,10 @@ public class Uploader implements Cancellable {
 				}
 			} else if (! destination.exists() && destination.getParentFile().canWrite()) {
 				inputStreamToFile(new FileInputStream(origin), destination);
+			} else if (! destination.exists() && ! destination.getParentFile().exists()) {
+				if (destination.getParentFile().getParentFile().canWrite() && destination.getParentFile().mkdirs()) {
+					inputStreamToFile(new FileInputStream(origin), destination);
+				}
 			} else if (destination.exists() && destination.isDirectory() && destination.canWrite()){
 				inputStreamToFile(new FileInputStream(origin), new File(destination.toString(), origin.getName()));
 			} else {
@@ -125,6 +130,19 @@ public class Uploader implements Cancellable {
 		}
 	}
 	
+	private void deleteFile(String fileName, File dst) throws MCASException{
+		try {
+			if (dst.isDirectory() && dst.canWrite()){
+				Files.deleteIfExists(Paths.get(dst.getPath(), fileName));
+			} else {
+				Files.deleteIfExists(Paths.get(dst.getPath()));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+	}
+	
 	public void deleteContent(String content) throws MCASException{
 		if (destination.getScheme().equals("file")) {
 			deleteFile(content, new File(destination.getPath()));
@@ -139,19 +157,6 @@ public class Uploader implements Cancellable {
 			throw new MCASException();
 		} else if (destination.getScheme().equals("scp")) {
 			//TODO
-			throw new MCASException();
-		}
-	}
-	
-	private void deleteFile(String fileName, File dst) throws MCASException{
-		try {
-			if (dst.isDirectory() && dst.canWrite()){
-				Files.deleteIfExists(Paths.get(dst.getPath(), fileName));
-			} else {
-				Files.deleteIfExists(Paths.get(dst.getPath()));
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
 			throw new MCASException();
 		}
 	}
@@ -176,5 +181,71 @@ public class Uploader implements Cancellable {
 			setCancelled(true);
 		}
 		return true;
+	}
+
+	public static URI createDestinationDir(String id, URI destination) throws MCASException {
+		if (destination.getScheme().equals("file")) {
+			return makerDestinationDir(id, destination);
+		} else if (destination.getScheme().equals("http")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("https")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("ftp")) {
+		//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("scp")) {
+		//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("blob")) {
+			return destination;
+		} else {
+			throw new MCASException();
+		}
+	}
+	
+	private static URI makerDestinationDir(String id, URI dst) throws MCASException{
+		URI path = TranscoderUtils.getDestinationDir(dst, id);
+		if (! (new File(path)).mkdirs()){
+			throw new MCASException();
+		} else {
+			return path;
+		}
+	}
+
+	public static boolean deleteDestination(String dst) {
+		try {
+			URI destination = new URI(dst);
+			return deleteDestination(destination);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static boolean deleteDestination(URI destination){
+		if (destination.getScheme().equals("file")) {
+			try {
+				return Files.deleteIfExists(Paths.get(destination));
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		} else if (destination.getScheme().equals("http")) {
+			//TODO
+			return false;
+		} else if (destination.getScheme().equals("https")) {
+			//TODO
+			return false;
+		} else if (destination.getScheme().equals("ftp")) {
+		//TODO
+			return false;
+		} else if (destination.getScheme().equals("scp")) {
+			//TODO
+			return false;
+		} else {
+			return false;
+		}
 	}
 }
