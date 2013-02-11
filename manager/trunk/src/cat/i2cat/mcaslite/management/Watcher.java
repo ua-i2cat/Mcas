@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.management;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -8,12 +9,10 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 public class Watcher implements Runnable, Cancellable {
 	
@@ -24,11 +23,11 @@ public class Watcher implements Runnable, Cancellable {
 	private boolean done = false;
 	private boolean cancelled = false;
 	
-	public Watcher(String path, TranscoderConfig tConfig) throws IOException {
+	public Watcher(String path, TranscoderConfig tConfig, URI dst) throws IOException {
 		this.path = Paths.get(path);
 		watchService = fileSystem.newWatchService();
-		this.path.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-		this.fileEP = tConfig.getFileEP();
+		this.path.register(watchService, ENTRY_CREATE);
+		this.fileEP = tConfig.getFileEP(dst);
 	}
 
 	@Override
@@ -38,13 +37,22 @@ public class Watcher implements Runnable, Cancellable {
 			do {
 				watchKey = watchService.take();
 				for (WatchEvent<?> event : watchKey.pollEvents()){
-					fileEP.eventHandle(event, path);
+					try {
+						fileEP.eventHandle(event, path);
+					} catch (MCASException e) {
+						e.printStackTrace();
+					}
 				}
-			} while(! isDone() && ! isCancelled() && watchKey.reset());
+				watchKey.reset();
+			} while(! isDone() && ! isCancelled());
 		} catch (InterruptedException e){
 			e.printStackTrace();
-		} catch (MCASException e) {
-			e.printStackTrace();
+		} finally {
+			try {
+				watchService.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -54,13 +62,13 @@ public class Watcher implements Runnable, Cancellable {
 
 	@Override
 	public boolean cancel(boolean mayInterruptIfRunning) {
-		try {
-			watchService.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		setCancelled(true);
+		setDone(true);
 		return true;
+	}
+
+	private void setDone(boolean done) {
+		this.done = done;
 	}
 
 	@Override

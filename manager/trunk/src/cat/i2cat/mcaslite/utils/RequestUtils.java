@@ -28,6 +28,8 @@ public class RequestUtils {
 					HttpURLConnection httpCon = (HttpURLConnection) uri.toURL().openConnection();
 					httpCon.setRequestMethod("HEAD");
 					return (httpCon.getResponseCode() == HttpURLConnection.HTTP_OK);
+				} else if (uri.getScheme().equals("rtp")) {
+					return true;
 				}
 			}
 			return false;

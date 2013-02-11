@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class TDashOptions extends TProfile {
 	
 	@Transient
 	@Override
-	public FileEventProcessor getFileEP(){
+	public FileEventProcessor getFileEP(URI dst){
 		return new DashManifestManager();
 	}
 	
