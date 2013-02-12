@@ -46,13 +46,9 @@ public class TDashOptions extends TProfile {
 		cmd += " -out " + output +".mpd";
 		cmd += " " + input;
 		
-		try {
-			transcos.add(new Transco(cmd, (new File(output)).getParentFile().getPath(), 
-					TranscoderUtils.pathToUri((new File(dst)).getParentFile().getPath()), input));
-		} catch (MCASException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		transcos.add(new Transco(cmd, (new File(output)).getParentFile().getPath(), 
+					((new File(dst)).getParentFile().getPath()), input));
+		
 		return transcos;
 	}
 	
