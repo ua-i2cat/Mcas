@@ -19,11 +19,11 @@ public class Transco {
 	
 	@Column(nullable = false, length = 255)
 	private String inputFile;
-	@Column(nullable = false, length = 1000)
+	@Column(nullable = false, length = 2000)
 	private String command;
-	@Column(nullable = false, length = 255)
+	@Column(nullable = false, length = 500)
 	private String outputFile;
-	@Column(nullable = false, length = 255)
+	@Column(nullable = false, length = 500)
 	private String destinationUri;
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;

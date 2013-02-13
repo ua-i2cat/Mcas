@@ -131,7 +131,7 @@ public class TProfile implements Serializable{
 		return null;
 	}
 
-	public FileEventProcessor getFileEP(URI dst) {
+	public FileEventProcessor getFileEP(URI dst) throws MCASException {
 		// TODO Auto-generated method stub
 		return null;
 	}

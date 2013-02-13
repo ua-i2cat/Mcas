@@ -66,8 +66,8 @@ public class TranscoHandler implements Runnable {
 				} catch (Exception e) {
 					return false;
 				}
+				request.setCancelled();
 				if (queue.remove(request)) {
-					request.setCancelled();
 					requestDao.save(request);
 					return true;
 				}

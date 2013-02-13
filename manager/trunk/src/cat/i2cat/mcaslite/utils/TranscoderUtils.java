@@ -31,7 +31,7 @@ public class TranscoderUtils {
 	private static String getDestination(String id, String src, URI dst) throws MCASException {
 		try {
 			String path = FilenameUtils.concat(getDestinationDir(dst, id).getPath(), FilenameUtils.getBaseName(src));
-			return (new URI(dst.getScheme(), dst.getHost(), path, null)).toString();
+			return (new URI(dst.getScheme(), (dst.getHost() == null) ? "" : dst.getHost(), path, null)).toString();
 		} catch (URISyntaxException e){
 			throw new MCASException();
 		}
@@ -63,6 +63,9 @@ public class TranscoderUtils {
 	}
 	
 	public static String getOutputFile(String id, String outWorkDir, String src) throws MCASException{
+		if (src == null || src.isEmpty()){
+			src = "output";
+		}
 		return FilenameUtils.concat(
 				FilenameUtils.concat(MediaUtils.getWorkDir(outWorkDir), id), FilenameUtils.getBaseName(src));
 	}

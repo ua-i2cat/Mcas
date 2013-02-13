@@ -33,7 +33,7 @@ public class RequestUtils {
 					HttpURLConnection httpCon = (HttpURLConnection) uri.toURL().openConnection();
 					httpCon.setRequestMethod("HEAD");
 					return (httpCon.getResponseCode() == HttpURLConnection.HTTP_OK);
-				} else if (uri.getScheme().equals("rtp")) {
+				} else if (uri.getScheme().equals("rtp") || uri.getScheme().equals("rtsp")) {
 					return true;
 				}
 			}
@@ -59,12 +59,8 @@ public class RequestUtils {
 			return false;
 		} else if (uri.getScheme().equals("ftp")) {
 			return false;
-		} else if (uri.getScheme().equals("rtp")) {
-			if (uri.getPort() > 1024) {
-				return true;
-			} else {
-				return false;
-			}
+		} else if (uri.getScheme().equals("rtp") || uri.getScheme().equals("rtsp")) {
+			return true;
 		}
 		
 		return false;

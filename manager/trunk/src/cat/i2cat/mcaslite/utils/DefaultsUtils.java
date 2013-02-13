@@ -20,7 +20,7 @@ public class DefaultsUtils {
 		List<TLevel> levels = new ArrayList<TLevel>();
 		List<TProfile> profiles = new ArrayList<TProfile>();
 		TLevel level = new TLevel();
-		//TProfile profile = new TProfile();
+		TProfile profile = new TProfile();
 		THLSOptions lProfile = new THLSOptions(); 
 				
 		tConfig.setInputWorkingDir("input");
@@ -41,23 +41,40 @@ public class DefaultsUtils {
 		level = new TLevel();
 		level.setaBitrate(128);
 		level.setaChannels(2);
-		level.setName(DEFAULT);
+		level.setName("HLShigh");
 		level.setWidth(-1);
 		level.setQuality(23);
+		level.setMaxRate(800);
 		levels.add(level);
 		
-//		level = new TLevel();
-//		level.setaBitrate(128);
-//		level.setaChannels(2);
-//		level.setName(DEFAULT + "_640");
-//		level.setWidth(640);
-//		level.setQuality(33);
-//		levels.add(level);
-
+		level = new TLevel();
+		level.setaBitrate(128);
+		level.setaChannels(2);
+		level.setName("HLSmedium");
+		level.setWidth(-1);
+		level.setQuality(30);
+		level.setMaxRate(256);
+		levels.add(level);
 		
-		lProfile.setaCodec("libfaac");
+		level = new TLevel();
+		level.setaBitrate(128);
+		level.setaChannels(2);
+		level.setName("HLSlow");
+		level.setWidth(640);
+		level.setQuality(40);
+		level.setMaxRate(96);
+		levels.add(level);
+
+		profile.setaCodec("libfdk_aac");
+		profile.setFormat("mp4");
+		profile.setName(DEFAULT + "mp4");
+		profile.setvCodec("libx264");
+		profile.setLevels(levels);
+		profile.setAdditionalFlags("-profile:v baseline");
+		
+		lProfile.setaCodec("libfdk_aac");
 		lProfile.setFormat("mp4");
-		lProfile.setName(DEFAULT + "mp4");
+		lProfile.setName(LIVE + "mp4");
 		lProfile.setvCodec("libx264");
 		lProfile.setLevels(levels);
 		lProfile.setAdditionalFlags("-profile:v baseline -map 0 -flags -global_header");
@@ -66,6 +83,31 @@ public class DefaultsUtils {
 		profiles.add(lProfile);
 		
 	
+		tConfig.setProfiles(profiles);
+		DAO<TranscoderConfig> transcoConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+		transcoConfigDao.save(tConfig);
+		
+		profiles = new ArrayList<TProfile>();
+		profiles.add(profile);
+		
+		profile = new TProfile();
+		profile.setaCodec("libvorbis");
+		profile.setFormat("webm");
+		profile.setName(DEFAULT + "webm");
+		profile.setvCodec("libvpx");
+		profile.setLevels(levels);
+		profile.setAdditionalFlags("");
+		
+		profiles.add(profile);
+		
+		tConfig = new TranscoderConfig();
+		tConfig.setInputWorkingDir("input");
+		tConfig.setOutputWorkingDir("output");
+		tConfig.setThreads(1);
+		tConfig.setTimeout(3600*24);
+		tConfig.setTranscoder(1);
+		tConfig.setName(DEFAULT);
+		tConfig.setLive(false);
 		tConfig.setProfiles(profiles);
 		
 		return tConfig;

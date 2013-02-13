@@ -68,13 +68,13 @@ public class Transcoder implements Runnable, Cancellable {
 		try {
 			mediaH.initWatcher();
 			transcodify();
-			setDone(true);
-			if (! isCancelled()) {
-				stop(true);
-				//throw new MCASException();
+			if (request.isTranscodedEmpty() && ! isCancelled()){
+				manageError();
+			} else {
+				setDone(true);
+				request.increaseStatus();
+				queue.update(request);
 			}
-			request.increaseStatus();
-			queue.update(request);
 		} finally {
 			mediaH.cancelWatcher();
 		}
@@ -135,6 +135,7 @@ public class Transcoder implements Runnable, Cancellable {
 	
 	private void executeCommand(String cmd) throws MCASException{
 		CommandLine commandLine = CommandLine.parse(cmd.trim());
+		System.out.println(commandLine.toString());
 		executor.setWatchdog(new ExecuteWatchdog(request.getTConfig().getTimeout() * 1000));
 		executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
 		try {

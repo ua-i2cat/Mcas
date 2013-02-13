@@ -45,9 +45,58 @@ public class Uploader implements Cancellable {
 		}
 	}
 	
+	public void toDestinationUri(File origin, String subDir) throws MCASException{
+		if (destination.getScheme().equals("file")) {
+			if (new File(destination.getPath()).isDirectory()){
+				File file = new File(destination.getPath(), subDir);
+				if (! file.exists()){
+					file.mkdirs();
+				}
+				fileToFile(origin, file);
+			} else {
+				throw new MCASException();
+			}
+		} else if (destination.getScheme().equals("http")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("https")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("ftp")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("scp")) {
+			//TODO
+			throw new MCASException();
+		}
+	}
+	
+	
 	public void toDestinationUri(byte[] byteArray, String fileName) throws MCASException{
 		if (destination.getScheme().equals("file")) {
 			byteArrayToFile(byteArray, new File(destination.getPath()), fileName);
+		} else if (destination.getScheme().equals("http")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("https")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("ftp")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("scp")) {
+			//TODO
+			throw new MCASException();
+		}
+	}
+	
+	public void toDestinationUri(byte[] byteArray, String fileName, String subDir) throws MCASException{
+		if (destination.getScheme().equals("file")) {
+			File file = new File(destination.getPath(), subDir);
+			if (! file.exists()){
+				file.mkdirs();
+			}
+			byteArrayToFile(byteArray, file, fileName);
 		} else if (destination.getScheme().equals("http")) {
 			//TODO
 			throw new MCASException();
@@ -66,9 +115,9 @@ public class Uploader implements Cancellable {
 	private void byteArrayToFile(byte[] byteArray, File dst, String fileName) throws MCASException {
 		try {
 			if (dst.exists() && dst.isDirectory() && dst.canWrite()) {
-				inputStreamToFile(new ByteArrayInputStream(byteArray), new File(destination.getPath(), fileName));
+				inputStreamToFile(new ByteArrayInputStream(byteArray), new File(dst.getPath(), fileName));
 			} else if(! dst.exists() && dst.getParentFile().canWrite()) {
-				inputStreamToFile(new ByteArrayInputStream(byteArray), new File(destination.getPath()));
+				inputStreamToFile(new ByteArrayInputStream(byteArray), dst);
 			} else {
 				throw new MCASException();
 			}
@@ -145,6 +194,24 @@ public class Uploader implements Cancellable {
 	public void deleteContent(String content) throws MCASException{
 		if (destination.getScheme().equals("file")) {
 			deleteFile(content, new File(destination.getPath()));
+		} else if (destination.getScheme().equals("http")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("https")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("ftp")) {
+			//TODO
+			throw new MCASException();
+		} else if (destination.getScheme().equals("scp")) {
+			//TODO
+			throw new MCASException();
+		}
+	}
+	
+	public void deleteContent(String content, String subDir) throws MCASException{
+		if (destination.getScheme().equals("file")) {
+			deleteFile(content, new File(destination.getPath(), subDir));
 		} else if (destination.getScheme().equals("http")) {
 			//TODO
 			throw new MCASException();
