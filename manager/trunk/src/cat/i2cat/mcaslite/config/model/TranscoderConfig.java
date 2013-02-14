@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 
 
@@ -23,7 +24,7 @@ import cat.i2cat.mcaslite.management.FileEventProcessor;
 public class TranscoderConfig implements Serializable {
 	
 	private static final long serialVersionUID = 5142563434573216847L;
-	public static final int FFMPEG 		= 1;
+	public static final int FFMPEG = 1;
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
@@ -128,7 +129,7 @@ public class TranscoderConfig implements Serializable {
 	}
 	
 	@Transient
-	public FileEventProcessor getFileEP(URI dst){
+	public FileEventProcessor getFileEP(URI dst) throws MCASException{
 		return profiles.get(0).getFileEP(dst);
 	}
 	

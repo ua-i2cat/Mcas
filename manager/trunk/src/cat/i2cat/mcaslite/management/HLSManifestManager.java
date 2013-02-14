@@ -128,5 +128,11 @@ public class HLSManifestManager implements FileEventProcessor {
 			data.write(filename + "_" + i + ".ts\n");
 		}
 	}
+
+	@Override
+	public void processManifest(String output) throws MCASException {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
