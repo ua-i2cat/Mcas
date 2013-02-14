@@ -17,10 +17,11 @@ import java.nio.file.Paths;
 import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
+import cat.i2cat.mcaslite.management.XMLReader;
 
 public class Uploader implements Cancellable {
 
-	private static final int BLOCK_SIZE = 1024*100;
+	private static final int BLOCK_SIZE = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "uploader.ublocksize"));;
 	
 	private boolean cancelled = false;
 	private URI destination;

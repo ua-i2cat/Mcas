@@ -66,11 +66,26 @@ public class XMLReader {
 		
 	}
 	
-	
-	
-	
-	
-	
+	public static String getXMLParameter(String path, String param){
+		String returnItem = null;
+		try {
+			SAXBuilder builder = new SAXBuilder();
+			File xmlFile = new File(path);
+			Document doc;
+			
+			doc = (Document) builder.build(xmlFile);
+			Element el = doc.getRootElement();
+		
+			String[] children = param.split("\\.");	
+			for (String child : children){
+				el = el.getChild(child);
+			}	
+			returnItem =  el.getText();
+		} catch (JDOMException | IOException e) {
+			e.printStackTrace();
+		}
+		return returnItem;
+	}	
 }
 	
 	

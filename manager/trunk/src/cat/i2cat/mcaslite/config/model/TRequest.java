@@ -20,7 +20,6 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileStatus;
 import cat.i2cat.mcaslite.management.LiveStatus;
 import cat.i2cat.mcaslite.management.Status;
-import cat.i2cat.mcaslite.utils.DefaultsUtils;
 import cat.i2cat.mcaslite.utils.RequestUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 

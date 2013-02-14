@@ -28,5 +28,13 @@ public class TranscoService {
 		clientTh.setName("MainManager");
 		clientTh.setDaemon(true);
 		clientTh.start();
-		}		
+		
+		try {
+			clientTh.join();
+			managerTh.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}		
 }

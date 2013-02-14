@@ -8,15 +8,14 @@ import java.util.concurrent.ExecutionException;
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.DefaultsUtils;
+
 
 public class TranscoHandler implements Runnable {
 
 	private static final TranscoHandler INSTANCE = new TranscoHandler();
 	
-	private static final int MAX_REQUESTS = 1000;
-	private static final int MAX_PROCESS = 
-	
+	private int maxRequests; 
+	private int maxProcess; 
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
 	private List<SimpleEntry<String, Cancellable>> workers = new ArrayList<SimpleEntry<String, Cancellable>>();
@@ -24,8 +23,10 @@ public class TranscoHandler implements Runnable {
 	private boolean run = true;
 	
 	private TranscoHandler() {
+		maxRequests = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "maxreq"));
+		maxProcess = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "maxproc"));
 		queue = ProcessQueue.getInstance();
-		queue.setMaxProcess(DefaultsUtils.MAX_PROCESS);
+		queue.setMaxProcess(maxProcess);
 	}
 	
 	public static TranscoHandler getInstance(){
@@ -75,7 +76,7 @@ public class TranscoHandler implements Runnable {
 	}
 
 	public synchronized boolean putRequest(TRequest request) throws MCASException {
-		if (queue.size() < MAX_REQUESTS) {
+		if (queue.size() < maxRequests) {
 			request.initRequest();
 			request.increaseStatus();
 			queue.put(request);
