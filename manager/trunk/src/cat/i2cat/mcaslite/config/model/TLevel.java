@@ -27,7 +27,17 @@ public class TLevel implements Serializable{
 	private int aChannels;
 	@Column(nullable = false)
 	private int aBitrate;
+	@Column(nullable = false)
+	private int maxRate;
 	
+	public int getMaxRate() {
+		return maxRate;
+	}
+
+	public void setMaxRate(int maxRate) {
+		this.maxRate = maxRate;
+	}
+
 	public int getWidth() {
 		return width;
 	}
