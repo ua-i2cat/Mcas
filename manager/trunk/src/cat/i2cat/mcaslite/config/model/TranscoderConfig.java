@@ -35,10 +35,6 @@ public class TranscoderConfig implements Serializable {
 	private String outputWorkingDir;
 	@Column(nullable = false)
 	private int timeout;
-	@Column(nullable = false)
-	private int threads;
-	@Column(nullable = false)
-	private int transcoder;
 	
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="tConfig", referencedColumnName="id")
@@ -68,22 +64,6 @@ public class TranscoderConfig implements Serializable {
 	
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
-	}
-	
-	public int getThreads() {
-		return threads;
-	}
-	
-	public void setThreads(int threads) {
-		this.threads = threads;
-	}
-	
-	public int getTranscoder() {
-		return transcoder;
-	}
-	
-	public void setTranscoder(int transcoder) {
-		this.transcoder = transcoder;
 	}
 	
 	public List<TProfile> getProfiles() {

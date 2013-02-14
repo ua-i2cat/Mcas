@@ -2,6 +2,8 @@ package cat.i2cat.mcaslite.management;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -10,42 +12,63 @@ import org.jdom2.input.SAXBuilder;
 
 public class XMLReader {
 	
-	private static String inputFile;
+	private String path;
 	
 	public XMLReader(String input){
-		this.inputFile = input;
+		this.path = input;
 	}
-		
-	// FilenameUtils.concat(System.getProperty("mcas.home"),"META-INF/config.xml");
-		
-	public static String configGetter(String configAttribute){
+	
+	public Document getDoc(String docName){
+ 		Document doc=null;
+		try {
+			SAXBuilder builder = new SAXBuilder();
+			File xmlFile = new File(path.concat(docName));
+			doc = (Document) builder.build(xmlFile);
+		} catch (JDOMException | IOException e) {
+			e.printStackTrace();
+		}
+ 		return doc;
+	}
+	
+	public HashMap<String, Element> mapElements(List<Element> elements){
+		HashMap<String, Element> map = new HashMap<String, Element>();
+		for(Element el : elements){
+			map.put(el.getAttributeValue("name"), el);
+		}
+		return map;
+	} 
+	
+	public List<Element> getConfigs(Document doc){
+		Element el = doc.getRootElement();
+		return (el.getChild("transcoconfigs").getChildren());
+	}
+	
+	public List<Element> getRootChildrenElements(Document doc){
+		Element el = doc.getRootElement();
+		return el.getChildren();
+	}
+	
+	public static String getElementName(Element el){
+		return el.getAttributeValue("name");
+	}
+	
+	public static String getParameter(Element el, String configAttribute){
 			
 	String returnItem = null;
-			
-	try { 
-			SAXBuilder builder = new SAXBuilder();
-			File xmlFile = new File(inputFile);
-	 
-			Document doc = (Document) builder.build(xmlFile);
-			
-			Element el = doc.getRootElement();
-			String[] children = configAttribute.split("\\.");
-			
-			for (String child : children){
-					el = el.getChild(child);
-			}
-			
-			returnItem =  el.getText();
-				
-		  } catch (IOException io) {
-			io.printStackTrace();
-		  } catch (JDOMException e) {
-			e.printStackTrace();
-		  }
+	
+	String[] children = configAttribute.split("\\.");	
+	for (String child : children){
+		el = el.getChild(child);
+	}	
+	returnItem =  el.getText();
 		
 	return returnItem;
 		
 	}
+	
+	
+	
+	
 	
 	
 }

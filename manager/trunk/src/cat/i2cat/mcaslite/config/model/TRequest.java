@@ -200,11 +200,7 @@ public class TRequest implements Serializable {
 		try {
 			setTConfig(TranscoderUtils.loadConfig(config));
 		} catch (MCASException e){
-			try {
-				setTConfig(TranscoderUtils.loadConfig(DefaultsUtils.DEFAULT));
-			} catch (MCASException e1) {
-				setTConfig(DefaultsUtils.tConfigGetDefaults());
-			}
+			setTConfig(null);
 		}
 	}
 

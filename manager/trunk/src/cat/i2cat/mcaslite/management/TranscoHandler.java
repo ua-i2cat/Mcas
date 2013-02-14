@@ -15,6 +15,7 @@ public class TranscoHandler implements Runnable {
 	private static final TranscoHandler INSTANCE = new TranscoHandler();
 	
 	private static final int MAX_REQUESTS = 1000;
+	private static final int MAX_PROCESS = 
 	
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
@@ -25,9 +26,6 @@ public class TranscoHandler implements Runnable {
 	private TranscoHandler() {
 		queue = ProcessQueue.getInstance();
 		queue.setMaxProcess(DefaultsUtils.MAX_PROCESS);
-		if (DefaultsUtils.feedDefaultsNeeded()){
-			DefaultsUtils.tConfigFeedDefaults();
-		}
 	}
 	
 	public static TranscoHandler getInstance(){

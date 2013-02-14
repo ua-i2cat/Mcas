@@ -78,7 +78,7 @@ public class TranscoderUtils {
 			return tConfigDao.findByName(config);
 		}catch (Exception e){
 			e.printStackTrace();
-			return tConfigDao.findByName(DefaultsUtils.DEFAULT);
+			throw new MCASException();
 		}
 	}
 }

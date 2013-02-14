@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- config.xml -->
+<system>	
+	<maxreq>1000</maxreq>
+    <maxproc>2</maxproc>
+    <downloader>
+    	<dblocksize>102400</dblocksize>
+    	<httptimeout>30000</httptimeout>
+    </downloader>
+    <uploader>
+    	<ublocksize>102400</ublocksize>
+    </uploader>
+    <cloud>
+    
+    </cloud>
+    <callback>
+    
+  	</callback>
+  	
+	<transcoconfigs>
+		<tconfig name="config1">
+			<workdir>
+				<input>input</input>
+				<output>output</output>
+			</workdir>
+			<timeout>86400</timeout>
+			<live>true</live>
+   			<profiles>
+   				<profile name="profile1"/>
+   				<profile name="profile2"/>
+   			</profiles>
+   		</tconfig>
+   		<tconfig name="config2">
+			<workdir>
+				<input>input</input>
+				<output>output</output>
+			</workdir>
+			<timeout>36000</timeout>
+			<live>false</live>
+   			<profiles>
+   				<profile name="profile1"/>
+   				<profile name="profile2"/>
+   			</profiles>
+   		</tconfig>
+	</transcoconfigs>
+</system>

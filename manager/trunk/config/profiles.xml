@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- profiles.xml -->
+<profiles>
+	<profile name="profile1">
+		<format>mp4</format>
+		<vcodec>libx264</vcodec>
+		<acodec>libfaac</acodec>
+		<additionalflags></additionalflags>
+		<levels>
+			<level name="level1"/>
+			<level name="level2"/>
+		</levels>
+	</profile>
+	<profile name="profile2">
+		<format>webm</format>
+		<vcodec>webmcodec</vcodec>
+		<acodec>webmaudiocodec</acodec>
+		<additionalflags></additionalflags>
+		<levels>
+			<level name="level1"/>
+			<level name="level2"/>
+		</levels>
+	</profile>
+</profiles>
