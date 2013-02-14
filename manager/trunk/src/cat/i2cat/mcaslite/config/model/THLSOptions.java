@@ -8,8 +8,6 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import org.apache.commons.io.FilenameUtils;
-
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.management.HLSManifestManager;
@@ -29,10 +27,10 @@ public class THLSOptions extends TProfile {
 	@Override
 	 public List<Transco> commandBuilder(String input, String output, String dst) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
-		String cmd = "ffmpeg -i " + input;
+		String cmd = "ffmpeg -analyzeduration 10 -i " + input;
 		for (TLevel level : getLevels()){
 			cmd += " -vf scale="+ level.getWidth() +":-1";
-			cmd += " -maxrate " + level.getMaxRate() + " -g 30"; 
+			cmd += " -g 30 -qmin " + level.getQuality() + " -qmax " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 			cmd += " -c:v " + getvCodec() + " -c:a " + getaCodec() + " " + getAdditionalFlags();
 			cmd += " -f segment -segment_time_delta 0.03";

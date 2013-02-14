@@ -43,8 +43,8 @@ public class DefaultsUtils {
 		level.setaChannels(2);
 		level.setName("HLShigh");
 		level.setWidth(-1);
-		level.setQuality(23);
-		level.setMaxRate(800);
+		level.setQuality(25);
+		level.setMaxRate(8000);
 		levels.add(level);
 		
 		level = new TLevel();
@@ -52,17 +52,17 @@ public class DefaultsUtils {
 		level.setaChannels(2);
 		level.setName("HLSmedium");
 		level.setWidth(-1);
-		level.setQuality(30);
-		level.setMaxRate(256);
+		level.setQuality(33);
+		level.setMaxRate(4000);
 		levels.add(level);
 		
 		level = new TLevel();
 		level.setaBitrate(128);
 		level.setaChannels(2);
 		level.setName("HLSlow");
-		level.setWidth(640);
+		level.setWidth(-1);
 		level.setQuality(40);
-		level.setMaxRate(96);
+		level.setMaxRate(2000);
 		levels.add(level);
 
 		profile.setaCodec("libfdk_aac");
@@ -78,7 +78,7 @@ public class DefaultsUtils {
 		lProfile.setvCodec("libx264");
 		lProfile.setLevels(levels);
 		lProfile.setAdditionalFlags("-profile:v baseline -map 0 -flags -global_header");
-		lProfile.setSegDuration(2);
+		lProfile.setSegDuration(3);
 		lProfile.setWindowLength(3);
 		profiles.add(lProfile);
 		
