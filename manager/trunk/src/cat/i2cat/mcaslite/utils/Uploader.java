@@ -81,9 +81,16 @@ public class Uploader implements Cancellable {
 	
 	private void fileToFile(File origin, File destination) throws MCASException{
 		try {
-			if (origin.isDirectory() && (new File(destination.getPath())).isDirectory()){
-				for (String file : origin.list()){
-					inputStreamToFile(new FileInputStream(new File(origin, file)), new File(destination, file));
+			
+			if (origin.isDirectory()){
+				if (destination.isDirectory()){
+					for (String file : origin.list()){
+						inputStreamToFile(new FileInputStream(new File(origin, file)), new File(destination, file));
+					}
+				} else if (! destination.getParentFile().exists() && destination.getParentFile().mkdirs()){
+					for (String file : origin.list()){
+						inputStreamToFile(new FileInputStream(new File(origin, file)), new File(destination.getParentFile(), file));
+					}
 				}
 			} else if (! destination.exists() && destination.getParentFile().canWrite()) {
 				inputStreamToFile(new FileInputStream(origin), destination);

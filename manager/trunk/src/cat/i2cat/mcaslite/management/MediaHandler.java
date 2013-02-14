@@ -74,7 +74,7 @@ public class MediaHandler implements Cancellable {
 		while(i.hasNext()){
 			Transco transco = i.next();
 			try {
-				//request.getTConfig().getFileEP(new URI(transco.getDestinationUri())).processManifest(transco.getOutputFile());
+				request.getTConfig().getFileEP(new URI(transco.getDestinationUri())).processManifest(transco.getOutputFile());
 				uploader = new Uploader(new URI(transco.getDestinationUri()));
 				uploader.toDestinationUri(new File(transco.getOutputFile()));
 			} catch (Exception e) {

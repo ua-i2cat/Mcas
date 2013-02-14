@@ -12,10 +12,8 @@ import javax.persistence.Transient;
 
 import org.apache.commons.io.FilenameUtils;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.DashManifestManager;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
-import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
 @DiscriminatorValue("tDashOptions")
@@ -47,7 +45,7 @@ public class TDashOptions extends TProfile {
 		cmd += " " + input;
 		
 		transcos.add(new Transco(cmd, (new File(output)).getParentFile().getPath(), 
-					((new File(dst)).getParentFile().getPath()), input));
+					FilenameUtils.concat((new File(dst)).getParentFile().getPath(), FilenameUtils.getBaseName(output) + ".mpd"), input));
 		
 		return transcos;
 	}
