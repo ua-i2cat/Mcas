@@ -16,11 +16,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileStatus;
 import cat.i2cat.mcaslite.management.LiveStatus;
 import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.utils.DefaultsUtils;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
@@ -223,12 +228,32 @@ public class TRequest implements Serializable {
 		return false;
 	}
 
-//	@Transient
-//	public void callback() {
-//		try {
-//			RequestUtils.callback(this);
-//		} catch (MCASException e){
-//			e.printStackTrace();
-//		}
-//	}
+	@Transient
+	public void callback() {
+		try {
+			RequestUtils.callback(this);
+		} catch (MCASException e){
+			e.printStackTrace();
+		}
+	}
+
+	public String toJSON() throws MCASException {
+		try {
+			JSONObject json = new JSONObject();
+			json.put("id", id);
+			json.put("status", status.toString());
+			if (transcoded.size() > 0) {
+				JSONArray jsonAr = new JSONArray();
+				for(Transco transco : transcoded){
+					JSONObject jsonObj = new JSONObject();
+					jsonObj.put("uri", transco.getDestinationUri());
+					jsonAr.put(jsonObj);
+				}
+				json.put("uris", jsonAr);
+			}
+			return json.toString();
+		} catch (JSONException e){
+			throw new MCASException();
+		}
+	}
 }
