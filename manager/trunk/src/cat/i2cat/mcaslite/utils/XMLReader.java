@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.management;
+package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
 import java.io.IOException;

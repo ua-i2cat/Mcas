@@ -97,8 +97,12 @@ public class RequestUtils {
 		try {
 			if (request.getStatus().isDone()) {
 				if (AzureUtils.updateVideoEntity(request)) {
-					AzureUtils.deleteQueueMessage(CloudManager.getInstance().popCloudMessage(request.getId()));
+					AzureUtils.deleteQueueMessage(
+							CloudManager.getInstance().popCloudMessage(request.getId()),
+							XMLReader.getXMLParameter("config/config.xml", "cloud.processqueue"));
 				}
+			} else {
+				AzureUtils.updateVideoEntity(request);
 			}
 		} catch (Exception e){
 			e.printStackTrace();

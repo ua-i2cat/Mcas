@@ -31,11 +31,11 @@ public class AzureUtils {
 		    "DefaultEndpointsProtocol=http;" + 
 	   	    "AccountName=storagevideos;" + 
 	  	    "AccountKey=qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==";
-	private static final String cloudQueue = "videoqueue";
-	private static final String inputCont = "input";
-	private static final String outputCont = "output";
+	//private static final String cloudQueue = "videoqueue";
+	//private static final String inputCont = "input";
+	//private static final String outputCont = "output";
 
-	public static CloudQueueMessage retrieveMessage(int timeout) throws MCASException {
+	public static CloudQueueMessage retrieveMessage(int timeout, String cloudQueue) throws MCASException {
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
@@ -47,7 +47,7 @@ public class AzureUtils {
 		} 
 	}
 	
-	public static CloudQueueMessage peekMessage() throws MCASException {
+	public static CloudQueueMessage peekMessage(String cloudQueue) throws MCASException {
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
@@ -59,7 +59,7 @@ public class AzureUtils {
 		} 
 	}
 	
-	public static void deleteQueueMessage(CloudQueueMessage msg) throws MCASException{
+	public static void deleteQueueMessage(CloudQueueMessage msg, String cloudQueue) throws MCASException{
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
@@ -71,7 +71,7 @@ public class AzureUtils {
 		} 
 	}
 	
-	public static void updateMessage(CloudQueueMessage message, boolean newContent, int timeout) throws MCASException  {
+	public static void updateMessage(CloudQueueMessage message, boolean newContent, int timeout, String cloudQueue) throws MCASException  {
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
@@ -115,11 +115,11 @@ public class AzureUtils {
 	}
 
 		
-	public static CloudBlob getFirstBlob(boolean input, String fileName) throws MCASException {
+	public static CloudBlob getFirstBlob(String cloudCont, String fileName) throws MCASException {
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference((input) ? inputCont : outputCont);
+			CloudBlobContainer container = blobClient.getContainerReference(cloudCont);
 			for (ListBlobItem blobItem : container.listBlobs(fileName)) {
 				if (blobItem instanceof CloudBlob) {
 					return (CloudBlob) blobItem;
@@ -132,11 +132,11 @@ public class AzureUtils {
 		throw new MCASException();
 	}
 	
-	public static BlobOutputStream fileToOutputStream(File file, boolean input, String fileName) throws MCASException{
+	public static BlobOutputStream fileToOutputStream(File file, String cloudCont, String fileName) throws MCASException{
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference((input) ? inputCont : outputCont);
+			CloudBlobContainer container = blobClient.getContainerReference(cloudCont);
 			if (container.exists()){
 				CloudBlockBlob blob = container.getBlockBlobReference(trimBottomDir(fileName));
 				return blob.openOutputStream();
@@ -149,11 +149,11 @@ public class AzureUtils {
 		}
 	}
 	
-	public static void byteArrayToBlob(byte[] byteArray, boolean input, String fileName) throws MCASException{
+	public static void byteArrayToBlob(byte[] byteArray, String cloudCont, String fileName) throws MCASException{
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference((input) ? inputCont : outputCont);
+			CloudBlobContainer container = blobClient.getContainerReference(cloudCont);
 			if (container.exists()){
 				CloudBlockBlob blob = container.getBlockBlobReference(trimBottomDir(fileName));
 				blob.upload(new ByteArrayInputStream(byteArray), byteArray.length);
@@ -188,18 +188,18 @@ public class AzureUtils {
 		try{ 
 			String[] keys = CloudManager.getInstance().getCloudMessage(request.getId()).getMessageContentAsString().split("\\*");
 			VideoEntity video = AzureUtils.getEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), VideoEntity.class);
-			video.setTRequest(request);
+			video.updateFromRequest(request);
 			return updateEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), video);
 		} catch (Exception e){
 			return false;
 		}
 	}
 	
-	public static boolean deleteBlob(String blobName, boolean input) {
+	public static boolean deleteBlob(String blobName, String cloudCont) {
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference((input) ? inputCont : outputCont);
+			CloudBlobContainer container = blobClient.getContainerReference(cloudCont);
 			for (ListBlobItem blobItem : container.listBlobs(blobName)) {
 				if (blobItem instanceof CloudBlob) {
 					((CloudBlob) blobItem).delete();

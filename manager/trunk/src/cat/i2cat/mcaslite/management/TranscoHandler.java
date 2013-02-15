@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.XMLReader;
 
 
 public class TranscoHandler implements Runnable {

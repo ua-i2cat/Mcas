@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
-import cat.i2cat.mcaslite.management.XMLReader;
 
 public class Uploader implements Cancellable {
 
@@ -109,11 +108,13 @@ public class Uploader implements Cancellable {
 		try {
 			if (origin.isDirectory()){
 				for (String file : origin.list()){
-					fileToOutputStream(AzureUtils.fileToOutputStream(new File(origin, file), false, 
-						Paths.get(destination.getPath(), file).toString()), new File(file));
+					fileToOutputStream(AzureUtils.fileToOutputStream(new File(origin, file), 
+						Paths.get(destination.getPath()).getName(0).toString(), file), new File(file));
 				}
 			} else if (origin.exists()){
-				fileToOutputStream(AzureUtils.fileToOutputStream(origin, false, destination.getPath()), origin);
+				fileToOutputStream(AzureUtils.fileToOutputStream(origin, 
+						Paths.get(destination.getPath()).getName(0).toString(), 
+						Paths.get(destination.getPath()).getFileName().toString()), origin);
 			} else {
 				throw new MCASException();
 			}
@@ -123,7 +124,9 @@ public class Uploader implements Cancellable {
 	}
 	
 	private void byteArrayToBlob(byte[] byteArray, String fileName) throws MCASException {
-		AzureUtils.byteArrayToBlob(byteArray, false, fileName);
+		AzureUtils.byteArrayToBlob(byteArray, 
+				Paths.get(destination.getPath()).getName(0).toString(), 
+				fileName);
 	}
 	
 	private void inputStreamToFile(InputStream in, File destination) throws IOException {
@@ -301,7 +304,8 @@ public class Uploader implements Cancellable {
 			//TODO
 			return false;
 		} else if (destination.getScheme().equals("blob")) {
-			return AzureUtils.deleteBlob(destination.getPath(), false);
+			return AzureUtils.deleteBlob(destination.getPath(), 
+				Paths.get(destination.getPath()).getFileName().toString());
 		} else {
 			return false;
 		}

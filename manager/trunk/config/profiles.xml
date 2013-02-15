@@ -5,7 +5,7 @@
 		<format>mp4</format>
 		<vcodec>libx264</vcodec>
 		<acodec>libfaac</acodec>
-		<additionalflags></additionalflags>
+		<additionalFlags></additionalFlags>
 		<levels>
 			<level name="level1"/>
 			<level name="level2"/>
@@ -15,7 +15,7 @@
 		<format>webm</format>
 		<vcodec>webmcodec</vcodec>
 		<acodec>webmaudiocodec</acodec>
-		<additionalflags></additionalflags>
+		<additionalFlags></additionalFlags>
 		<levels>
 			<level name="level1"/>
 			<level name="level2"/>

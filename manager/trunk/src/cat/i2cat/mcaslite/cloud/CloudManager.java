@@ -6,10 +6,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.microsoft.windowsazure.services.queue.client.CloudQueueMessage;
 
+import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
 import cat.i2cat.mcaslite.management.ProcessQueue;
 import cat.i2cat.mcaslite.management.TranscoHandler;
+import cat.i2cat.mcaslite.utils.XMLReader;
 
 public class CloudManager implements Runnable, Cancellable {
 	
@@ -17,10 +19,13 @@ public class CloudManager implements Runnable, Cancellable {
 	
 	private boolean cancelled = false;
 	private ProcessQueue queue;
-	//TODO: configuration
+
 	private int pollInterval = 10;
 	private int pollFactor = 2;
-	// End of configuration
+
+	private String videoQueue = XMLReader.getXMLParameter("config/config.xml", "cloud.processqueue");
+	private String cancelQueue = XMLReader.getXMLParameter("config/config.xml", "cloud.cancelqueue");
+	
 	private Map<String, CloudQueueMessage> messages = new ConcurrentHashMap<String, CloudQueueMessage>();
 
 	private CloudManager(){
@@ -36,8 +41,9 @@ public class CloudManager implements Runnable, Cancellable {
 		while(! cancelled){
 			try {
 				if (queue.hasSlot()){
-					processMessage(AzureUtils.retrieveMessage(pollFactor*pollInterval));
+					processMessage(AzureUtils.retrieveMessage(pollFactor*pollInterval, videoQueue));
 				}
+				processCancelMessage(AzureUtils.peekMessage(cancelQueue));
 				Thread.sleep(pollInterval*1000);
 				updateStatus();
 			} catch (InterruptedException e) {
@@ -48,6 +54,23 @@ public class CloudManager implements Runnable, Cancellable {
 		}
 	}
 	
+	private void processCancelMessage(CloudQueueMessage msg) throws MCASException {
+		if (msg != null){
+			try {
+				String id = msg.getMessageContentAsString();
+				if (messages.containsKey(id)){
+					if (TranscoHandler.getInstance().cancelRequest(
+						TRequest.getEqualRequest(id), true)){
+						//AzureUtils.
+					}
+				}
+			} catch (Exception e){
+				e.printStackTrace();
+				throw new MCASException();
+			}
+		}
+	}
+
 	@Override
 	public boolean cancel(boolean mayInterruptIfRunning) {
 		cancelled = true;
@@ -69,8 +92,8 @@ public class CloudManager implements Runnable, Cancellable {
 			try {
 				String[] keys = msg.getMessageContentAsString().split("\\*");
 				VideoEntity video = AzureUtils.getEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), VideoEntity.class);
-				if (TranscoHandler.getInstance().putRequest(video.videoEntityToTrequest())){
-					messages.put(video.videoEntityToTrequest().getId(), msg);
+				if (TranscoHandler.getInstance().putRequest(video.toRequest())){
+					messages.put(video.toRequest().getId(), msg);
 				}
 			} catch (Exception e){
 				e.printStackTrace();
@@ -84,7 +107,7 @@ public class CloudManager implements Runnable, Cancellable {
 		while(it.hasNext()){
 			String id = it.next();
 			if (TranscoHandler.getInstance().getStatus(id).hasNext()){
-				AzureUtils.updateMessage(messages.get(id), false, pollFactor*pollInterval) ;
+				AzureUtils.updateMessage(messages.get(id), false, pollFactor*pollInterval, videoQueue) ;
 			}
 		}
 	}

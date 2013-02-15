@@ -16,12 +16,13 @@ import com.microsoft.windowsazure.services.blob.client.CloudBlob;
 import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
-import cat.i2cat.mcaslite.management.XMLReader;
 
 public class Downloader implements Cancellable {
 
 	private static final int BLOCK_SIZE = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "downloader.dblocksize"));
 	private static final int HTTP_TIMEOUT = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "downloader.httptimeout"));
+	private static final String CLOUD_CONTAINER = XMLReader.getXMLParameter("config/config.xml", "cloud.container");
+	
 	
 	private boolean cancelled = false;
 	private URI input;
@@ -55,7 +56,7 @@ public class Downloader implements Cancellable {
 	
 	private void blobToFile() throws MCASException {
 		try {
-			CloudBlob blob = AzureUtils.getFirstBlob(true, Paths.get(input.getPath()).getFileName().toString());
+			CloudBlob blob = AzureUtils.getFirstBlob(CLOUD_CONTAINER, Paths.get(input.getPath()).getFileName().toString());
 			inputStreamToFile(blob.openInputStream());
 		} catch (Exception e) {
 			e.printStackTrace();

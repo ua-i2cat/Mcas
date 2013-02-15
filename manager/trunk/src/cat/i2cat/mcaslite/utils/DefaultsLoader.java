@@ -11,7 +11,6 @@ import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.management.XMLReader;
 
 
 public class DefaultsLoader {
@@ -32,7 +31,7 @@ public class DefaultsLoader {
 			XMLReader reader = new XMLReader(path);
 			List<Element> configElements = reader.getConfigs(reader.getDoc("config.xml"));
 			for (Element el : configElements){
-				configs.add(setConfig(el));
+				configs.add(getConfig(el));
 			}
 		}
 		return configs;
@@ -44,7 +43,7 @@ public class DefaultsLoader {
 			XMLReader reader = new XMLReader(path);
 			List<Element> profileElements = reader.getRootChildrenElements(reader.getDoc("profiles.xml"));
 			for(Element el : profileElements){
-				allProfiles.put(el.getAttributeValue("name"), setProfile(el));			
+				allProfiles.put(el.getAttributeValue("name"), getProfile(el));			
 			}
 		}
 		return allProfiles;
@@ -62,7 +61,7 @@ public class DefaultsLoader {
 		return allLevels;
 	}
 	
-	private TranscoderConfig setConfig(Element config){
+	private TranscoderConfig getConfig(Element config){
 		
 		TranscoderConfig tConfig = new TranscoderConfig();
 		tConfig.setName(config.getAttributeValue("name"));
@@ -71,12 +70,12 @@ public class DefaultsLoader {
 		tConfig.setTimeout(Integer.parseInt(XMLReader.getParameter(config, "timeout")));
 		tConfig.setLive(Boolean.parseBoolean(XMLReader.getParameter(config, "live")));
 		
-		tConfig.setProfiles(setConfigProfiles(getConfigProfilesName(config)));
+		tConfig.setProfiles(getConfigProfiles(getConfigProfilesName(config)));
 		
 		return tConfig;
 	}
 	
-	private List<TProfile> setConfigProfiles(List<String> configProfiles){
+	private List<TProfile> getConfigProfiles(List<String> configProfiles){
 		List<TProfile> tProfiles = new ArrayList<TProfile>();
 		for(String name : configProfiles){
 			tProfiles.add(getAllProfiles().get(name));
@@ -84,20 +83,20 @@ public class DefaultsLoader {
 		return tProfiles;
 	}
 	
-	private TProfile setProfile(Element profile){
+	private TProfile getProfile(Element profile){
 		TProfile tProfile = new TProfile();
 		
 		tProfile.setFormat(XMLReader.getParameter(profile, "format"));
 		tProfile.setaCodec(XMLReader.getParameter(profile, "acodec"));
 		tProfile.setvCodec(XMLReader.getParameter(profile, "vcodec"));
 		tProfile.setName(XMLReader.getElementName(profile) + XMLReader.getParameter(profile, "format"));
-		tProfile.setAdditionalFlags(XMLReader.getParameter(profile, "additionalflags"));
-		tProfile.setLevels(setProfileLevels(getProfileLevelsName(profile)));
+		tProfile.setAdditionalFlags(XMLReader.getParameter(profile, "additionalFlags"));
+		tProfile.setLevels(getProfileLevels(getProfileLevelsName(profile)));
 		
 		return tProfile;
 	}
 	
-	private List<TLevel> setProfileLevels(List<String> profileLevels){
+	private List<TLevel> getProfileLevels(List<String> profileLevels){
 		List<TLevel> tLevels = new ArrayList<TLevel>();
 		for(String name : profileLevels){
 			Map<String, TLevel> levels = getAllLevels();
