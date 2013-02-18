@@ -24,16 +24,23 @@ public class MediaUtils {
 		}
 	}
 	
-	public static boolean deleteInputFile(String requestId, String inputWorkingDir){
-		return deleteFile(FilenameUtils.concat(getWorkDir(inputWorkingDir), requestId));
+	public static boolean deleteInputFile(String requestId, String inputWorkingDir) {
+		try {
+			return deleteFile(FilenameUtils.concat(getWorkDir(inputWorkingDir), requestId));
+		} catch (MCASException e) {
+			return false;
+		}
 	}
 	
-	public static String getWorkDir(String workDir){
+	public static String getWorkDir(String workDir) throws MCASException{
 		File file = new File(workDir);
-		if (! file.isAbsolute()){
-			return FilenameUtils.concat(System.getProperty("mcas.home"), workDir);
+		if (file.isDirectory() && file.canWrite()){
+			return workDir;
 		}
-		return file.getPath();
+		else if(!file.exists() && file.getParentFile().canWrite() && file.mkdirs()){
+			return workDir;
+		}
+		throw new MCASException();
 	}
 	
 	private static String createWorkDir(String workDir) throws MCASException{
@@ -83,7 +90,7 @@ public class MediaUtils {
 		}
 	}
 	
-	public static synchronized void clean(TRequest request){
+	public static synchronized void clean(TRequest request) {
 		if (request.getTranscoded().size() > 0){
 			cleanTranscos(request.getTranscoded());
 		} else {

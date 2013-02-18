@@ -26,7 +26,6 @@ public class VideoEntity extends TableServiceEntity {
     private String cancelId;
     private String tenantContainer;
     
-    
     public VideoEntity() {}
     
     public VideoEntity(String partitionKey, String rowKey) {

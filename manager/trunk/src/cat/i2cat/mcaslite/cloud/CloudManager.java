@@ -10,6 +10,7 @@ import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
 import cat.i2cat.mcaslite.management.ProcessQueue;
+import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.management.TranscoHandler;
 import cat.i2cat.mcaslite.utils.XMLReader;
 
@@ -46,11 +47,9 @@ public class CloudManager implements Runnable, Cancellable {
 				processCancelMessage(AzureUtils.peekMessage(cancelQueue));
 				Thread.sleep(pollInterval*1000);
 				updateStatus();
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-			} catch (MCASException e) {
-				e.printStackTrace();
-			}
+			} 
 		}
 	}
 	
@@ -92,8 +91,9 @@ public class CloudManager implements Runnable, Cancellable {
 			try {
 				String[] keys = msg.getMessageContentAsString().split("\\*");
 				VideoEntity video = AzureUtils.getEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), VideoEntity.class);
-				if (TranscoHandler.getInstance().putRequest(video.toRequest())){
-					messages.put(video.toRequest().getId(), msg);
+				TRequest request = video.toRequest();
+				if (TranscoHandler.getInstance().putRequest(request)){
+					messages.put(request.getId(), msg);
 				}
 			} catch (Exception e){
 				e.printStackTrace();
@@ -106,7 +106,8 @@ public class CloudManager implements Runnable, Cancellable {
 		Iterator<String> it = messages.keySet().iterator();
 		while(it.hasNext()){
 			String id = it.next();
-			if (TranscoHandler.getInstance().getStatus(id).hasNext()){
+			Status status = TranscoHandler.getInstance().getStatus(id);
+			if (status != null && status.hasNext()){
 				AzureUtils.updateMessage(messages.get(id), false, pollFactor*pollInterval, videoQueue) ;
 			}
 		}
