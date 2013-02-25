@@ -32,7 +32,6 @@ public class TranscoService {
 	private TranscoHandler transcoH;
 	private Thread managerTh;
 
-	
 	public TranscoService() {
 		transcoH = TranscoHandler.getInstance();
 		managerTh = new Thread(transcoH);
