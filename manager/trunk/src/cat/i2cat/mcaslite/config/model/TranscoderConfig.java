@@ -101,11 +101,7 @@ public class TranscoderConfig implements Serializable {
 	
 	@Transient
 	public int getNumOutputs(){
-		int i = 0;
-		for(TProfile profile : profiles){
-			i += profile.getNumOutputs();
-		}
-		return i;
+		return profiles.size();
 	}
 	
 	@Transient

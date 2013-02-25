@@ -7,20 +7,22 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
 
 public class NewUploader implements Cancellable {
 	
-private static final int BLOCK_SIZE = 102400;
-	
+	private int blockSize;
 	private boolean cancelled = false;
 	private URI destination;
 	private Path origin;
 	private boolean done = false;
 	
 	public NewUploader(Path origin, URI destination){
+		String path = Paths.get(System.getProperty("mcas.home"), "WEB-INF/config.xml").toString();
+		this.blockSize = Integer.parseInt(XMLReader.getXMLParameter(path, "uploader.ublocksize"));
 		this.origin = origin;
 		this.destination = destination;
 	}
@@ -35,20 +37,19 @@ private static final int BLOCK_SIZE = 102400;
 			} else if (file.exists() && !file.isDirectory()){
 				fileToOutputStream(Connection.getOutputStream(destination, file.getName()), file);
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new MCASException();
 		}
 	}
 	
 	
-	private void fileToOutputStream(OutputStream out, File origin) throws IOException, MCASException {
+	private void fileToOutputStream(OutputStream out, File origin) throws MCASException, IOException {
 		FileInputStream reader = null;
 		BufferedOutputStream outStream = null;
 		try {
 			reader = new FileInputStream(origin);
 			outStream = new BufferedOutputStream(out);
-			byte[] buffer = new byte[BLOCK_SIZE];
+			byte[] buffer = new byte[blockSize];
 			int bytesRead = 0;
 			while ((bytesRead = reader.read(buffer)) != -1) {
 		        if (isCancelled()){

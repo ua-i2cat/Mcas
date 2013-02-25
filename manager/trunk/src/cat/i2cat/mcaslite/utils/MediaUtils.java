@@ -2,6 +2,7 @@ package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -83,7 +84,7 @@ public class MediaUtils {
 
 	private static void cleanTransco(Transco transco){
 		deleteFile(transco.getInputFile());
-		deleteFile(transco.getOutputDir());
+		deleteFile(Paths.get(transco.getOutputDir()).getParent().toString());
 	}
 	
 	private static void cleanTranscos(List<Transco> transcos){

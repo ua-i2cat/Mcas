@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.management;
 
+import java.nio.file.Paths;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,8 +16,8 @@ public class TranscoHandler implements Runnable {
 
 	private static final TranscoHandler INSTANCE = new TranscoHandler();
 	
-	private int maxRequests; 
-	private int maxProcess; 
+	private int maxRequests;
+	
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
 	private List<SimpleEntry<String, Cancellable>> workers = new ArrayList<SimpleEntry<String, Cancellable>>();
@@ -24,10 +25,10 @@ public class TranscoHandler implements Runnable {
 	private boolean run = true;
 	
 	private TranscoHandler() {
-		maxRequests = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "maxreq"));
-		maxProcess = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "maxproc"));
+		String path = Paths.get(System.getProperty("mcas.home"), "WEB-INF/config.xml").toString();
+		maxRequests = Integer.parseInt(XMLReader.getXMLParameter(path, "maxreq"));
 		queue = ProcessQueue.getInstance();
-		queue.setMaxProcess(maxProcess);
+		queue.setMaxProcess(Integer.parseInt(XMLReader.getXMLParameter(path, "maxproc")));
 	}
 	
 	public static TranscoHandler getInstance(){

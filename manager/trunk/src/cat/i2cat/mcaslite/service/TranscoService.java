@@ -2,26 +2,25 @@ package cat.i2cat.mcaslite.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.sun.jersey.spi.resource.Singleton;
-
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.management.TranscoHandler;
+import cat.i2cat.mcaslite.utils.DefaultsLoader;
 import cat.i2cat.mcaslite.utils.RequestUtils;
+
+import com.sun.jersey.spi.resource.Singleton;
 
 @Singleton
 @Path("/transco")
@@ -33,6 +32,8 @@ public class TranscoService {
 	private Thread managerTh;
 
 	public TranscoService() {
+		System.out.println("DEBUG: --> " + System.getProperty("mcas.home"));
+		(new DefaultsLoader(Paths.get(System.getProperty("mcas.home"), "WEB-INF").toString())).tConfigFeedDefaults();
 		transcoH = TranscoHandler.getInstance();
 		managerTh = new Thread(transcoH);
 		managerTh.setName("MainManager");
@@ -56,39 +57,39 @@ public class TranscoService {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("System overloaded, wait and retry.").build();
 		}
 	}
-
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getStatus(@QueryParam("id") String id){
-		try {
-			Status status = transcoH.getStatus(id);
-			if (status == null){
-				throw new WebApplicationException(Response.Status.NOT_FOUND);
-			} else {
-				return status.toString();
-			}
-		} catch (MCASException e){
-			e.printStackTrace();
-			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
-	@GET
-	@Path("uris")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String getDestinationUris(@QueryParam("id") String id){
-		try {
-			TRequest request = transcoH.getRequest(id);
-			if (request == null){
-				throw new WebApplicationException(Response.Status.NOT_FOUND);
-			} else {
-				return RequestUtils.destinationJSONbuilder(request);
-			}
-		} catch (MCASException e) {
-			e.printStackTrace();
-			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-		}	
-	}
+//TODO Merge the two commented methods in only one that returns in a json id, status and uris
+//	@GET
+//	@Produces(MediaType.TEXT_PLAIN)
+//	public String getStatus(@QueryParam("id") String id){
+//		try {
+//			Status status = transcoH.getStatus(id);
+//			if (status == null){
+//				throw new WebApplicationException(Response.Status.NOT_FOUND);
+//			} else {
+//				return status.toString();
+//			}
+//		} catch (MCASException e){
+//			e.printStackTrace();
+//			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+//	
+//	@GET
+//	@Path("uris")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public String getDestinationUris(@QueryParam("id") String id){
+//		try {
+//			TRequest request = transcoH.getRequest(id);
+//			if (request == null){
+//				throw new WebApplicationException(Response.Status.NOT_FOUND);
+//			} else {
+//				return RequestUtils.destinationJSONbuilder(request);
+//			}
+//		} catch (MCASException e) {
+//			e.printStackTrace();
+//			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+//		}	
+//	}
 	
 	@POST
 	@Path("cancel")

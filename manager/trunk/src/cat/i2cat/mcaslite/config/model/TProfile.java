@@ -119,11 +119,6 @@ public class TProfile implements Serializable{
 		return transcos;
 	}
 	
-
-	@Transient
-	public int getNumOutputs(){
-		return levels.size();
-	}
 	
 	@Transient
 	public FileEventProcessor getFileEP(String dst){

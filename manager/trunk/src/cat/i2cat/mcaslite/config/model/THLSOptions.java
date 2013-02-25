@@ -1,6 +1,5 @@
 package cat.i2cat.mcaslite.config.model;
 
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.management.HLSManifestManager;
@@ -25,18 +25,18 @@ public class THLSOptions extends TProfile {
 
 	
 	@Override
-	 public List<Transco> commandBuilder(String input, String output, String dst) throws MCASException{
+	 public List<Transco> commandBuilder(String input, String output) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
-		String cmd = "ffmpeg -analyzeduration 10 -i " + input;
+		String cmd = "ffmpeg -re -analyzeduration 10 -i " + input;
 		for (TLevel level : getLevels()){
 			cmd += " -vf scale="+ level.getWidth() +":-1";
-			cmd += " -g 30 -qmin " + level.getQuality() + " -qmax " + level.getQuality();
+			cmd += " -g 50 -r 25 -qmin " + level.getQuality() + " -qmax " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 			cmd += " -c:v " + getvCodec() + " -c:a " + getaCodec() + " " + getAdditionalFlags();
 			cmd += " -f segment -segment_time_delta 0.03";
-			cmd += " -segment_time " + getSegDuration() + " " + output + "_" + level.getName() + "_%d.ts";
+			cmd += " -segment_time " + getSegDuration() + " " + output + "/" + this.getName() + "_" + level.getName() + "_%d.ts";
 		}
-		transcos.add(new Transco(cmd, (new File(output)).getParent(), dst, input));
+		transcos.add(new Transco(cmd, output, input));
 		return transcos;
 	}
 	

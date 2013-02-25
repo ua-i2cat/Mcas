@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.io.FilenameUtils;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -24,6 +25,7 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileStatus;
 import cat.i2cat.mcaslite.management.LiveStatus;
 import cat.i2cat.mcaslite.management.Status;
+import cat.i2cat.mcaslite.utils.DefaultsLoader;
 import cat.i2cat.mcaslite.utils.RequestUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
@@ -203,7 +205,11 @@ public class TRequest implements Serializable {
 		try {
 			setTConfig(TranscoderUtils.loadConfig(config));
 		} catch (MCASException e){
-			setTConfig(null);
+			try {
+				setTConfig(TranscoderUtils.loadConfig(DefaultsLoader.DEFAULT));
+			} catch (MCASException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
@@ -239,10 +245,13 @@ public class TRequest implements Serializable {
 			json.put("status", status.toString());
 			if (transcoded.size() > 0) {
 				JSONArray jsonAr = new JSONArray();
-				for(Transco transco : transcoded){
-					JSONObject jsonObj = new JSONObject();
-					jsonObj.put("uri", transco.getDestinationUri());
-					jsonAr.put(jsonObj);
+				for (TProfile profile : this.getTConfig().getProfiles()){
+					for (TLevel level : profile.getLevels()){
+						JSONObject jsonObj = new JSONObject();
+						jsonObj.put("uri", FilenameUtils.concat(
+								this.getDst(), profile.getName() + "_" + level.getName() + "." + profile.getFormat()));
+						jsonAr.put(jsonObj);
+					}
 				}
 				json.put("uris", jsonAr);
 			}
