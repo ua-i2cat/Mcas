@@ -30,6 +30,9 @@ public class TranscoderUtils {
 	
 	private static String getDestination(String id, String src, URI dst) throws MCASException {
 		try {
+			if (src == null || src.isEmpty()){
+				src = "output";
+			}
 			String path = FilenameUtils.concat(getDestinationDir(dst, id).getPath(), FilenameUtils.getBaseName(src));
 			return (new URI(dst.getScheme(), (dst.getHost() == null) ? "" : dst.getHost(), path, null)).toString();
 		} catch (URISyntaxException e){
@@ -81,7 +84,7 @@ public class TranscoderUtils {
 			return tConfigDao.findByName(config);
 		}catch (Exception e){
 			e.printStackTrace();
-			return tConfigDao.findByName(DefaultsUtils.DEFAULT);
+			return tConfigDao.findByName(DefaultsLoader.DEFAULT);
 		}
 	}
 }

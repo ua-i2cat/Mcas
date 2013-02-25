@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.management;
 
+import java.nio.file.Paths;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,13 +9,13 @@ import java.util.concurrent.ExecutionException;
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.DefaultsUtils;
+import cat.i2cat.mcaslite.utils.XMLReader;
 
 public class TranscoHandler implements Runnable {
 
 	private static final TranscoHandler INSTANCE = new TranscoHandler();
 	
-	private static final int MAX_REQUESTS = 1000;
+	private int maxRequests;
 	
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
@@ -23,11 +24,10 @@ public class TranscoHandler implements Runnable {
 	private boolean run = true;
 	
 	private TranscoHandler() {
+		String path = Paths.get(System.getProperty("mcas.home"), "WEB-INF/config.xml").toString();
+		maxRequests = Integer.parseInt(XMLReader.getXMLParameter(path, "maxreq"));
 		queue = ProcessQueue.getInstance();
-		queue.setMaxProcess(DefaultsUtils.MAX_PROCESS);
-		if (DefaultsUtils.feedDefaultsNeeded()){
-			DefaultsUtils.tConfigFeedDefaults();
-		}
+		queue.setMaxProcess(Integer.parseInt(XMLReader.getXMLParameter(path, "maxproc")));
 	}
 	
 	public static TranscoHandler getInstance(){
@@ -77,7 +77,7 @@ public class TranscoHandler implements Runnable {
 	}
 
 	public synchronized boolean putRequest(TRequest request) throws MCASException {
-		if (queue.size() < MAX_REQUESTS) {
+		if (queue.size() < maxRequests) {
 			request.initRequest();
 			request.increaseStatus();
 			queue.put(request);

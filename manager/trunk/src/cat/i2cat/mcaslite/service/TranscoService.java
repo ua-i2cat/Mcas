@@ -2,6 +2,8 @@ package cat.i2cat.mcaslite.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -21,6 +23,7 @@ import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.management.TranscoHandler;
+import cat.i2cat.mcaslite.utils.DefaultsLoader;
 import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Singleton
@@ -34,6 +37,8 @@ public class TranscoService {
 
 	
 	public TranscoService() {
+		System.out.println("DEBUG: --> " + System.getProperty("mcas.home"));
+		(new DefaultsLoader(Paths.get(System.getProperty("mcas.home"), "WEB-INF").toString())).tConfigFeedDefaults();
 		transcoH = TranscoHandler.getInstance();
 		managerTh = new Thread(transcoH);
 		managerTh.setName("MainManager");

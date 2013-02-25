@@ -102,9 +102,11 @@ public class Transcoder implements Runnable, Cancellable {
 			Transco transco = it.next();
 			try {
 				request.addTrancoded(transco);
+				queue.update(request);
 				executeCommand(transco.getCommand().trim());				
 			} catch (MCASException e) {
 				request.deleteTranscoded(transco);
+				queue.update(request);
 				e.printStackTrace();
 				MediaUtils.deleteFile(transco.getOutputFile());
 			}

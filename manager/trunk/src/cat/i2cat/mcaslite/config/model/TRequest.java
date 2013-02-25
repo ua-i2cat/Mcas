@@ -24,7 +24,7 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileStatus;
 import cat.i2cat.mcaslite.management.LiveStatus;
 import cat.i2cat.mcaslite.management.Status;
-import cat.i2cat.mcaslite.utils.DefaultsUtils;
+import cat.i2cat.mcaslite.utils.DefaultsLoader;
 import cat.i2cat.mcaslite.utils.RequestUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
@@ -205,9 +205,9 @@ public class TRequest implements Serializable {
 			setTConfig(TranscoderUtils.loadConfig(config));
 		} catch (MCASException e){
 			try {
-				setTConfig(TranscoderUtils.loadConfig(DefaultsUtils.DEFAULT));
+				setTConfig(TranscoderUtils.loadConfig(DefaultsLoader.DEFAULT));
 			} catch (MCASException e1) {
-				setTConfig(DefaultsUtils.tConfigGetDefaults());
+				e1.printStackTrace();
 			}
 		}
 	}
