@@ -82,7 +82,7 @@ public class RequestUtils {
 		try {
 			for(Transco transco : request.getTranscoded()){
 				JSONObject jsonObj = new JSONObject();
-				jsonObj.put("uri", transco.getDestinationUri());
+				jsonObj.put("uri", request.getDst());
 				jsonAr.put(jsonObj);
 			}
 			return (new JSONObject()).put("destinationUris", jsonAr);

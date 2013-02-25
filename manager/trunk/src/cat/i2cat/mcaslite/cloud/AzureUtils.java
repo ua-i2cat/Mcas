@@ -132,13 +132,13 @@ public class AzureUtils {
 		throw new MCASException();
 	}
 	
-	public static BlobOutputStream fileToOutputStream(File file, String cloudCont, String fileName) throws MCASException{
+	public static BlobOutputStream fileToOutputStream(String cloudCont, String fileName) throws MCASException{
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
 			CloudBlobContainer container = blobClient.getContainerReference(cloudCont);
 			if (container.exists()){
-				CloudBlockBlob blob = container.getBlockBlobReference(trimBottomDir(fileName));
+				CloudBlockBlob blob = container.getBlockBlobReference(fileName);
 				return blob.openOutputStream();
 			} else {
 				throw new MCASException();
@@ -155,7 +155,7 @@ public class AzureUtils {
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
 			CloudBlobContainer container = blobClient.getContainerReference(cloudCont);
 			if (container.exists()){
-				CloudBlockBlob blob = container.getBlockBlobReference(trimBottomDir(fileName));
+				CloudBlockBlob blob = container.getBlockBlobReference(fileName);
 				blob.upload(new ByteArrayInputStream(byteArray), byteArray.length);
 			} else {
 				throw new MCASException();
@@ -211,10 +211,5 @@ public class AzureUtils {
 		}
 	}
 	
-	private static String trimBottomDir(String fileName) {
-		String emaNelif = (new StringBuilder(fileName)).reverse().toString();
-		emaNelif = Paths.get(emaNelif).getParent().toString();
-		fileName = (new StringBuilder(emaNelif)).reverse().toString();
-		return fileName;
-	}
+	
 }

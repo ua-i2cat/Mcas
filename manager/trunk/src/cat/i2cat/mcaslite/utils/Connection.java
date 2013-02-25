@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.Paths;
 
+import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class Connection {
@@ -16,7 +18,7 @@ public class Connection {
 				File file = new File(destination.getPath(),fileName);
 				return new FileOutputStream(file);
 			} else if (destination.getScheme().equals("blob")){
-				
+				return AzureUtils.fileToOutputStream(Paths.get(destination.getPath()).toString(), fileName);
 			}
 			
 			throw new MCASException();

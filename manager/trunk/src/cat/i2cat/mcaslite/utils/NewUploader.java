@@ -42,7 +42,7 @@ private static final int BLOCK_SIZE = 102400;
 	}
 	
 	
-	private void fileToOutputStream(OutputStream out, File origin) throws IOException {
+	private void fileToOutputStream(OutputStream out, File origin) throws IOException, MCASException {
 		FileInputStream reader = null;
 		BufferedOutputStream outStream = null;
 		try {
@@ -65,7 +65,7 @@ private static final int BLOCK_SIZE = 102400;
 				outStream.close();
 			}
 			if (! done){
-				//TODO
+				throw new MCASException();
 			}
 		}
 	}
@@ -91,9 +91,4 @@ private static final int BLOCK_SIZE = 102400;
 		}
 		return true;
 	}
-
-
-	
-	
-
 }

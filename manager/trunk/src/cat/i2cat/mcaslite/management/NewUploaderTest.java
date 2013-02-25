@@ -11,8 +11,8 @@ import cat.i2cat.mcaslite.utils.NewUploader;
 public class NewUploaderTest {
 	
 	private static Path origin;
-	private static String pathName = "/home/marc/Videos";
-	private static String destinationName = "file:///home/marc/testUploader"; 
+	private static String pathName = "/home/marc/Videos/ka.mp4";
+	private static String destinationName = "/home/marc/testUploader"; 
 	private static URI destination;
 	
 	public static void main(String[] args) {
