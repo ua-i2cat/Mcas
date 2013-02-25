@@ -13,9 +13,9 @@
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"></property>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
             
-            <property name="hibernate.show_sql" value="true" />
-            <property name="javax.persistence.jdbc.user" value="mcas" />
-            <property name="javax.persistence.jdbc.password" value="mcas" />
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="javax.persistence.jdbc.user" value="mcas"/>
+            <property name="javax.persistence.jdbc.password" value="mcas"/>
             <property name="hibernate.connection.shutdown" value="true"/>
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
         </properties>

@@ -9,14 +9,15 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Paths;
+
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
 
 public class Downloader implements Cancellable {
 
-	private static final int BLOCK_SIZE 	= 1024*100;
-	private static final int HTTP_TIMEOUT 	= 30*1000;
-	
+	private static final int BLOCK_SIZE = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "downloader.dblocksize"));
+	private static final int HTTP_TIMEOUT = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "downloader.httptimeout"));
 	private boolean cancelled = false;
 	private URI input;
 	private File destination;
@@ -44,7 +45,6 @@ public class Downloader implements Cancellable {
 		}
 	}
 
-	
 	private void fileToFile() throws MCASException{
 		try {
 			inputStreamToFile(new FileInputStream(new File(input.getPath())));

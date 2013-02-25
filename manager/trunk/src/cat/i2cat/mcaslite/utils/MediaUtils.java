@@ -15,25 +15,34 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 public class MediaUtils {
 	
 	public static String createOutputWorkingDir(String id, String outputWorkingDir) throws MCASException {
-		String path = TranscoderUtils.getOutputDir(id, outputWorkingDir);
+		String path = FilenameUtils.concat(outputWorkingDir, id);
 		File file = new File(path);
-		if (! file.mkdirs()){
-			throw new MCASException();
-		} else {
+		if (file.isDirectory() && file.canWrite()){
 			return path;
 		}
-	}
-	
-	public static boolean deleteInputFile(String requestId, String inputWorkingDir){
-		return deleteFile(FilenameUtils.concat(getWorkDir(inputWorkingDir), requestId));
-	}
-	
-	public static String getWorkDir(String workDir){
-		File file = new File(workDir);
-		if (! file.isAbsolute()){
-			return FilenameUtils.concat(System.getProperty("mcas.home"), workDir);
+		else if(!file.exists() && file.getParentFile().canWrite() && file.mkdirs()){
+			return path;
 		}
-		return file.getPath();
+		throw new MCASException();
+	}
+	
+	public static boolean deleteInputFile(String requestId, String inputWorkingDir) {
+		try {
+			return deleteFile(FilenameUtils.concat(getWorkDir(inputWorkingDir), requestId));
+		} catch (MCASException e) {
+			return false;
+		}
+	}
+	
+	public static String getWorkDir(String workDir) throws MCASException{
+		File file = new File(workDir);
+		if (file.isDirectory() && file.canWrite()){
+			return workDir;
+		}
+		else if(!file.exists() && file.getParentFile().canWrite() && file.mkdirs()){
+			return workDir;
+		}
+		throw new MCASException();
 	}
 	
 	private static String createWorkDir(String workDir) throws MCASException{
@@ -74,7 +83,7 @@ public class MediaUtils {
 
 	private static void cleanTransco(Transco transco){
 		deleteFile(transco.getInputFile());
-		deleteFile(transco.getOutputFile());
+		deleteFile(transco.getOutputDir());
 	}
 	
 	private static void cleanTranscos(List<Transco> transcos){
@@ -83,7 +92,7 @@ public class MediaUtils {
 		}
 	}
 	
-	public static synchronized void clean(TRequest request){
+	public static synchronized void clean(TRequest request) {
 		if (request.getTranscoded().size() > 0){
 			cleanTranscos(request.getTranscoded());
 		} else {

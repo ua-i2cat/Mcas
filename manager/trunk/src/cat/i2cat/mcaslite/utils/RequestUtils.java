@@ -82,7 +82,7 @@ public class RequestUtils {
 		try {
 			for(Transco transco : request.getTranscoded()){
 				JSONObject jsonObj = new JSONObject();
-				jsonObj.put("uri", transco.getDestinationUri());
+				jsonObj.put("uri", request.getDst());
 				jsonAr.put(jsonObj);
 			}
 			return (new JSONObject()).put("uris", jsonAr).toString();
@@ -91,6 +91,7 @@ public class RequestUtils {
 			throw new MCASException();
 		}
 	}
+	
 
 	public static void callback(TRequest request) throws MCASException{
 		Client client = Client.create();
