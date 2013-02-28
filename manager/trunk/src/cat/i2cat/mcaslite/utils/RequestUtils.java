@@ -3,20 +3,16 @@ package cat.i2cat.mcaslite.utils;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URI;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+
+import cat.i2cat.mcaslite.config.model.TRequest;
+import cat.i2cat.mcaslite.exceptions.MCASException;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-
-import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.Status;
 
 
 public class RequestUtils {

@@ -12,6 +12,7 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
+import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
@@ -103,7 +104,8 @@ public class Transcoder implements Runnable, Cancellable {
 			try {
 				request.addTrancoded(transco);
 				queue.update(request);
-				executeCommand(transco.getCommand().trim());				
+				executeCommand(transco.getCommand().trim());
+				processManifest(transco);
 			} catch (MCASException e) {
 				request.deleteTranscoded(transco);
 				queue.update(request);
@@ -132,6 +134,14 @@ public class Transcoder implements Runnable, Cancellable {
 			return true;
 		} else {
 			return false;
+		}
+	}
+	
+	private void processManifest(Transco transco) throws MCASException{
+		for(TProfile profile : request.getTConfig().getProfiles()){
+			if (profile.getName().equals(transco.getProfileName())){
+				profile.processManifest(transco);
+			}
 		}
 	}
 	

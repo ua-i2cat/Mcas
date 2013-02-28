@@ -18,40 +18,42 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.Uploader;
+import cat.i2cat.mcaslite.utils.NewUploader;
 
 public class HLSManifestManager implements FileEventProcessor {
 	private int windowLength;
 	private int segDuration;
-	private Uploader uploader;
+	private NewUploader uploader;
 	private Map<String, TLevel> levels = new HashMap<String, TLevel>();
+	private String profileName;
 	private boolean mainCreated = false;
 		
-	public HLSManifestManager(int windowLength, int segDuration, URI dst, List<TLevel> levels) throws MCASException{
+	public HLSManifestManager(int windowLength, int segDuration, URI dst, List<TLevel> levels, String profileName) throws MCASException{
 		try {
 			this.windowLength = windowLength;
 			for(TLevel level : levels){
 				this.levels.put(level.getName(), level);
 			}
 			this.segDuration = segDuration;
-			this.uploader = new Uploader(dst);
+			this.uploader = new NewUploader(dst);
+			this.profileName = profileName;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new MCASException();
 		}
 	}
 	
-	private void createMainManifest(String filename) throws MCASException, IOException {
+	private void createMainManifest() throws MCASException, IOException {
 		ByteArrayOutputStream bufferedBytes = new ByteArrayOutputStream();
 		BufferedWriter data = new BufferedWriter(new OutputStreamWriter(bufferedBytes, Charset.defaultCharset()));
 		try {
 			data.write("#EXTM3U\n");
 			for(String level : levels.keySet()){
 				data.write("#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=" + (levels.get(level).getMaxRate()*1000) + "\n");
-				data.write(Paths.get(level, filename).toString() + ".m3u8\n");
+				data.write(profileName + ".m3u8\n");
 			}
 			data.flush();
-			uploader.toDestinationUri(bufferedBytes.toByteArray(), filename + ".m3u8");
+			uploader.uploadLive(bufferedBytes.toByteArray(), profileName + ".m3u8");
 		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();
@@ -99,22 +101,23 @@ public class HLSManifestManager implements FileEventProcessor {
 	
 	private void updateVideoFiles(Path path, String file) throws MCASException{
 		try {
-			int lastIdx = file.lastIndexOf("_");
-			int seg = Integer.parseInt(file.substring(lastIdx + 1, file.lastIndexOf(".")));
-			String level = file.substring(file.lastIndexOf("_", lastIdx - 1) + 1, lastIdx);
-			String filename = file.substring(0, file.lastIndexOf("_", lastIdx - 1));
+			String[] parsedName = file.split("_");
+			String profile = parsedName[0];
+			String level = parsedName[1];
+			String filename = profile + "_" + level;
+			int seg = Integer.parseInt(parsedName[2].substring(0, parsedName[2].lastIndexOf(".")));
 			if (seg > 0){
-				File segment = Paths.get(path.toString(), filename + "_" + level + "_" + (--seg) + ".ts").toFile();
-				uploader.toDestinationUri(segment, level);
-				segment.delete();
+				Path segment = Paths.get(path.toString(), filename + (--seg) + ".ts");
+				uploader.upload(segment);
+				segment.toFile().delete();
 				if (seg >= windowLength){
-					uploader.toDestinationUri(createManifest(seg, filename + "_" + level), filename + ".m3u8", level);
-					uploader.deleteContent(filename + "_" + level + "_" + (seg - windowLength) + ".ts", level);
+					uploader.uploadLive(createManifest(seg, filename), filename + ".m3u8");
+		//TODO		uploader.deleteContent(filename + "_" + (seg - windowLength) + ".ts");
 				} else {
-					uploader.toDestinationUri(createManifest(seg, filename + "_" + level), filename + ".m3u8", level);
+					uploader.uploadLive(createManifest(seg, filename), filename + ".m3u8");
 				}
 			} else if (! mainCreated) {
-				createMainManifest(filename);
+				createMainManifest();
 			}
 		} catch (Exception e){
 			e.printStackTrace();

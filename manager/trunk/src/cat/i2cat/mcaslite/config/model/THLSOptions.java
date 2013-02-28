@@ -36,7 +36,7 @@ public class THLSOptions extends TProfile {
 			cmd += " -f segment -segment_time_delta 0.03";
 			cmd += " -segment_time " + getSegDuration() + " " + output + "/" + this.getName() + "_" + level.getName() + "_%d.ts";
 		}
-		transcos.add(new Transco(cmd, output, input));
+		transcos.add(new Transco(cmd, output, input, this.getName()));
 		return transcos;
 	}
 	
@@ -63,6 +63,6 @@ public class THLSOptions extends TProfile {
 	
 	@Override
 	public FileEventProcessor getFileEP(URI dst) throws MCASException{
-		return new HLSManifestManager(windowLength, segDuration, dst, getLevels());
+		return new HLSManifestManager(windowLength, segDuration, dst, getLevels(), this.getName());
 	}
 }

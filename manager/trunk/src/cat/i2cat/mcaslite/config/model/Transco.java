@@ -17,6 +17,8 @@ public class Transco {
 	private String command;
 	@Column(nullable = false, length = 255)
 	private String outputDir;
+	@Column(nullable = false, length = 255)
+	private String profileName;
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 
@@ -24,12 +26,21 @@ public class Transco {
 		
 	}
 	
-	public Transco(String command, String outputDir, String inputFile){
+	public Transco(String command, String outputDir, String inputFile, String profileName){
 		this.command = command;
 		this.outputDir = outputDir;
 		this.inputFile = inputFile;
+		this.profileName = profileName;
 	}
 	
+	public String getProfileName() {
+		return profileName;
+	}
+
+	public void setProfileName(String profileName) {
+		this.profileName = profileName;
+	}
+
 	public int getId(){
 		return id;
 	}

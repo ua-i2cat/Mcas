@@ -31,12 +31,13 @@
             <profiles>
                 <profile name="profile1"/>
                 <profile name="profile2"/>
+                <profile name="profile4"/>
             </profiles>
         </tconfig>
         <tconfig name="live">
             <workdir>
-                <input>input</input>
-                <output>output</output>
+                <input>/home/marc/input</input>
+                <output>/home/marc/output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>true</live>
