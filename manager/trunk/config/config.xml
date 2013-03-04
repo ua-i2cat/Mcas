@@ -16,6 +16,7 @@
 		<processqueue>videoqueue</processqueue>
 		<cancelqueue>cancelqueue</cancelqueue>
 		<container>input</container>
+		<cancelTryout>3</cancelTryout>
 	</cloud>
     <callback>
 
@@ -23,13 +24,19 @@
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
+<<<<<<< HEAD
                 <input>/Users/i2cat/input</input>
                 <output>/Users/i2cat/output</output>
+=======
+                <input>/home/david/input</input>
+                <output>/home/david/output</output>
+>>>>>>> 0579081fd24e1dc05d23bbf8b7e64553dcf4ddd5
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>
             <profiles>
                 <profile name="profile1"/>
+                <profile name="profile2"/>
             </profiles>
         </tconfig>
     </transcoconfigs>

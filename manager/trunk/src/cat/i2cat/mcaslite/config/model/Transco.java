@@ -1,17 +1,11 @@
 package cat.i2cat.mcaslite.config.model;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import cat.i2cat.mcaslite.exceptions.MCASException;
 
 @Entity
 @Table(name = "transcos")
@@ -63,17 +57,7 @@ public class Transco {
 		this.outputFile = outputFile;
 	}
 
-	@Transient
-	public URI getDestinationUriUri() throws MCASException {
-		try {
-			URI uri = new URI(destinationUri);
-			return uri;
-		} catch(URISyntaxException e){
-			e.printStackTrace();
-			throw new MCASException();
-		}
-	}
-	
+
 	public String getDestinationUri(){
 		return destinationUri;
 	}

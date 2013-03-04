@@ -17,12 +17,14 @@ public class DefaultsLoader {
 	
 	public DefaultsLoader(String path){
 		this.path = path;
+		transcoConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 	}
 	
 	private String path;
 	private List<TranscoderConfig> configs;
 	private Map<String, TLevel> allLevels;
 	private Map<String, TProfile> allProfiles;
+	private DAO<TranscoderConfig> transcoConfigDao;
 	
 	
 	public List<TranscoderConfig> getConfigs(){
@@ -136,7 +138,6 @@ public class DefaultsLoader {
 	}
 	
 	public void tConfigFeedDefaults(){
-		DAO<TranscoderConfig> transcoConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		List<TranscoderConfig> transcoList = getConfigs();
 		for (TranscoderConfig transco : transcoList){
 			transcoConfigDao.save(transco);

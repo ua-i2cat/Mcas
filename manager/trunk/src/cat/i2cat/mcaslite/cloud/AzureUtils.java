@@ -2,7 +2,6 @@ package cat.i2cat.mcaslite.cloud;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.EnumSet;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
@@ -138,7 +137,7 @@ public class AzureUtils {
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
 			CloudBlobContainer container = blobClient.getContainerReference(cloudCont);
 			if (container.exists()){
-				CloudBlockBlob blob = container.getBlockBlobReference(trimBottomDir(fileName));
+				CloudBlockBlob blob = container.getBlockBlobReference(fileName);
 				return blob.openOutputStream();
 			} else {
 				throw new MCASException();
@@ -155,7 +154,7 @@ public class AzureUtils {
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
 			CloudBlobContainer container = blobClient.getContainerReference(cloudCont);
 			if (container.exists()){
-				CloudBlockBlob blob = container.getBlockBlobReference(trimBottomDir(fileName));
+				CloudBlockBlob blob = container.getBlockBlobReference(fileName);
 				blob.upload(new ByteArrayInputStream(byteArray), byteArray.length);
 			} else {
 				throw new MCASException();
@@ -211,10 +210,7 @@ public class AzureUtils {
 		}
 	}
 	
-	private static String trimBottomDir(String fileName) {
-		String emaNelif = (new StringBuilder(fileName)).reverse().toString();
-		emaNelif = Paths.get(emaNelif).getParent().toString();
-		fileName = (new StringBuilder(emaNelif)).reverse().toString();
-		return fileName;
-	}
+//	private static String trimBottomDir(String fileName) {
+//		return Paths.get(fileName).getName(0).toString();
+//	}
 }
