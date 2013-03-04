@@ -15,7 +15,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class TranscoServiceClient {
 	
-	public static final String uri = "http://localhost:8080/mcas";
+	public static final String uri = "http://localhost:8080/mcaslite";
 	
 	public static void main(String[] args){
 		BufferedReader br;
@@ -62,7 +62,7 @@ public class TranscoServiceClient {
 			System.out.println("Write a Destination place resulting contentse:");
 			br = new BufferedReader(new InputStreamReader(System.in));
 			String dst = br.readLine();
-			String input = "{\"config\":\"default\",\"usr\":\"joe\",\"dst\":\"" + dst + "\","
+			String input = "{\"config\":\"default\",\"title\":\"joe\",\"dst\":\"" + dst + "\","
 				+ "\"src\":\"" + src + "\"}";
 			ClientResponse response= service.path("/transco").type("application/json").post(ClientResponse.class, input);
 			if (response.hasEntity()){

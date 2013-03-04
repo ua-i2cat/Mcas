@@ -23,8 +23,8 @@
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
-                <input>/home/marc/input</input>
-                <output>/home/marc/output</output>
+                <input>/Users/i2cat/input</input>
+                <output>/Users/i2cat/output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>
@@ -35,8 +35,8 @@
         </tconfig>
         <tconfig name="live">
             <workdir>
-                <input>input</input>
-                <output>output</output>
+                <input>/Users/i2cat/input</input>
+                <output>/Users/i2cat/output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>true</live>

@@ -21,7 +21,7 @@ import cat.i2cat.mcaslite.management.Status;
 
 public class RequestUtils {
 	
-	public static final String CALLBACK = "http://localhost:8080/MCASfrontend";
+	public static final String CALLBACK = "http://localhost:8080/mcaslitefrontend";
 
 	public static boolean isValidSrcUri(URI uri) {
 		try {
