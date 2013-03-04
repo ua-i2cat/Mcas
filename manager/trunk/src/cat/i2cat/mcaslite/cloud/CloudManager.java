@@ -27,7 +27,12 @@ public class CloudManager implements Runnable, Cancellable {
 	private String videoQueue = XMLReader.getXMLParameter("config/config.xml", "cloud.processqueue");
 	private String cancelQueue = XMLReader.getXMLParameter("config/config.xml", "cloud.cancelqueue");
 	
+	private int cancelTryout = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "cloud.cancelTryout"));
+	
 	private Map<String, CloudQueueMessage> messages = new ConcurrentHashMap<String, CloudQueueMessage>();
+	private String cancelId;
+	private int cancelRetry;
+	
 
 	private CloudManager(){
 		queue = ProcessQueue.getInstance();
@@ -60,7 +65,12 @@ public class CloudManager implements Runnable, Cancellable {
 				if (messages.containsKey(id)){
 					if (TranscoHandler.getInstance().cancelRequest(
 						TRequest.getEqualRequest(id), true)){
-						//AzureUtils.
+						AzureUtils.deleteQueueMessage(msg, cancelQueue);
+					}
+				} else {
+					if (cancelId.equals(id) && cancelRetry++ >= cancelTryout){
+						cancelTryout = 0;
+						AzureUtils.deleteQueueMessage(msg, cancelQueue);
 					}
 				}
 			} catch (Exception e){

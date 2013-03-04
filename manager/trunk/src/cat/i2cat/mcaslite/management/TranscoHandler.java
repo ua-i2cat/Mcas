@@ -48,7 +48,7 @@ public class TranscoHandler implements Runnable {
 				if (queue.remove(request)){
 						requestDao.save(request);
 				}
-				e.printStackTrace();
+				e.printStackTrace(); 
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

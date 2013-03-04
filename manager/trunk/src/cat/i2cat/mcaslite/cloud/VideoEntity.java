@@ -76,7 +76,7 @@ public class VideoEntity extends TableServiceEntity {
 			this.host = uri.getHost();
 			this.videoUploadedUrl = videoUploadedUrl;
 		} catch (URISyntaxException e){
-			throw new MCASException();
+			this.videoUploadedUrl = videoUploadedUrl;
 		}
 	}
 
@@ -141,18 +141,22 @@ public class VideoEntity extends TableServiceEntity {
     }
     
     private String getVideoBySuffix(TRequest request, String suffix) throws MCASException{
-    	try {
-	    	List<Transco> transcos = request.getTranscoded();
-	    	for (Transco transco : transcos){
-	    		if (transco.getDestinationUri().endsWith(suffix)){
-	    			URI uri = transco.getDestinationUriUri();
-	    			return (new URI(getScheme(), uri.getHost(), uri.getPath(), null)).toString();
-	    		}
+    	if (! request.getStatus().hasNext()) {
+	    	try {
+		    	List<Transco> transcos = request.getTranscoded();
+		    	for (Transco transco : transcos){
+		    		if (transco.getDestinationUri().endsWith(suffix)){
+		    			URI uri = new URI(transco.getDestinationUri());
+		    			return (new URI(getScheme(), uri.getHost(), uri.getPath(), null)).toString();
+		    		}
+		    	}
+	    	} catch (URISyntaxException e) {
+	    		throw new MCASException();
 	    	}
-    	} catch (URISyntaxException e) {
-    		throw new MCASException();
+	    	throw new MCASException();
+    	} else {
+    		return "";
     	}
-    	throw new MCASException();
     }
     
     private String uriToBlob(URI uri) throws URISyntaxException{

@@ -16,7 +16,9 @@ public class Transco {
 	@Column(nullable = false, length = 1000)
 	private String command;
 	@Column(nullable = false, length = 255)
-	private String outputDir;
+	private String outputFile;
+	@Column(nullable = false, length = 255)
+	private String destinationUri;
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 
@@ -24,10 +26,11 @@ public class Transco {
 		
 	}
 	
-	public Transco(String command, String outputDir, String inputFile){
+	public Transco(String command, String outputFile, String destinationUri, String inputFile){
 		this.command = command;
-		this.outputDir = outputDir;
+		this.outputFile = outputFile;
 		this.inputFile = inputFile;
+		this.destinationUri = destinationUri;
 	}
 	
 	public int getId(){
@@ -45,13 +48,22 @@ public class Transco {
 	public void setCommand(String command) {
 		this.command = command;
 	}
-
-	public String getOutputDir() {
-		return outputDir;
+	
+	public String getOutputFile() {
+		return outputFile;
+	}
+	
+	public void setOutputFile(String outputFile) {
+		this.outputFile = outputFile;
 	}
 
-	public void setOutputDir(String outputDir) {
-		this.outputDir = outputDir;
+
+	public String getDestinationUri(){
+		return destinationUri;
+	}
+
+	public void setDestinationUri(String destinationFile) {
+		this.destinationUri = destinationFile;
 	}
 
 	public String getInputFile() {
@@ -62,17 +74,17 @@ public class Transco {
 		this.inputFile = inputFile;
 	}
 	
-//	@Override
-//	public boolean equals(Object o){
-//		try {
-//			Transco transco = (Transco) o;
-//			if (transco.getCommand().equals(this.command) || transco.getOutputFile().equals(this.outputFile)){
-//				return true;
-//			}
-//		} catch (Exception e){
-//			e.printStackTrace();
-//			return false;
-//		}
-//		return false;
-//	}
+	@Override
+	public boolean equals(Object o){
+		try {
+			Transco transco = (Transco) o;
+			if (transco.getCommand().equals(this.command) || transco.getOutputFile().equals(this.outputFile)){
+				return true;
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+	}
 }

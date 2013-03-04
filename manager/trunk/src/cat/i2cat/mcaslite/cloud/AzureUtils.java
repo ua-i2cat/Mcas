@@ -2,7 +2,6 @@ package cat.i2cat.mcaslite.cloud;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.EnumSet;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
@@ -132,7 +131,7 @@ public class AzureUtils {
 		throw new MCASException();
 	}
 	
-	public static BlobOutputStream fileToOutputStream(String cloudCont, String fileName) throws MCASException{
+	public static BlobOutputStream fileToOutputStream(File file, String cloudCont, String fileName) throws MCASException{
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
@@ -211,5 +210,7 @@ public class AzureUtils {
 		}
 	}
 	
-	
+//	private static String trimBottomDir(String fileName) {
+//		return Paths.get(fileName).getName(0).toString();
+//	}
 }

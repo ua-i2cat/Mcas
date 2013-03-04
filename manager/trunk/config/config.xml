@@ -16,6 +16,7 @@
 		<processqueue>videoqueue</processqueue>
 		<cancelqueue>cancelqueue</cancelqueue>
 		<container>input</container>
+		<cancelTryout>3</cancelTryout>
 	</cloud>
     <callback>
 
@@ -23,13 +24,14 @@
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
-                <input>/home/marc/input</input>
-                <output>/home/marc/output</output>
+                <input>/home/david/input</input>
+                <output>/home/david/output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>
             <profiles>
                 <profile name="profile1"/>
+                <profile name="profile2"/>
             </profiles>
         </tconfig>
     </transcoconfigs>
