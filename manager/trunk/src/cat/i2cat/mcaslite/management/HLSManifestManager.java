@@ -2,7 +2,6 @@ package cat.i2cat.mcaslite.management;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
@@ -50,7 +49,7 @@ public class HLSManifestManager implements FileEventProcessor {
 			data.write("#EXTM3U\n");
 			for(String level : levels.keySet()){
 				data.write("#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=" + (levels.get(level).getMaxRate()*1000) + "\n");
-				data.write(profileName + ".m3u8\n");
+				data.write(profileName + "_" + levels.get(level).getName() + ".m3u8\n");
 			}
 			data.flush();
 			uploader.uploadLive(bufferedBytes.toByteArray(), profileName + ".m3u8");
@@ -107,7 +106,7 @@ public class HLSManifestManager implements FileEventProcessor {
 			String filename = profile + "_" + level;
 			int seg = Integer.parseInt(parsedName[2].substring(0, parsedName[2].lastIndexOf(".")));
 			if (seg > 0){
-				Path segment = Paths.get(path.toString(), filename + (--seg) + ".ts");
+				Path segment = Paths.get(path.toString(), filename + "_" + (--seg) + ".ts");
 				uploader.upload(segment);
 				segment.toFile().delete();
 				if (seg >= windowLength){

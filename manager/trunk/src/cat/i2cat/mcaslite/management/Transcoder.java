@@ -65,10 +65,20 @@ public class Transcoder implements Runnable, Cancellable {
 	}
 	
 	private void HTTPLive() throws MCASException, IOException, URISyntaxException {
-		//TODO: test input output?
 		try {
-			mediaH.initWatcher();
-			transcodify();
+			Iterator<Transco> it = transcos.iterator();
+			while(! isCancelled() && it.hasNext()){
+				Transco transco = it.next();
+				try {
+					mediaH.initWatcher(transco.getProfileName());
+					transcodify(transco);
+				} catch (MCASException e) {
+					request.deleteTranscoded(transco);
+					queue.update(request);
+					e.printStackTrace();
+					MediaUtils.deleteFile(transco.getOutputDir());
+				}
+			}
 			if (request.isTranscodedEmpty() && ! isCancelled()){
 				manageError();
 			} else {
@@ -83,7 +93,18 @@ public class Transcoder implements Runnable, Cancellable {
 	
 	private void videoOnDemand() throws MCASException {
 		mediaH.inputHandle();
-		transcodify();
+		Iterator<Transco> it = transcos.iterator();
+		while(! isCancelled() && it.hasNext()){
+			Transco transco = it.next();
+			try {
+				transcodify(transco);
+			} catch (MCASException e) {
+				request.deleteTranscoded(transco);
+				queue.update(request);
+				e.printStackTrace();
+				MediaUtils.deleteFile(transco.getOutputDir());
+			}
+		}
 		setDone(true);
 		if (isCancelled()) {
 			MediaUtils.clean(request);
@@ -97,22 +118,11 @@ public class Transcoder implements Runnable, Cancellable {
 		mediaH.outputHandle();
 	}
 	
-	private void transcodify(){
-		Iterator<Transco> it = transcos.iterator();
-		while(! isCancelled() && it.hasNext()){
-			Transco transco = it.next();
-			try {
-				request.addTrancoded(transco);
-				queue.update(request);
-				executeCommand(transco.getCommand().trim());
-				processManifest(transco);
-			} catch (MCASException e) {
-				request.deleteTranscoded(transco);
-				queue.update(request);
-				e.printStackTrace();
-				MediaUtils.deleteFile(transco.getOutputDir());
-			}
-		}
+	private void transcodify(Transco transco) throws MCASException{
+		request.addTrancoded(transco);
+		queue.update(request);
+		executeCommand(transco.getCommand().trim());
+		processManifest(transco);
 	}
 	
 	private void manageError(){
@@ -141,6 +151,7 @@ public class Transcoder implements Runnable, Cancellable {
 		for(TProfile profile : request.getTConfig().getProfiles()){
 			if (profile.getName().equals(transco.getProfileName())){
 				profile.processManifest(transco);
+				return;
 			}
 		}
 	}

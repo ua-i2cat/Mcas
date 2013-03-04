@@ -105,8 +105,13 @@ public class TranscoderConfig implements Serializable {
 	}
 	
 	@Transient
-	public FileEventProcessor getFileEP(URI dst) throws MCASException{
-		return profiles.get(0).getFileEP(dst);
+	public FileEventProcessor getFileEP(URI dst, String profileName) throws MCASException{
+		for(TProfile profile : profiles){
+			if (profile.getName().equals(profileName)){
+				return profile.getFileEP(dst, profileName);
+			}
+		}
+		throw new MCASException();
 	}
 	
 }

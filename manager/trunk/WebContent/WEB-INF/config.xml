@@ -17,14 +17,12 @@
 		<cancelqueue>cancelqueue</cancelqueue>
 		<container>input</container>
 	</cloud>
-    <callback>
-
-    </callback>
+    <callback>http://192.168.10.114:8080/mcasWeb</callback>
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
-                <input>/home/marc/input</input>
-                <output>/home/marc/output</output>
+                <input>/home/david/input</input>
+                <output>/home/david/output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>
@@ -36,8 +34,8 @@
         </tconfig>
         <tconfig name="live">
             <workdir>
-                <input>/home/marc/input</input>
-                <output>/home/marc/output</output>
+                <input>/home/david/input</input>
+                <output>/home/david/output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>true</live>

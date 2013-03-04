@@ -144,12 +144,8 @@ public class TProfile implements Serializable{
 	
 	
 	@Transient
-	public FileEventProcessor getFileEP(String dst){
+	public FileEventProcessor getFileEP(URI dst, String profileName) throws MCASException{
 		return null;
 	}
 
-	public FileEventProcessor getFileEP(URI dst) throws MCASException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

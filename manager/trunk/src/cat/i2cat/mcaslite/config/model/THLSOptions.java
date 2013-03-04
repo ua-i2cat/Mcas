@@ -1,12 +1,17 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
@@ -62,7 +67,20 @@ public class THLSOptions extends TProfile {
 	}
 	
 	@Override
-	public FileEventProcessor getFileEP(URI dst) throws MCASException{
+	public void setUris(JSONArray jsonAr, String destination) throws MCASException{
+		try {
+			JSONObject jsonObj = new JSONObject();
+			jsonObj.put("uri", Paths.get(
+					destination, this.getName() + "." + this.getFormat()));
+			jsonAr.put(jsonObj);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+	}
+	
+	@Override
+	public FileEventProcessor getFileEP(URI dst, String profileName) throws MCASException{
 		return new HLSManifestManager(windowLength, segDuration, dst, getLevels(), this.getName());
 	}
 }

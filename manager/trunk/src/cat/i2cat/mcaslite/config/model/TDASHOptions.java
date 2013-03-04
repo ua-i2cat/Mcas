@@ -72,7 +72,7 @@ public class TDASHOptions extends TProfile {
 	
 	@Transient
 	@Override
-	public FileEventProcessor getFileEP(URI dst){
+	public FileEventProcessor getFileEP(URI dst, String profileName){
 		return new DashManifestManager();
 	}
 	

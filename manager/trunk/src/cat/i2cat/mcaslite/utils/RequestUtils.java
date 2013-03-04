@@ -3,6 +3,7 @@ package cat.i2cat.mcaslite.utils;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -17,7 +18,8 @@ import com.sun.jersey.api.client.WebResource;
 
 public class RequestUtils {
 	
-	public static final String CALLBACK = "http://localhost:8080/MCASfrontend";
+	public static final String PATH = Paths.get(System.getProperty("mcas.home"), "WEB-INF/config.xml").toString();
+	public static final String CALLBACK = XMLReader.getXMLParameter(PATH, "callback");
 
 	public static boolean isValidSrcUri(URI uri) {
 		try {
