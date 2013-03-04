@@ -265,7 +265,7 @@ public class Uploader implements Cancellable {
 	}
 	
 	private static URI makerDestinationDir(String id, URI dst) throws MCASException{
-		URI path = TranscoderUtils.getDestinationDir(dst, id);
+		URI path = TranscoderUtils.getDestinationDir(dst);
 		if (! (new File(path)).mkdirs()){
 			throw new MCASException();
 		} else {
