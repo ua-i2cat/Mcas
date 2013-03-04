@@ -31,12 +31,18 @@
             <profiles>
                 <profile name="profile1"/>
                 <profile name="profile2"/>
+                <profile name="profile4"/>
             </profiles>
         </tconfig>
         <tconfig name="live">
             <workdir>
+<<<<<<< HEAD
                 <input>/Users/i2cat/input</input>
                 <output>/Users/i2cat/output</output>
+=======
+                <input>/home/marc/input</input>
+                <output>/home/marc/output</output>
+>>>>>>> 403ac39e8a214cb3e370e320f37a0c71da42e00f
             </workdir>
             <timeout>86400</timeout>
             <live>true</live>

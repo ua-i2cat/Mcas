@@ -2,6 +2,7 @@ package cat.i2cat.mcaslite.config.model;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,10 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
@@ -114,9 +119,27 @@ public class TProfile implements Serializable{
 			cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + " -f " + getFormat() + " ";
 			cmd += getAdditionalFlags() + " -codec:v " + getvCodec() + " -codec:a " + getaCodec();
 			cmd += " -y " + output + "/" + this.getName() + "_" + level.getName() + "." + getFormat();
-			transcos.add(new Transco(cmd, output, input));
+			transcos.add(new Transco(cmd, output, input, this.getName()));
 		}
 		return transcos;
+	}
+	
+	public void setUris(JSONArray jsonAr, String destination) throws MCASException{
+		try {
+			for (TLevel level : this.getLevels()){
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("uri", Paths.get(
+						destination, this.getName() + "_" + level.getName() + "." + this.getFormat()));
+				jsonAr.put(jsonObj);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+	}
+	
+	public void processManifest(Transco transco) throws MCASException{
+		
 	}
 	
 	

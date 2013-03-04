@@ -28,6 +28,19 @@
         <windowLength>3</windowLength>
         <levels>
             <level name="level2"/>
+            <level name="level3"/>h
+            <level name="level4"/>
+        </levels>
+    </profile>
+    <profile name="profile4" class="DASH">
+    	<format>mpd</format>
+        <vcodec>libx264</vcodec>
+        <acodec>libfdk_aac</acodec>
+        <additionalFlags></additionalFlags>
+        <segDuration>500</segDuration>    <!-- Duration in ms -->
+        <fragDuration>100</fragDuration>	<!-- Duration in ms -->  
+        <levels>
+            <level name="level2"/>
             <level name="level3"/>
             <level name="level4"/>
         </levels>

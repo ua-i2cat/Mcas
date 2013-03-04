@@ -16,7 +16,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.io.FilenameUtils;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -246,12 +245,7 @@ public class TRequest implements Serializable {
 			if (transcoded.size() > 0) {
 				JSONArray jsonAr = new JSONArray();
 				for (TProfile profile : this.getTConfig().getProfiles()){
-					for (TLevel level : profile.getLevels()){
-						JSONObject jsonObj = new JSONObject();
-						jsonObj.put("uri", FilenameUtils.concat(
-								this.getDst(), profile.getName() + "_" + level.getName() + "." + profile.getFormat()));
-						jsonAr.put(jsonObj);
-					}
+					profile.setUris(jsonAr,this.getDst());
 				}
 				json.put("uris", jsonAr);
 			}

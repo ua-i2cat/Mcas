@@ -70,8 +70,8 @@ public class MediaHandler implements Cancellable {
 	public void outputHandle() throws MCASException {
 		try {
 			for (Transco transco : request.getTranscoded()){
-				uploader = new NewUploader(Paths.get(transco.getOutputDir()), new URI(request.getDst()));
-				uploader.upload();	
+				uploader = new NewUploader(new URI(request.getDst()));
+				uploader.upload(Paths.get(transco.getOutputDir()));	
 			}	
 			
 		} catch (URISyntaxException e) {

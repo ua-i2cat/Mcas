@@ -8,6 +8,7 @@ import java.util.Map;
 import org.jdom2.Element;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
+import cat.i2cat.mcaslite.config.model.TDASHOptions;
 import cat.i2cat.mcaslite.config.model.THLSOptions;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
@@ -87,6 +88,8 @@ public class DefaultsLoader {
 		String classAtr = profile.getAttributeValue("class");
 		if (classAtr != null && classAtr.equals("HLS")){
 			return getHLSProfile(profile);
+		} else if (classAtr != null && classAtr.equals("DASH")){
+			return getDASHProfile(profile);
 		} else {
 			TProfile tProfile = new TProfile();
 			setStdProfile(tProfile, profile);
@@ -100,6 +103,14 @@ public class DefaultsLoader {
 		hProfile.setSegDuration(XMLReader.getIntParameter(profile, "segDuration"));
 		setStdProfile(hProfile, profile);
 		return hProfile;
+	}
+	
+	private TDASHOptions getDASHProfile(Element profile){
+		TDASHOptions dProfile = new TDASHOptions();
+		dProfile.setSegDuration(XMLReader.getIntParameter(profile, "segDuration"));
+		dProfile.setFragDuration(XMLReader.getIntParameter(profile, "fragDuration"));
+		setStdProfile(dProfile, profile);
+		return dProfile;
 	}
 	
 	private void setStdProfile(TProfile tProfile, Element profile){
