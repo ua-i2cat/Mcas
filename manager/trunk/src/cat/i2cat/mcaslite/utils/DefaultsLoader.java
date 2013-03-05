@@ -8,6 +8,8 @@ import java.util.Map;
 import org.jdom2.Element;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
+import cat.i2cat.mcaslite.config.model.TDASHOptions;
+import cat.i2cat.mcaslite.config.model.THLSOptions;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
@@ -15,16 +17,16 @@ import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 
 public class DefaultsLoader {
 	
+	public static String DEFAULT = "default";
+	
 	public DefaultsLoader(String path){
 		this.path = path;
-		transcoConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 	}
 	
 	private String path;
 	private List<TranscoderConfig> configs;
 	private Map<String, TLevel> allLevels;
 	private Map<String, TProfile> allProfiles;
-	private DAO<TranscoderConfig> transcoConfigDao;
 	
 	
 	public List<TranscoderConfig> getConfigs(){
@@ -57,23 +59,20 @@ public class DefaultsLoader {
 			XMLReader reader = new XMLReader(path);
 			List<Element> levelElements = reader.getRootChildrenElements(reader.getDoc("levels.xml"));
 			for(Element el : levelElements){
-				allLevels.put(el.getAttributeValue("name"), setLevel(el));			
+				allLevels.put(el.getAttributeValue("name"), getLevel(el));			
 			}
 		}
 		return allLevels;
 	}
 	
 	private TranscoderConfig getConfig(Element config){
-		
 		TranscoderConfig tConfig = new TranscoderConfig();
 		tConfig.setName(config.getAttributeValue("name"));
-		tConfig.setInputWorkingDir(XMLReader.getParameter(config, "workdir.input"));
-		tConfig.setOutputWorkingDir(XMLReader.getParameter(config, "workdir.output"));
-		tConfig.setTimeout(Integer.parseInt(XMLReader.getParameter(config, "timeout")));
-		tConfig.setLive(Boolean.parseBoolean(XMLReader.getParameter(config, "live")));
-		
+		tConfig.setInputWorkingDir(XMLReader.getStringParameter(config, "workdir.input"));
+		tConfig.setOutputWorkingDir(XMLReader.getStringParameter(config, "workdir.output"));
+		tConfig.setTimeout(XMLReader.getIntParameter(config, "timeout"));
+		tConfig.setLive(Boolean.parseBoolean(XMLReader.getStringParameter(config, "live")));
 		tConfig.setProfiles(getConfigProfiles(getConfigProfilesName(config)));
-		
 		return tConfig;
 	}
 	
@@ -86,16 +85,41 @@ public class DefaultsLoader {
 	}
 	
 	private TProfile getProfile(Element profile){
-		TProfile tProfile = new TProfile();
-		
-		tProfile.setFormat(XMLReader.getParameter(profile, "format"));
-		tProfile.setaCodec(XMLReader.getParameter(profile, "acodec"));
-		tProfile.setvCodec(XMLReader.getParameter(profile, "vcodec"));
-		tProfile.setName(XMLReader.getElementName(profile) + XMLReader.getParameter(profile, "format"));
-		tProfile.setAdditionalFlags(XMLReader.getParameter(profile, "additionalFlags"));
+		String classAtr = profile.getAttributeValue("class");
+		if (classAtr != null && classAtr.equals("HLS")){
+			return getHLSProfile(profile);
+		} else if (classAtr != null && classAtr.equals("DASH")){
+			return getDASHProfile(profile);
+		} else {
+			TProfile tProfile = new TProfile();
+			setStdProfile(tProfile, profile);
+			return tProfile;
+		}
+	}
+	
+	private THLSOptions getHLSProfile(Element profile){
+		THLSOptions hProfile = new THLSOptions(); 
+		hProfile.setWindowLength(XMLReader.getIntParameter(profile, "windowLength"));
+		hProfile.setSegDuration(XMLReader.getIntParameter(profile, "segDuration"));
+		setStdProfile(hProfile, profile);
+		return hProfile;
+	}
+	
+	private TDASHOptions getDASHProfile(Element profile){
+		TDASHOptions dProfile = new TDASHOptions();
+		dProfile.setSegDuration(XMLReader.getIntParameter(profile, "segDuration"));
+		dProfile.setFragDuration(XMLReader.getIntParameter(profile, "fragDuration"));
+		setStdProfile(dProfile, profile);
+		return dProfile;
+	}
+	
+	private void setStdProfile(TProfile tProfile, Element profile){
+		tProfile.setFormat(XMLReader.getStringParameter(profile, "format"));
+		tProfile.setaCodec(XMLReader.getStringParameter(profile, "acodec"));
+		tProfile.setvCodec(XMLReader.getStringParameter(profile, "vcodec"));
+		tProfile.setName(XMLReader.getElementName(profile) + XMLReader.getStringParameter(profile, "format"));
+		tProfile.setAdditionalFlags(XMLReader.getStringParameter(profile, "additionalFlags"));
 		tProfile.setLevels(getProfileLevels(getProfileLevelsName(profile)));
-		
-		return tProfile;
 	}
 	
 	private List<TLevel> getProfileLevels(List<String> profileLevels){
@@ -108,14 +132,14 @@ public class DefaultsLoader {
 		return tLevels;
 	}
 	
-	private TLevel setLevel(Element level){
+	private TLevel getLevel(Element level){
 		TLevel tLevel = new TLevel();
-		tLevel.setaBitrate(Integer.parseInt(XMLReader.getParameter(level, "abitrate")));
-		tLevel.setaChannels(Integer.parseInt(XMLReader.getParameter(level, "achannels")));
+		tLevel.setaBitrate(XMLReader.getIntParameter(level, "abitrate"));
+		tLevel.setaChannels(XMLReader.getIntParameter(level, "achannels"));
 		tLevel.setName(XMLReader.getElementName(level));
-		tLevel.setWidth(Integer.parseInt(XMLReader.getParameter(level, "width")));
-		tLevel.setQuality(Integer.parseInt(XMLReader.getParameter(level, "quality")));
-		
+		tLevel.setWidth(XMLReader.getIntParameter(level, "width"));
+		tLevel.setQuality(XMLReader.getIntParameter(level, "quality"));
+		tLevel.setMaxRate(XMLReader.getIntParameter(level, "maxRate"));
 		return tLevel;
 	}
 	
@@ -138,6 +162,7 @@ public class DefaultsLoader {
 	}
 	
 	public void tConfigFeedDefaults(){
+		DAO<TranscoderConfig> transcoConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
 		List<TranscoderConfig> transcoList = getConfigs();
 		for (TranscoderConfig transco : transcoList){
 			transcoConfigDao.save(transco);

@@ -1,10 +1,9 @@
 package cat.i2cat.mcaslite.management;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Iterator;
+import java.nio.file.Paths;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TRequest;
@@ -12,7 +11,7 @@ import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.Uploader;
+import cat.i2cat.mcaslite.utils.NewUploader;
 
 public class MediaHandler implements Cancellable {
 
@@ -20,7 +19,7 @@ public class MediaHandler implements Cancellable {
 	private TRequest request;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class); 
 	private Downloader downloader;
-	private Uploader uploader;
+	private NewUploader uploader;
 	private boolean cancelled = false;
 	private boolean done = false;
 	private Watcher watcher;
@@ -31,14 +30,13 @@ public class MediaHandler implements Cancellable {
 	}
 
 	public void inputHandle() throws MCASException {
-		MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
 		copyToWorkingDir();
 	}
 	
-	public void initWatcher() throws IOException, MCASException, URISyntaxException{
+	public void initWatcher(String profile) throws IOException, MCASException, URISyntaxException{
 		String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
-		URI dst = Uploader.createDestinationDir(request.getId(), new URI(request.getDst()));
-		watcher = new Watcher(path, request.getTConfig(), dst);
+		URI dst = new URI(request.getDst());
+		watcher = new Watcher(path, request.getTConfig(), dst, profile);
 		(new Thread(watcher)).start();
 	}
 	
@@ -70,25 +68,23 @@ public class MediaHandler implements Cancellable {
 	}
 	
 	public void outputHandle() throws MCASException {
-		Iterator<Transco> i = request.getTranscoded().iterator();
-		while(i.hasNext()){
-			Transco transco = i.next();
-			try {
-				uploader = new Uploader(new URI(transco.getDestinationUri()));
-				uploader.toDestinationUri(new File(transco.getOutputFile()));
-			} catch (Exception e) {
-				e.printStackTrace();
-				i.remove();
-				MediaUtils.deleteFile(transco.getOutputFile());
-			}
+		try {
+			for (Transco transco : request.getTranscoded()){
+				uploader = new NewUploader(new URI(request.getDst()));
+				uploader.upload(Paths.get(transco.getOutputDir()));	
+			}	
+			
+		} catch (URISyntaxException e) {
+			throw new MCASException();
 		}
+		
 		try {
 			setDone(true);
 			if (! isCancelled()) {
 				if (request.getNumOutputs() > request.getTranscoded().size()){
 					if (request.isTranscodedEmpty()){
 						MediaUtils.deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
-						Uploader.deleteDestination(request.getDst());
+			//TODO			Uploader.deleteDestination(request.getDst());
 						request.setError();
 					} else {
 						request.setPartialError();

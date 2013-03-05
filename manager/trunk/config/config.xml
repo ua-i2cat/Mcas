@@ -15,7 +15,7 @@
 		</connection>
 		<processqueue>videoqueue</processqueue>
 		<cancelqueue>cancelqueue</cancelqueue>
-		<container>input</container>
+		<inContainer>input</inContainer>
 		<cancelTryout>3</cancelTryout>
 	</cloud>
     <callback>

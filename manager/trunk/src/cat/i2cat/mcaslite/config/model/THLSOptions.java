@@ -1,7 +1,8 @@
 package cat.i2cat.mcaslite.config.model;
 
-import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,17 +27,18 @@ public class THLSOptions extends TProfile {
 
 	
 	@Override
-	 public List<Transco> commandBuilder(String input, String output, String dst) throws MCASException{
+	 public List<Transco> commandBuilder(String input, String output) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
+		String cmd = "ffmpeg -re -analyzeduration 10 -i " + input;
 		for (TLevel level : getLevels()){
-			String cmd = "ffmpeg -i " + input;
-			cmd += " -vf scale="+ level.getWidth() +":-1" + " -qmin " + level.getQuality() + " -qmax " + level.getQuality(); 
+			cmd += " -vf scale="+ level.getWidth() +":-1";
+			cmd += " -g 50 -r 25 -qmin " + level.getQuality() + " -qmax " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
-			cmd += " -codec:v " + getvCodec() + " -codec:a " + getaCodec() + " " + getAdditionalFlags();
-			cmd += " -f segment -segment_list_flags live -segment_list " + output + "_" + level.getName() + ".csv";
-			cmd += " -segment_time " + getSegDuration() + " " + output + "_" + level.getName() + "_%d.ts";
-			transcos.add(new Transco(cmd, (new File(output)).getParent(), dst, input));
+			cmd += " -c:v " + getvCodec() + " -c:a " + getaCodec() + " " + getAdditionalFlags();
+			cmd += " -f segment -segment_time_delta 0.03";
+			cmd += " -segment_time " + getSegDuration() + " " + output + "/" + this.getName() + "_" + level.getName() + "_%d.ts";
 		}
+		transcos.add(new Transco(cmd, output, input, this.getName()));
 		return transcos;
 	}
 	
@@ -52,12 +54,33 @@ public class THLSOptions extends TProfile {
 		return windowLength;
 	}
 	
+//	@Transient
+//	public double getTimeDelta() {
+//		return this.segDuration*0.05;
+//	}
+	
 	public void setWindowLength(int windowLength) {
 		this.windowLength = windowLength;
 	}
 	
 	@Override
-	public FileEventProcessor getFileEP(URI dst){
-		return new HLSManifestManager(windowLength, segDuration, dst);
+	public List<String> getUris(URI destination) throws MCASException{
+		List<String> uris = new ArrayList<String>();
+		try {
+			URI dst = new URI(destination.getScheme(), 
+				destination.getHost(), 
+				Paths.get(destination.getPath(), this.getName() + "." + this.getFormat()).toString(), 
+				null);
+			uris.add(dst.toString());
+		} catch (URISyntaxException e){
+			e.printStackTrace();
+			throw new MCASException();
+		}
+		return uris;
+	}
+	
+	@Override
+	public FileEventProcessor getFileEP(URI dst) throws MCASException{
+		return new HLSManifestManager(windowLength, segDuration, dst, getLevels(), this.getName());
 	}
 }

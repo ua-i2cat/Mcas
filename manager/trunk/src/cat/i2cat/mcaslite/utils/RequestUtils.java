@@ -5,16 +5,11 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 
 import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.cloud.CloudManager;
 import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.Status;
 
 
 public class RequestUtils {
@@ -29,7 +24,7 @@ public class RequestUtils {
 					HttpURLConnection httpCon = (HttpURLConnection) uri.toURL().openConnection();
 					httpCon.setRequestMethod("HEAD");
 					return (httpCon.getResponseCode() == HttpURLConnection.HTTP_OK);
-				} else if (uri.getScheme().equals("rtp")) {
+				} else if (uri.getScheme().equals("rtp") || uri.getScheme().equals("rtsp")) {
 					return true;
 				}
 			}
@@ -55,8 +50,8 @@ public class RequestUtils {
 			return false;
 		} else if (uri.getScheme().equals("ftp")) {
 			return false;
-		} else if (uri.getScheme().equals("scp")) {
-			return false;
+		} else if (uri.getScheme().equals("rtp") || uri.getScheme().equals("rtsp")) {
+			return true;
 		}
 		
 		return false;
@@ -69,30 +64,6 @@ public class RequestUtils {
 		return true;
 	}
 	
-	public static String destinationJSONbuilder(TRequest request) throws MCASException {
-		if (!(request.getStatus().getInt() == Status.DONE)  && !(request.getStatus().getInt() == Status.P_ERROR)
-				&& !(request.getStatus().getInt() == Status.PROCESS_L)){
-			throw new MCASException();
-		}
-		return destinationJSON(request).toString();
-	}
-	
-	private static JSONObject destinationJSON(TRequest request) throws MCASException{
-		JSONArray jsonAr = new JSONArray();
-		try {
-			for(Transco transco : request.getTranscoded()){
-				JSONObject jsonObj = new JSONObject();
-				jsonObj.put("uri", transco.getDestinationUri());
-				jsonAr.put(jsonObj);
-			}
-			return (new JSONObject()).put("destinationUris", jsonAr);
-		} catch (JSONException e){
-			e.printStackTrace();
-			throw new MCASException();
-		}
-	}
-	
-
 	public static void callback(TRequest request) throws MCASException {
 		try {
 			if (request.getStatus().isDone()) {

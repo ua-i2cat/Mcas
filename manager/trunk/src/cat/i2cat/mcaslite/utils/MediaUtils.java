@@ -2,6 +2,7 @@ package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -15,13 +16,15 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 public class MediaUtils {
 	
 	public static String createOutputWorkingDir(String id, String outputWorkingDir) throws MCASException {
-		String path = TranscoderUtils.getOutputDir(id, outputWorkingDir);
+		String path = FilenameUtils.concat(outputWorkingDir, id);
 		File file = new File(path);
-		if (! file.mkdirs()){
-			throw new MCASException();
-		} else {
+		if (file.isDirectory() && file.canWrite()){
 			return path;
 		}
+		else if(!file.exists() && file.getParentFile().canWrite() && file.mkdirs()){
+			return path;
+		}
+		throw new MCASException();
 	}
 	
 	public static boolean deleteInputFile(String requestId, String inputWorkingDir) {
@@ -81,7 +84,7 @@ public class MediaUtils {
 
 	private static void cleanTransco(Transco transco){
 		deleteFile(transco.getInputFile());
-		deleteFile(transco.getOutputFile());
+		deleteFile(Paths.get(transco.getOutputDir()).getParent().toString());
 	}
 	
 	private static void cleanTranscos(List<Transco> transcos){

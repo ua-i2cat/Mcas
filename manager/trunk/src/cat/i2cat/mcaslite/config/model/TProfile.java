@@ -2,6 +2,8 @@ package cat.i2cat.mcaslite.config.model;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,32 +108,47 @@ public class TProfile implements Serializable{
 		this.id = id;
 	}
 	
-	public List<Transco> commandBuilder(String input, String output, String dst) throws MCASException{
+	public List<Transco> commandBuilder(String input, String output) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
 		for (TLevel level : levels){
 			String cmd = "ffmpeg -i " + input;
 			cmd += " -vf scale="+ level.getWidth() +":-1" + " -qmin " + level.getQuality() + " -qmax " + level.getQuality() + " -ac "; 
 			cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + " -f " + getFormat() + " ";
 			cmd += getAdditionalFlags() + " -codec:v " + getvCodec() + " -codec:a " + getaCodec();
-			cmd += " -y " + output + "_" + level.getName() + "." + getFormat();
-			transcos.add(new Transco(cmd, output + "_" + level.getName() + "." + getFormat(), 
-					dst + level.getName() + "." + getFormat(), input));
+			cmd += " -y " + output + "/" + this.getName() + "_" + level.getName() + "." + getFormat();
+			transcos.add(new Transco(cmd, output, input, this.getName()));
 		}
 		return transcos;
 	}
 	
-
-	@Transient
-	public int getNumOutputs(){
-		return levels.size();
+	public List<String> getUris(URI destination) throws MCASException{
+		List<String> uris = new ArrayList<String>();
+		try {
+			for (TLevel level : this.getLevels()){
+				URI dst = new URI(destination.getScheme(), 
+						destination.getHost(), 
+						Paths.get(destination.getPath(), this.getName() + "_" + level.getName() + "." + this.getFormat()).toString(), 
+						null);
+				uris.add(dst.toString());
+			}
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+		return uris;
 	}
+	
+	public void processManifest(Transco transco) throws MCASException{
+		
+	}
+	
 	
 	@Transient
 	public FileEventProcessor getFileEP(String dst){
 		return null;
 	}
 
-	public FileEventProcessor getFileEP(URI dst) {
+	public FileEventProcessor getFileEP(URI dst) throws MCASException {
 		// TODO Auto-generated method stub
 		return null;
 	}

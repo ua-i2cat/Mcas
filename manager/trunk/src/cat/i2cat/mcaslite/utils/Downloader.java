@@ -19,17 +19,19 @@ import cat.i2cat.mcaslite.management.Cancellable;
 
 public class Downloader implements Cancellable {
 
-	private static final int BLOCK_SIZE = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "downloader.dblocksize"));
-	private static final int HTTP_TIMEOUT = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "downloader.httptimeout"));
-	private static final String CLOUD_CONTAINER = XMLReader.getXMLParameter("config/config.xml", "cloud.container");
-	
-	
+	private int blockSize; 
+	private int httpTimeout;
+	private String cloudContainer;
 	private boolean cancelled = false;
 	private URI input;
 	private File destination;
 	private boolean done = false;
 	
 	public Downloader(URI input, File destination){
+		String path = "config/config.xml";
+		this.blockSize = Integer.parseInt(XMLReader.getXMLParameter(path, "downloader.dblocksize"));
+		this.httpTimeout = Integer.parseInt(XMLReader.getXMLParameter(path, "downloader.httptimeout"));
+		this.cloudContainer = XMLReader.getXMLParameter("config/config.xml", "cloud.inContainer");
 		this.input = input;
 		this.destination = destination;
 	}
@@ -56,7 +58,7 @@ public class Downloader implements Cancellable {
 	
 	private void blobToFile() throws MCASException {
 		try {
-			CloudBlob blob = AzureUtils.getFirstBlob(CLOUD_CONTAINER, Paths.get(input.getPath()).getFileName().toString());
+			CloudBlob blob = AzureUtils.getFirstBlob(cloudContainer, Paths.get(input.getPath()).getFileName().toString());
 			inputStreamToFile(blob.openInputStream());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -77,7 +79,7 @@ public class Downloader implements Cancellable {
 		try {
 			URL url = input.toURL();
 			URLConnection conn = url.openConnection();
-			conn.setReadTimeout(HTTP_TIMEOUT);
+			conn.setReadTimeout(httpTimeout);
 			inputStreamToFile(conn.getInputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -91,7 +93,7 @@ public class Downloader implements Cancellable {
 		try {
 			writer = new FileOutputStream(destination);
 			inStream = new BufferedInputStream(in);
-			byte[] buffer = new byte[BLOCK_SIZE];
+			byte[] buffer = new byte[blockSize];
 			int bytesRead = 0;
 			while ((bytesRead = inStream.read(buffer)) != -1) {
 		        if (isCancelled()){

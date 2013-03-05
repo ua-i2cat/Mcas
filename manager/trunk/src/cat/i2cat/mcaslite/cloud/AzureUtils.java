@@ -1,7 +1,6 @@
 package cat.i2cat.mcaslite.cloud;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.util.EnumSet;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
@@ -30,9 +29,6 @@ public class AzureUtils {
 		    "DefaultEndpointsProtocol=http;" + 
 	   	    "AccountName=storagevideos;" + 
 	  	    "AccountKey=qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==";
-	//private static final String cloudQueue = "videoqueue";
-	//private static final String inputCont = "input";
-	//private static final String outputCont = "output";
 
 	public static CloudQueueMessage retrieveMessage(int timeout, String cloudQueue) throws MCASException {
 		try {
@@ -131,7 +127,7 @@ public class AzureUtils {
 		throw new MCASException();
 	}
 	
-	public static BlobOutputStream fileToOutputStream(File file, String cloudCont, String fileName) throws MCASException{
+	public static BlobOutputStream fileToOutputStream(String cloudCont, String fileName) throws MCASException{
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
@@ -209,8 +205,4 @@ public class AzureUtils {
 			return false;
 		}
 	}
-	
-//	private static String trimBottomDir(String fileName) {
-//		return Paths.get(fileName).getName(0).toString();
-//	}
 }
