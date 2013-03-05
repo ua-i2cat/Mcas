@@ -29,9 +29,9 @@ public class Downloader implements Cancellable {
 	
 	public Downloader(URI input, File destination){
 		String path = "config/config.xml";
-		this.blockSize = Integer.parseInt(XMLReader.getXMLParameter(path, "downloader.dblocksize"));
-		this.httpTimeout = Integer.parseInt(XMLReader.getXMLParameter(path, "downloader.httptimeout"));
-		this.cloudContainer = XMLReader.getXMLParameter("config/config.xml", "cloud.inContainer");
+		this.blockSize = XMLReader.getIntParameter(path, "downloader.dblocksize");
+		this.httpTimeout = XMLReader.getIntParameter(path, "downloader.httptimeout");
+		this.cloudContainer = XMLReader.getStringParameter("config/config.xml", "cloud.inContainer");
 		this.input = input;
 		this.destination = destination;
 	}

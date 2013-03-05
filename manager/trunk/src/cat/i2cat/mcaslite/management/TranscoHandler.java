@@ -25,9 +25,9 @@ public class TranscoHandler implements Runnable {
 	
 	private TranscoHandler() {
 		String path = "config/config.xml";
-		maxRequests = Integer.parseInt(XMLReader.getXMLParameter(path, "maxreq"));
+		maxRequests = XMLReader.getIntParameter(path, "maxreq");
 		queue = ProcessQueue.getInstance();
-		queue.setMaxProcess(Integer.parseInt(XMLReader.getXMLParameter(path, "maxproc")));
+		queue.setMaxProcess(XMLReader.getIntParameter(path, "maxproc"));
 	}
 	
 	public static TranscoHandler getInstance(){

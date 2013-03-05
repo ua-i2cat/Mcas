@@ -12,6 +12,9 @@
     </uploader>
    <cloud>
 		<connection>
+			<accountName>storagevideos</accountName>
+			<accountKey>qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==</accountKey>
+			<protocol>http</protocol>
 		</connection>
 		<processqueue>videoqueue</processqueue>
 		<cancelqueue>cancelqueue</cancelqueue>
@@ -24,8 +27,8 @@
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
-                <input>/home/david/input</input>
-                <output>/home/david/output</output>
+                <input>input</input>
+                <output>output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>

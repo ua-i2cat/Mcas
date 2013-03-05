@@ -5,6 +5,7 @@ import java.util.EnumSet;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.XMLReader;
 
 import com.microsoft.windowsazure.services.blob.client.BlobContainerPermissions;
 import com.microsoft.windowsazure.services.blob.client.BlobContainerPublicAccessType;
@@ -25,10 +26,11 @@ import com.microsoft.windowsazure.services.table.client.TableOperation;
 
 public class AzureUtils {
 	
+	private static final String path = "config/config.xml";
 	private static final String storageConnectionString = 
-		    "DefaultEndpointsProtocol=http;" + 
-	   	    "AccountName=storagevideos;" + 
-	  	    "AccountKey=qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==";
+		    "DefaultEndpointsProtocol=" + XMLReader.getStringParameter(path, "cloud.connection.protocol") + ";" + 
+	   	    "AccountName=" + XMLReader.getStringParameter(path, "cloud.connection.accountName") + ";" + 
+	  	    "AccountKey=" + XMLReader.getStringParameter(path, "cloud.connection.accountKey");
 
 	public static CloudQueueMessage retrieveMessage(int timeout, String cloudQueue) throws MCASException {
 		try {

@@ -82,24 +82,31 @@ public class XMLReader {
 		}
 	}
 	
-	public static String getXMLParameter(String path, String param){
-		String returnItem = null;
+	public static String getStringParameter(String path, String param){
 		try {
 			SAXBuilder builder = new SAXBuilder();
 			File xmlFile = new File(path);
 			Document doc;
 			doc = (Document) builder.build(xmlFile);
-			Element el = doc.getRootElement();
-			String[] children = param.split("\\.");	
-			for (String child : children){
-				el = el.getChild(child);
-			}	
-			returnItem =  el.getText();
+			return getStringParameter(doc.getRootElement(), param);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return returnItem;
-	}	
+	}
+	
+	public static int getIntParameter(String path, String param){
+		try {
+			SAXBuilder builder = new SAXBuilder();
+			File xmlFile = new File(path);
+			Document doc;
+			doc = (Document) builder.build(xmlFile);
+			return getIntParameter(doc.getRootElement(), param);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
 }
 	
 	

@@ -24,10 +24,10 @@ public class CloudManager implements Runnable, Cancellable {
 	private int pollInterval = 10;
 	private int pollFactor = 2;
 
-	private String videoQueue = XMLReader.getXMLParameter("config/config.xml", "cloud.processqueue");
-	private String cancelQueue = XMLReader.getXMLParameter("config/config.xml", "cloud.cancelqueue");
+	private String videoQueue = XMLReader.getStringParameter("config/config.xml", "cloud.processqueue");
+	private String cancelQueue = XMLReader.getStringParameter("config/config.xml", "cloud.cancelqueue");
 	
-	private int cancelTryout = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "cloud.cancelTryout"));
+	private int cancelTryout = XMLReader.getIntParameter("config/config.xml", "cloud.cancelTryout");
 	
 	private Map<String, CloudQueueMessage> messages = new ConcurrentHashMap<String, CloudQueueMessage>();
 	private String cancelId;

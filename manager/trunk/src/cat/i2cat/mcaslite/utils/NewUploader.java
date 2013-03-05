@@ -21,7 +21,7 @@ public class NewUploader implements Cancellable {
 	
 	public NewUploader(URI destination){
 		String path = "config/config.xml";
-		this.blockSize = Integer.parseInt(XMLReader.getXMLParameter(path, "uploader.ublocksize"));
+		this.blockSize = XMLReader.getIntParameter(path, "uploader.ublocksize");
 		this.destination = destination;
 	}
 	

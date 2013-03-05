@@ -70,13 +70,13 @@ public class RequestUtils {
 				if (AzureUtils.updateVideoEntity(request)) {
 					AzureUtils.deleteQueueMessage(
 							CloudManager.getInstance().popCloudMessage(request.getId()),
-							XMLReader.getXMLParameter("config/config.xml", "cloud.processqueue"));
+							XMLReader.getStringParameter("config/config.xml", "cloud.processqueue"));
 				}
 			} else if (! request.getStatus().hasNext()) {
 				if (AzureUtils.updateVideoEntity(request)) {
 					AzureUtils.deleteQueueMessage(
 							CloudManager.getInstance().popCloudMessage(request.getId()),
-							XMLReader.getXMLParameter("config/config.xml", "cloud.processqueue"));
+							XMLReader.getStringParameter("config/config.xml", "cloud.processqueue"));
 				}
 			} else {
 				AzureUtils.updateVideoEntity(request);
