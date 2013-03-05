@@ -86,7 +86,6 @@ public class MediaHandler implements Cancellable {
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
-		
 		try {
 			setDone(true);
 			if (! isCancelled()) {

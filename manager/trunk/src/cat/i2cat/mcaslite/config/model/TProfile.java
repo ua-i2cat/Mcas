@@ -2,6 +2,7 @@ package cat.i2cat.mcaslite.config.model;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,11 +129,18 @@ public class TProfile implements Serializable{
 		try {
 			for (TLevel level : this.getLevels()){
 				JSONObject jsonObj = new JSONObject();
-				jsonObj.put("uri", Paths.get(
-						destination, this.getName() + "_" + level.getName() + "." + this.getFormat()));
+				URI dst = new URI(destination);
+				dst = new URI(dst.getScheme(), 
+						dst.getHost(), 
+						Paths.get(dst.getPath(), this.getName() + "_" + level.getName() + "." + this.getFormat()).toString(), 
+						null);
+				jsonObj.put("uri", dst.toString());
 				jsonAr.put(jsonObj);
 			}
 		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			throw new MCASException();
 		}
