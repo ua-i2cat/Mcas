@@ -1,6 +1,8 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -244,14 +246,27 @@ public class TRequest implements Serializable {
 			json.put("status", status.toString());
 			if (transcoded.size() > 0) {
 				JSONArray jsonAr = new JSONArray();
-				for (TProfile profile : this.getTConfig().getProfiles()){
-					profile.setUris(jsonAr,this.getDst());
+				for (String uri : getUris()){
+					jsonAr.put(new JSONObject("{uri: '" + uri + "'}"));
 				}
 				json.put("uris", jsonAr);
 			}
 			return json.toString();
 		} catch (JSONException e){
+			e.printStackTrace();
 			throw new MCASException();
 		}
+	}
+	
+	public List<String> getUris() throws MCASException{
+		List<String> uris = new ArrayList<String>();
+		try {
+			for (TProfile profile : this.getTConfig().getProfiles()){
+				uris.addAll(profile.getUris(new URI(dst)));
+			}
+		} catch (URISyntaxException e){
+			throw new MCASException();
+		}
+		return uris;
 	}
 }

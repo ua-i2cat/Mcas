@@ -22,7 +22,7 @@ public class TranscoderUtils {
 		for(TProfile profile : config.getProfiles()){
 			commands.addAll(profile.commandBuilder(
 				(config.isLive()) ? src.toString() : getInput(id,config.getInputWorkingDir()), 
-				getOutput(id, config.getOutputWorkingDir(), profile.getName())));
+				getOutput(id, config.getOutputWorkingDir(), profile.getName()), config.isLive()));
 		}
 		return commands;
 	}

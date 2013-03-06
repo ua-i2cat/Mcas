@@ -178,17 +178,17 @@ public class Transcoder implements Runnable, Cancellable {
 				case Status.PROCESS_MO:
 					return mediaH.cancel(mayInterruptIfRunning);
 				case Status.PROCESS_T:
+					MediaUtils.clean(request);
 					if (! isDone()){
 						return stop(mayInterruptIfRunning);
 					} else {
-						MediaUtils.clean(request);
 						return true;
 					}
 				case Status.PROCESS_L:
+					MediaUtils.clean(request);
 					if (! isDone()){
 						return stop(mayInterruptIfRunning);
 					} else {
-						MediaUtils.clean(request);
 						return true;
 					}
 				default:

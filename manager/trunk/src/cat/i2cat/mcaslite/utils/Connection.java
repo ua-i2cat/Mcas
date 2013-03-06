@@ -16,7 +16,6 @@ public class Connection {
 				return new FileOutputStream(file);
 			}
 			throw new MCASException();
-			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			throw new MCASException();

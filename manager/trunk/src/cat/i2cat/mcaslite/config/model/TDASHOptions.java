@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +10,6 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.DashManifestManager;
@@ -39,7 +36,7 @@ public class TDASHOptions extends TProfile {
 
 	
 	@Override
-	 public List<Transco> commandBuilder(String input, String output){
+	 public List<Transco> commandBuilder(String input, String output, boolean live){
 		List<Transco> transcos = new ArrayList<Transco>();
 		String cmd = "MP4Box -rap -frag-rap";
 		cmd += " -dash " + this.segDuration + " -frag " + this.fragDuration;
@@ -59,20 +56,24 @@ public class TDASHOptions extends TProfile {
 	}
 	
 	@Override
-	public void setUris(JSONArray jsonAr, String destination) throws MCASException{
+	public List<String> getUris(URI destination) throws MCASException{
+		List<String> uris = new ArrayList<String>();
 		try {
-			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("uri", Paths.get(destination, this.getName() + "." + this.getFormat()));
-			jsonAr.put(jsonObj);
-		} catch (JSONException e) {
+			URI dst = new URI(destination.getScheme(), 
+				destination.getHost(), 
+				Paths.get(destination.getPath(), this.getName() + "." + this.getFormat()).toString(), 
+				null);
+			uris.add(dst.toString());
+		} catch (URISyntaxException e){
 			e.printStackTrace();
 			throw new MCASException();
 		}
+		return uris;
 	}
 	
 	@Transient
 	@Override
-	public FileEventProcessor getFileEP(URI dst, String profileName){
+	public FileEventProcessor getFileEP(URI dst){
 		return new DashManifestManager();
 	}
 	

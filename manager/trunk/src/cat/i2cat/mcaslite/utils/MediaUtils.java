@@ -20,10 +20,9 @@ public class MediaUtils {
 		File file = new File(path);
 		if (file.isDirectory() && file.canWrite()){
 			return path;
-		}
-		else if(!file.exists() && file.getParentFile().canWrite() && file.mkdirs()){
+		} else if(!file.exists() && file.mkdirs()){
 			return path;
-		}
+		} 
 		throw new MCASException();
 	}
 	
@@ -39,8 +38,7 @@ public class MediaUtils {
 		File file = new File(workDir);
 		if (file.isDirectory() && file.canWrite()){
 			return workDir;
-		}
-		else if(!file.exists() && file.getParentFile().canWrite() && file.mkdirs()){
+		} else if(!file.exists() && file.mkdirs()){
 			return workDir;
 		}
 		throw new MCASException();

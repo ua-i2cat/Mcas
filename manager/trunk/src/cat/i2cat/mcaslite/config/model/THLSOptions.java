@@ -1,6 +1,8 @@
 package cat.i2cat.mcaslite.config.model;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +10,6 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
@@ -30,15 +28,18 @@ public class THLSOptions extends TProfile {
 
 	
 	@Override
-	 public List<Transco> commandBuilder(String input, String output) throws MCASException{
+	 public List<Transco> commandBuilder(String input, String output, boolean live) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
-		String cmd = "ffmpeg -re -analyzeduration 10 -i " + input;
+		String cmd = "ffmpeg " + (live ? "-re" : "") + " -analyzeduration 10 -i " + input;
 		for (TLevel level : getLevels()){
-			cmd += " -vf scale="+ level.getWidth() +":-1";
+			cmd += " -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
 			cmd += " -g 50 -r 25 -qmin " + level.getQuality() + " -qmax " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 			cmd += " -c:v " + getvCodec() + " -c:a " + getaCodec() + " " + getAdditionalFlags();
 			cmd += " -f segment -segment_time_delta 0.03";
+			if (! live){
+				cmd += " -segment_list "+ output + "/" + this.getName() + "_" + level.getName() + ".csv";
+			}
 			cmd += " -segment_time " + getSegDuration() + " " + output + "/" + this.getName() + "_" + level.getName() + "_%d.ts";
 		}
 		transcos.add(new Transco(cmd, output, input, this.getName()));
@@ -67,20 +68,35 @@ public class THLSOptions extends TProfile {
 	}
 	
 	@Override
-	public void setUris(JSONArray jsonAr, String destination) throws MCASException{
+	public List<String> getUris(URI destination) throws MCASException{
+		List<String> uris = new ArrayList<String>();
 		try {
-			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("uri", Paths.get(
-					destination, this.getName() + "." + this.getFormat()));
-			jsonAr.put(jsonObj);
-		} catch (JSONException e) {
+			URI dst = new URI(destination.getScheme(), 
+				destination.getHost(), 
+				Paths.get(destination.getPath(), this.getName() + "." + this.getFormat()).toString(), 
+				null);
+			uris.add(dst.toString());
+		} catch (URISyntaxException e){
 			e.printStackTrace();
 			throw new MCASException();
 		}
+		return uris;
 	}
 	
 	@Override
-	public FileEventProcessor getFileEP(URI dst, String profileName) throws MCASException{
+	public FileEventProcessor getFileEP(URI dst) throws MCASException{
 		return new HLSManifestManager(windowLength, segDuration, dst, getLevels(), this.getName());
+	}
+	
+	@Override
+	public void processManifest(Transco transco) throws MCASException{
+		HLSManifestManager HLSMngr = new HLSManifestManager(0, segDuration, Paths.get(transco.getOutputDir()).toUri(), getLevels(), this.getName());
+		try {
+			HLSMngr.createMainManifest();
+			HLSMngr.createLevelManifests(transco.getOutputDir());
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
 	}
 }

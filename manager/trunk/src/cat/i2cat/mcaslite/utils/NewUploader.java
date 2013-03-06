@@ -22,7 +22,7 @@ public class NewUploader implements Cancellable {
 	
 	public NewUploader(URI destination){
 		String path = Paths.get(System.getProperty("mcas.home"), "WEB-INF/config.xml").toString();
-		this.blockSize = Integer.parseInt(XMLReader.getXMLParameter(path, "uploader.ublocksize"));
+		this.blockSize = XMLReader.getIntParameter(path, "uploader.ublocksize");
 		this.destination = destination;
 	}
 	
@@ -41,7 +41,7 @@ public class NewUploader implements Cancellable {
 		}
 	}
 	
-	public void uploadLive(byte[] byteArray, String fileName) throws MCASException{
+	public void upload(byte[] byteArray, String fileName) throws MCASException{
 		try {
 			byteArrayToOutputStream(Connection.getOutputStream(destination, fileName), byteArray);
 		} catch (Exception e) {

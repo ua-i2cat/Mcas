@@ -37,8 +37,8 @@
         <vcodec>libx264</vcodec>
         <acodec>libfdk_aac</acodec>
         <additionalFlags></additionalFlags>
-        <segDuration>500</segDuration>    <!-- Duration in ms -->
-        <fragDuration>100</fragDuration>	<!-- Duration in ms -->  
+        <segDuration>500</segDuration>
+        <fragDuration>100</fragDuration>
         <levels>
             <level name="level2"/>
             <level name="level3"/>

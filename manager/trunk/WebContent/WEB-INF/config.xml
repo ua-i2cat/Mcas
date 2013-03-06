@@ -10,19 +10,12 @@
     <uploader>
         <ublocksize>102400</ublocksize>
     </uploader>
-   <cloud>
-		<connection>
-		</connection>
-		<processqueue>videoqueue</processqueue>
-		<cancelqueue>cancelqueue</cancelqueue>
-		<container>input</container>
-	</cloud>
     <callback>http://192.168.10.114:8080/mcasWeb</callback>
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
-                <input>/home/david/input</input>
-                <output>/home/david/output</output>
+                <input>input</input>
+                <output>output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>
@@ -30,12 +23,13 @@
                 <profile name="profile1"/>
                 <profile name="profile2"/>
                 <profile name="profile4"/>
+                <profile name="profile3"/>
             </profiles>
         </tconfig>
         <tconfig name="live">
             <workdir>
-                <input>/home/david/input</input>
-                <output>/home/david/output</output>
+                <input>input</input>
+                <output>output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>true</live>
