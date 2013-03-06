@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.service;
 
 import cat.i2cat.mcaslite.cloud.CloudManager;
+import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.TranscoHandler;
 import cat.i2cat.mcaslite.utils.DefaultsLoader;
 
@@ -15,7 +16,12 @@ public class TranscoService {
 	public static void main(String[] args){
 		
 		DefaultsLoader loader = new DefaultsLoader(path);
-		loader.tConfigFeedDefaults();
+		try {
+			loader.tConfigFeedDefaults();
+		} catch (MCASException e) {
+			e.printStackTrace();
+			return;
+		}
 	
 		transcoH = TranscoHandler.getInstance();
 		managerTh = new Thread(transcoH);

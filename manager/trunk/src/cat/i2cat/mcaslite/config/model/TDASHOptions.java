@@ -36,12 +36,12 @@ public class TDASHOptions extends TProfile {
 
 	
 	@Override
-	 public List<Transco> commandBuilder(String input, String output){
+	 public List<Transco> commandBuilder(String input, String output, boolean live, String title){
 		List<Transco> transcos = new ArrayList<Transco>();
 		String cmd = "MP4Box -rap -frag-rap";
 		cmd += " -dash " + this.segDuration + " -frag " + this.fragDuration;
 		cmd += " -segment-name " + this.getName() + "_seg";
-		cmd += " -out " + output + "/" + this.getName() + "." + this.getFormat();
+		cmd += " -out " + output + "/" + title + "_" + this.getName() + "." + this.getFormat();
 		cmd += " " + input;
 		
 		transcos.add(new Transco(cmd, output, input, this.getName()));
@@ -56,12 +56,12 @@ public class TDASHOptions extends TProfile {
 	}
 	
 	@Override
-	public List<String> getUris(URI destination) throws MCASException{
+	public List<String> getUris(URI destination, String title) throws MCASException{
 		List<String> uris = new ArrayList<String>();
 		try {
 			URI dst = new URI(destination.getScheme(), 
 				destination.getHost(), 
-				Paths.get(destination.getPath(), this.getName() + "." + this.getFormat()).toString(), 
+				Paths.get(destination.getPath(), title + "_" + this.getName() + "." + this.getFormat()).toString(), 
 				null);
 			uris.add(dst.toString());
 		} catch (URISyntaxException e){

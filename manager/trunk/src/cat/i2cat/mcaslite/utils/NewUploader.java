@@ -40,7 +40,7 @@ public class NewUploader implements Cancellable {
 		}
 	}
 	
-	public void uploadLive(byte[] byteArray, String fileName) throws MCASException{
+	public void upload(byte[] byteArray, String fileName) throws MCASException{
 		try {
 			byteArrayToOutputStream(Connection.getOutputStream(destination, fileName), byteArray);
 		} catch (Exception e) {

@@ -35,7 +35,7 @@ public class Transcoder implements Runnable, Cancellable {
 		this.request = request;
 		try {
 			this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getId(), 
-					new URI(request.getSrc()));
+					new URI(request.getSrc()), request.getTitle());
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
@@ -151,6 +151,7 @@ public class Transcoder implements Runnable, Cancellable {
 		for(TProfile profile : request.getTConfig().getProfiles()){
 			if (profile.getName().equals(transco.getProfileName())){
 				profile.processManifest(transco);
+				return;
 			}
 		}
 	}
@@ -177,17 +178,17 @@ public class Transcoder implements Runnable, Cancellable {
 				case Status.PROCESS_MO:
 					return mediaH.cancel(mayInterruptIfRunning);
 				case Status.PROCESS_T:
+					MediaUtils.clean(request);
 					if (! isDone()){
 						return stop(mayInterruptIfRunning);
 					} else {
-						MediaUtils.clean(request);
 						return true;
 					}
 				case Status.PROCESS_L:
+					MediaUtils.clean(request);
 					if (! isDone()){
 						return stop(mayInterruptIfRunning);
 					} else {
-						MediaUtils.clean(request);
 						return true;
 					}
 				default:

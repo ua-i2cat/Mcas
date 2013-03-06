@@ -4,11 +4,11 @@
     <maxreq>1000</maxreq>
     <maxproc>2</maxproc>
     <downloader>
-        <dblocksize>102400</dblocksize>
+        <dblocksize>1024</dblocksize>
         <httptimeout>30000</httptimeout>
     </downloader>
     <uploader>
-        <ublocksize>102400</ublocksize>
+        <ublocksize>1024</ublocksize>
     </uploader>
    <cloud>
 		<connection>
@@ -16,14 +16,13 @@
 			<accountKey>qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==</accountKey>
 			<protocol>http</protocol>
 		</connection>
+		<pollFactor>2</pollFactor>
+		<pollInterval>10</pollInterval>
 		<processqueue>videoqueue</processqueue>
 		<cancelqueue>cancelqueue</cancelqueue>
 		<inContainer>input</inContainer>
 		<cancelTryout>3</cancelTryout>
 	</cloud>
-    <callback>
-
-    </callback>
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
@@ -33,8 +32,8 @@
             <timeout>86400</timeout>
             <live>false</live>
             <profiles>
-                <profile name="profile1"/>
-                <profile name="profile2"/>
+                <profile name="H264"/>
+                <profile name="WebM"/>
             </profiles>
         </tconfig>
     </transcoconfigs>

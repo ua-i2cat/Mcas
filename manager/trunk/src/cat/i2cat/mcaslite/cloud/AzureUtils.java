@@ -134,12 +134,10 @@ public class AzureUtils {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
 			CloudBlobContainer container = blobClient.getContainerReference(cloudCont);
-			if (container.exists()){
-				CloudBlockBlob blob = container.getBlockBlobReference(fileName);
-				return blob.openOutputStream();
-			} else {
-				throw new MCASException();
-			}
+			container.createIfNotExist();
+			//TODO: I should'nt create that container
+			CloudBlockBlob blob = container.getBlockBlobReference(fileName);
+			return blob.openOutputStream();
 		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();

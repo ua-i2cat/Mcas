@@ -247,7 +247,7 @@ public class TRequest implements Serializable {
 			if (transcoded.size() > 0) {
 				JSONArray jsonAr = new JSONArray();
 				for (String uri : getUris()){
-					jsonAr.put(new JSONObject("{uri: " + uri + "}"));
+					jsonAr.put(new JSONObject("{uri: '" + uri + "'}"));
 				}
 				json.put("uris", jsonAr);
 			}
@@ -262,7 +262,7 @@ public class TRequest implements Serializable {
 		List<String> uris = new ArrayList<String>();
 		try {
 			for (TProfile profile : this.getTConfig().getProfiles()){
-				uris.addAll(profile.getUris(new URI(dst)));
+				uris.addAll(profile.getUris(new URI(dst), getTitle()));
 			}
 		} catch (URISyntaxException e){
 			throw new MCASException();

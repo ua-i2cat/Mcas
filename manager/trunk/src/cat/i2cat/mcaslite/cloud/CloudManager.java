@@ -21,8 +21,8 @@ public class CloudManager implements Runnable, Cancellable {
 	private boolean cancelled = false;
 	private ProcessQueue queue;
 
-	private int pollInterval = 10;
-	private int pollFactor = 2;
+	private int pollInterval = XMLReader.getIntParameter("config/config.xml", "cloud.pollInterval");
+	private int pollFactor = XMLReader.getIntParameter("config/config.xml", "cloud.pollFactor");
 
 	private String videoQueue = XMLReader.getStringParameter("config/config.xml", "cloud.processqueue");
 	private String cancelQueue = XMLReader.getStringParameter("config/config.xml", "cloud.cancelqueue");
@@ -30,7 +30,7 @@ public class CloudManager implements Runnable, Cancellable {
 	private int cancelTryout = XMLReader.getIntParameter("config/config.xml", "cloud.cancelTryout");
 	
 	private Map<String, CloudQueueMessage> messages = new ConcurrentHashMap<String, CloudQueueMessage>();
-	private String cancelId;
+	private String cancelId = "";
 	private int cancelRetry;
 	
 
@@ -61,15 +61,19 @@ public class CloudManager implements Runnable, Cancellable {
 	private void processCancelMessage(CloudQueueMessage msg) throws MCASException {
 		if (msg != null){
 			try {
-				String id = msg.getMessageContentAsString();
-				if (messages.containsKey(id)){
-					if (TranscoHandler.getInstance().cancelRequest(
-						TRequest.getEqualRequest(id), true)){
-						AzureUtils.deleteQueueMessage(msg, cancelQueue);
-					}
+				if (! msg.getMessageContentAsString().equals(cancelId)) {
+					cancelId =  msg.getMessageContentAsString();
+					cancelRetry = 0;
+				}
+				if (messages.containsKey(cancelId)){
+					TranscoHandler.getInstance().cancelRequest(TRequest.getEqualRequest(cancelId), true);
+					msg = AzureUtils.retrieveMessage(pollInterval, cancelQueue);
+					AzureUtils.deleteQueueMessage(msg, cancelQueue);
 				} else {
-					if (cancelId.equals(id) && cancelRetry++ >= cancelTryout){
-						cancelTryout = 0;
+					if (cancelRetry++ >= cancelTryout){
+						cancelRetry = 0;
+						cancelId = "";
+						msg = AzureUtils.retrieveMessage(pollInterval, cancelQueue);
 						AzureUtils.deleteQueueMessage(msg, cancelQueue);
 					}
 				}
