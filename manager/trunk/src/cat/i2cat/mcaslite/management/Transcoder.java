@@ -35,7 +35,7 @@ public class Transcoder implements Runnable, Cancellable {
 		this.request = request;
 		try {
 			this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getId(), 
-					new URI(request.getSrc()));
+					new URI(request.getSrc()), request.getTitle());
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
@@ -150,7 +150,7 @@ public class Transcoder implements Runnable, Cancellable {
 	private void processManifest(Transco transco) throws MCASException{
 		for(TProfile profile : request.getTConfig().getProfiles()){
 			if (profile.getName().equals(transco.getProfileName())){
-				profile.processManifest(transco);
+				profile.processManifest(transco, request.getTitle());
 				return;
 			}
 		}

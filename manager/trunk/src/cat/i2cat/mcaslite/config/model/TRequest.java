@@ -176,7 +176,10 @@ public class TRequest implements Serializable {
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public void setTitle(String title) throws MCASException {
+		if (title.contains("_")){
+			throw new MCASException();
+		}
 		this.title = title;
 	}
 
@@ -262,7 +265,7 @@ public class TRequest implements Serializable {
 		List<String> uris = new ArrayList<String>();
 		try {
 			for (TProfile profile : this.getTConfig().getProfiles()){
-				uris.addAll(profile.getUris(new URI(dst)));
+				uris.addAll(profile.getUris(new URI(dst), getTitle()));
 			}
 		} catch (URISyntaxException e){
 			throw new MCASException();

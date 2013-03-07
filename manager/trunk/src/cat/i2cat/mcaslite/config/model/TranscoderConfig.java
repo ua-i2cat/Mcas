@@ -55,7 +55,10 @@ public class TranscoderConfig implements Serializable {
 		return name;
 	}
 	
-	public void setName(String name) {
+	public void setName(String name) throws MCASException{
+		if (name.contains("_")){
+			throw new MCASException();
+		}
 		this.name = name;
 	}
 	
@@ -105,10 +108,10 @@ public class TranscoderConfig implements Serializable {
 	}
 	
 	@Transient
-	public FileEventProcessor getFileEP(URI dst, String profileName) throws MCASException{
+	public FileEventProcessor getFileEP(URI dst, String profileName, String title) throws MCASException{
 		for(TProfile profile : profiles){
 			if (profile.getName().equals(profileName)){
-				return profile.getFileEP(dst);
+				return profile.getFileEP(dst, title);
 			}
 		}
 		throw new MCASException();

@@ -17,12 +17,14 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class TranscoderUtils {
 	
-	public static List<Transco> transcoBuilder(TranscoderConfig config, String id, URI src) throws MCASException{
+	public static List<Transco> transcoBuilder(TranscoderConfig config, String id, URI src, String title) throws MCASException{
 		List<Transco> commands = new ArrayList<Transco>();
 		for(TProfile profile : config.getProfiles()){
 			commands.addAll(profile.commandBuilder(
 				(config.isLive()) ? src.toString() : getInput(id,config.getInputWorkingDir()), 
-				getOutput(id, config.getOutputWorkingDir(), profile.getName()), config.isLive()));
+				getOutput(id, config.getOutputWorkingDir(), profile.getName()), 
+				config.isLive(),
+				title));
 		}
 		return commands;
 	}

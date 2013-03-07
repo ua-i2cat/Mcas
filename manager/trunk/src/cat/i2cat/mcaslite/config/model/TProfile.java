@@ -21,6 +21,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
+import cat.i2cat.mcaslite.utils.MediaUtils;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -94,7 +95,10 @@ public class TProfile implements Serializable{
 		return name;
 	}
 	
-	public void setName(String name) {
+	public void setName(String name) throws MCASException{
+		if (name.contains("_")){
+			throw new MCASException();
+		}
 		this.name = name;
 	}
 
@@ -106,26 +110,26 @@ public class TProfile implements Serializable{
 		this.id = id;
 	}
 	
-	public List<Transco> commandBuilder(String input, String output, boolean live) throws MCASException{
+	public List<Transco> commandBuilder(String input, String output, boolean live, String title) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
 		String cmd = "ffmpeg -i " + input;
 		for (TLevel level : levels){
 			cmd += " -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"" + " -qmin " + level.getQuality() + " -qmax " + level.getQuality() + " -ac "; 
 			cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + " -f " + getFormat() + " ";
 			cmd += getAdditionalFlags() + " -codec:v " + getvCodec() + " -codec:a " + getaCodec();
-			cmd += " -y " + output + "/" + this.getName() + "_" + level.getName() + "." + getFormat();
+			cmd += " -y " + output + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + getFormat();
 		}
 		transcos.add(new Transco(cmd, output, input, this.getName()));
 		return transcos;
 	}
 	
-	public List<String> getUris(URI destination) throws MCASException{
+	public List<String> getUris(URI destination, String title) throws MCASException{
 		List<String> uris = new ArrayList<String>();
 		try {
 			for (TLevel level : this.getLevels()){
 				URI dst = new URI(destination.getScheme(), 
 						destination.getHost(), 
-						Paths.get(destination.getPath(), this.getName() + "_" + level.getName() + "." + this.getFormat()).toString(), 
+						Paths.get(destination.getPath(), MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat()).toString(), 
 						null);
 				uris.add(dst.toString());
 			}
@@ -136,11 +140,11 @@ public class TProfile implements Serializable{
 		return uris;
 	}
 	
-	public void processManifest(Transco transco) throws MCASException{
+	public void processManifest(Transco transco, String title) throws MCASException{
 		
 	}
 	
-	public FileEventProcessor getFileEP(URI dst) throws MCASException{
+	public FileEventProcessor getFileEP(URI dst, String title) throws MCASException{
 		return null;
 	}
 }

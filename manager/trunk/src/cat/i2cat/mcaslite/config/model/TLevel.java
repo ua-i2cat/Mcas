@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import cat.i2cat.mcaslite.exceptions.MCASException;
+
 @Entity
 @Table(name = "tLevels")
 public class TLevel implements Serializable{
@@ -74,7 +76,10 @@ public class TLevel implements Serializable{
 		return name;
 	}
 	
-	public void setName(String name) {
+	public void setName(String name) throws MCASException{
+		if (name.contains("_")){
+			throw new MCASException();
+		}
 		this.name = name;
 	}
 
