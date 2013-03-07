@@ -14,6 +14,7 @@ import javax.persistence.Transient;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.DashManifestManager;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
+import cat.i2cat.mcaslite.utils.MediaUtils;
 
 @Entity
 @DiscriminatorValue("tDashOptions")
@@ -36,12 +37,12 @@ public class TDASHOptions extends TProfile {
 
 	
 	@Override
-	 public List<Transco> commandBuilder(String input, String output, boolean live, String title){
+	 public List<Transco> commandBuilder(String input, String output, boolean live, String title) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
 		String cmd = "MP4Box -rap -frag-rap";
 		cmd += " -dash " + this.segDuration + " -frag " + this.fragDuration;
-		cmd += " -segment-name " + this.getName() + "_seg";
-		cmd += " -out " + output + "/" + title + "_" + this.getName() + "." + this.getFormat();
+		cmd += " -segment-name " + MediaUtils.fileNameMakerByProfile(title, getName()) + "_seg";
+		cmd += " -out " + output + "/" + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat();
 		cmd += " " + input;
 		
 		transcos.add(new Transco(cmd, output, input, this.getName()));
@@ -50,7 +51,7 @@ public class TDASHOptions extends TProfile {
 	}
 	
 	@Override
-	public void processManifest(Transco transco) throws MCASException{
+	public void processManifest(Transco transco, String title) throws MCASException{
 		DashManifestManager mpdModifier = new DashManifestManager(transco.getOutputDir());
 		mpdModifier.processManifest();
 	}
@@ -61,7 +62,7 @@ public class TDASHOptions extends TProfile {
 		try {
 			URI dst = new URI(destination.getScheme(), 
 				destination.getHost(), 
-				Paths.get(destination.getPath(), title + "_" + this.getName() + "." + this.getFormat()).toString(), 
+				Paths.get(destination.getPath(), MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat()).toString(), 
 				null);
 			uris.add(dst.toString());
 		} catch (URISyntaxException e){
@@ -73,7 +74,7 @@ public class TDASHOptions extends TProfile {
 	
 	@Transient
 	@Override
-	public FileEventProcessor getFileEP(URI dst){
+	public FileEventProcessor getFileEP(URI dst, String title){
 		return new DashManifestManager();
 	}
 	

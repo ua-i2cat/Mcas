@@ -150,7 +150,7 @@ public class Transcoder implements Runnable, Cancellable {
 	private void processManifest(Transco transco) throws MCASException{
 		for(TProfile profile : request.getTConfig().getProfiles()){
 			if (profile.getName().equals(transco.getProfileName())){
-				profile.processManifest(transco);
+				profile.processManifest(transco, request.getTitle());
 				return;
 			}
 		}

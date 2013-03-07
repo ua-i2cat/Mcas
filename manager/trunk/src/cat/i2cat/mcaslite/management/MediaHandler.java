@@ -37,7 +37,7 @@ public class MediaHandler implements Cancellable {
 		try {
 			String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
 			URI dst = new URI(request.getDst());
-			watcher = new Watcher(path, request.getTConfig(), dst, profile);
+			watcher = new Watcher(path, request.getTConfig(), dst, profile, request.getTitle());
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			throw new MCASException();

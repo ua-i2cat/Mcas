@@ -176,7 +176,10 @@ public class TRequest implements Serializable {
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public void setTitle(String title) throws MCASException {
+		if (title.contains("_")){
+			throw new MCASException();
+		}
 		this.title = title;
 	}
 
