@@ -23,11 +23,11 @@ public class Watcher implements Runnable, Cancellable {
 	private boolean done = false;
 	private boolean cancelled = false;
 	
-	public Watcher(String path, TranscoderConfig tConfig, URI dst, String profile) throws IOException, MCASException {
-		this.path = Paths.get(path);
+	public Watcher(String path, TranscoderConfig tConfig, URI dst, String profile, String title) throws IOException, MCASException {
+		this.path = Paths.get(path, profile);
 		watchService = fileSystem.newWatchService();
 		this.path.register(watchService, ENTRY_CREATE);
-		this.fileEP = tConfig.getFileEP(dst);
+		this.fileEP = tConfig.getFileEP(dst, profile, title);
 	}
 
 	@Override

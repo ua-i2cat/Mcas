@@ -32,13 +32,17 @@ public class TranscoService {
 	private Thread managerTh;
 
 	public TranscoService() {
-		System.out.println("DEBUG: --> " + System.getProperty("mcas.home"));
-		(new DefaultsLoader(Paths.get(System.getProperty("mcas.home"), "WEB-INF").toString())).tConfigFeedDefaults();
-		transcoH = TranscoHandler.getInstance();
-		managerTh = new Thread(transcoH);
-		managerTh.setName("MainManager");
-		managerTh.setDaemon(true);
-		managerTh.start();
+		try {
+			(new DefaultsLoader(Paths.get(System.getProperty("mcas.home"), "WEB-INF").toString())).tConfigFeedDefaults();
+			transcoH = TranscoHandler.getInstance();
+			managerTh = new Thread(transcoH);
+			managerTh.setName("MainManager");
+			managerTh.setDaemon(true);
+			managerTh.start();
+		} catch (MCASException e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 	
 	@POST

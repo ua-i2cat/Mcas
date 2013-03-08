@@ -10,21 +10,17 @@
     <uploader>
         <ublocksize>102400</ublocksize>
     </uploader>
-   <cloud>
-		<connection>
-		</connection>
-		<processqueue>videoqueue</processqueue>
-		<cancelqueue>cancelqueue</cancelqueue>
-		<container>input</container>
-	</cloud>
-    <callback>
-
-    </callback>
+    <callback>http://192.168.10.114:8080/mcasWeb</callback>
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
+<<<<<<< HEAD
                 <input>/Users/i2cat/input</input>
                 <output>/Users/i2cat/output</output>
+=======
+                <input>input</input>
+                <output>output</output>
+>>>>>>> 4b7fb7dd75adb0317b0ca746698a77828c3d8071
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>
@@ -32,10 +28,12 @@
                 <profile name="profile1"/>
                 <profile name="profile2"/>
                 <profile name="profile4"/>
+                <profile name="profile3"/>
             </profiles>
         </tconfig>
         <tconfig name="live">
             <workdir>
+<<<<<<< HEAD
 <<<<<<< HEAD
                 <input>/Users/i2cat/input</input>
                 <output>/Users/i2cat/output</output>
@@ -43,6 +41,10 @@
                 <input>/home/marc/input</input>
                 <output>/home/marc/output</output>
 >>>>>>> 403ac39e8a214cb3e370e320f37a0c71da42e00f
+=======
+                <input>input</input>
+                <output>output</output>
+>>>>>>> 4b7fb7dd75adb0317b0ca746698a77828c3d8071
             </workdir>
             <timeout>86400</timeout>
             <live>true</live>

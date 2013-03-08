@@ -35,7 +35,7 @@ public class Transcoder implements Runnable, Cancellable {
 		this.request = request;
 		try {
 			this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getId(), 
-					new URI(request.getSrc()));
+					new URI(request.getSrc()), request.getTitle());
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
@@ -65,10 +65,20 @@ public class Transcoder implements Runnable, Cancellable {
 	}
 	
 	private void HTTPLive() throws MCASException, IOException, URISyntaxException {
-		//TODO: test input output?
 		try {
-			mediaH.initWatcher();
-			transcodify();
+			Iterator<Transco> it = transcos.iterator();
+			while(! isCancelled() && it.hasNext()){
+				Transco transco = it.next();
+				try {
+					mediaH.initWatcher(transco.getProfileName());
+					transcodify(transco);
+				} catch (MCASException e) {
+					request.deleteTranscoded(transco);
+					queue.update(request);
+					e.printStackTrace();
+					MediaUtils.deleteFile(transco.getOutputDir());
+				}
+			}
 			if (request.isTranscodedEmpty() && ! isCancelled()){
 				manageError();
 			} else {
@@ -83,7 +93,18 @@ public class Transcoder implements Runnable, Cancellable {
 	
 	private void videoOnDemand() throws MCASException {
 		mediaH.inputHandle();
-		transcodify();
+		Iterator<Transco> it = transcos.iterator();
+		while(! isCancelled() && it.hasNext()){
+			Transco transco = it.next();
+			try {
+				transcodify(transco);
+			} catch (MCASException e) {
+				request.deleteTranscoded(transco);
+				queue.update(request);
+				e.printStackTrace();
+				MediaUtils.deleteFile(transco.getOutputDir());
+			}
+		}
 		setDone(true);
 		if (isCancelled()) {
 			MediaUtils.clean(request);
@@ -97,22 +118,11 @@ public class Transcoder implements Runnable, Cancellable {
 		mediaH.outputHandle();
 	}
 	
-	private void transcodify(){
-		Iterator<Transco> it = transcos.iterator();
-		while(! isCancelled() && it.hasNext()){
-			Transco transco = it.next();
-			try {
-				request.addTrancoded(transco);
-				queue.update(request);
-				executeCommand(transco.getCommand().trim());
-				processManifest(transco);
-			} catch (MCASException e) {
-				request.deleteTranscoded(transco);
-				queue.update(request);
-				e.printStackTrace();
-				MediaUtils.deleteFile(transco.getOutputDir());
-			}
-		}
+	private void transcodify(Transco transco) throws MCASException{
+		request.addTrancoded(transco);
+		queue.update(request);
+		executeCommand(transco.getCommand().trim());
+		processManifest(transco);
 	}
 	
 	private void manageError(){
@@ -140,7 +150,8 @@ public class Transcoder implements Runnable, Cancellable {
 	private void processManifest(Transco transco) throws MCASException{
 		for(TProfile profile : request.getTConfig().getProfiles()){
 			if (profile.getName().equals(transco.getProfileName())){
-				profile.processManifest(transco);
+				profile.processManifest(transco, request.getTitle());
+				return;
 			}
 		}
 	}
@@ -167,17 +178,17 @@ public class Transcoder implements Runnable, Cancellable {
 				case Status.PROCESS_MO:
 					return mediaH.cancel(mayInterruptIfRunning);
 				case Status.PROCESS_T:
+					MediaUtils.clean(request);
 					if (! isDone()){
 						return stop(mayInterruptIfRunning);
 					} else {
-						MediaUtils.clean(request);
 						return true;
 					}
 				case Status.PROCESS_L:
+					MediaUtils.clean(request);
 					if (! isDone()){
 						return stop(mayInterruptIfRunning);
 					} else {
-						MediaUtils.clean(request);
 						return true;
 					}
 				default:

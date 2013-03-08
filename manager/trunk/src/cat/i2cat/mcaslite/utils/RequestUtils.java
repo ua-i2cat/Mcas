@@ -3,6 +3,7 @@ package cat.i2cat.mcaslite.utils;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -17,7 +18,12 @@ import com.sun.jersey.api.client.WebResource;
 
 public class RequestUtils {
 	
+<<<<<<< HEAD
 	public static final String CALLBACK = "http://localhost:8080/mcaslitefrontend";
+=======
+	public static final String PATH = Paths.get(System.getProperty("mcas.home"), "WEB-INF/config.xml").toString();
+	public static final String CALLBACK = XMLReader.getStringParameter(PATH, "callback");
+>>>>>>> 4b7fb7dd75adb0317b0ca746698a77828c3d8071
 
 	public static boolean isValidSrcUri(URI uri) {
 		try {
@@ -69,24 +75,6 @@ public class RequestUtils {
 		return true;
 	}
 	
-//	public static String destinationJSONbuilder(TRequest request) throws MCASException {
-//		if (!(request.getStatus().getInt() == Status.DONE)  && !(request.getStatus().getInt() == Status.P_ERROR)
-//				&& !(request.getStatus().getInt() == Status.PROCESS_L)){
-//			throw new MCASException();
-//		}
-//		JSONArray jsonAr = new JSONArray();
-//		try {
-//			for(Transco transco : request.getTranscoded()){
-//				JSONObject jsonObj = new JSONObject();
-//				jsonObj.put("uri", request.getDst());
-//				jsonAr.put(jsonObj);
-//			}
-//			return (new JSONObject()).put("uris", jsonAr).toString();
-//		} catch (JSONException e){
-//			e.printStackTrace();
-//			throw new MCASException();
-//		}
-//	}
 	
 
 	public static void callback(TRequest request) throws MCASException{
