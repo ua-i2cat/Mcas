@@ -106,7 +106,7 @@ public class TProfile implements Serializable{
 		this.id = id;
 	}
 	
-	public List<Transco> commandBuilder(String input, String output) throws MCASException{
+	public List<Transco> commandBuilder(String input, String output, String destination) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
 		for (TLevel level : levels){
 			String cmd = "ffmpeg -i " + input;
@@ -114,7 +114,7 @@ public class TProfile implements Serializable{
 			cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + " -f " + getFormat() + " ";
 			cmd += getAdditionalFlags() + " -codec:v " + getvCodec() + " -codec:a " + getaCodec();
 			cmd += " -y " + output + "/" + this.getName() + "_" + level.getName() + "." + getFormat();
-			transcos.add(new Transco(cmd, output, input));
+			transcos.add(new Transco(cmd, output, destination, input));
 		}
 		return transcos;
 	}

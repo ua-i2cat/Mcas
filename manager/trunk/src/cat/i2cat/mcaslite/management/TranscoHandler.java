@@ -24,8 +24,8 @@ public class TranscoHandler implements Runnable {
 	private boolean run = true;
 	
 	private TranscoHandler() {
-		maxRequests = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "maxreq"));
-		maxProcess = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "maxproc"));
+		maxRequests = Integer.parseInt(XMLReader.getXMLParameter("/home/vm/azureSystemApp/config/config.xml", "maxreq"));
+		maxProcess = Integer.parseInt(XMLReader.getXMLParameter("/home/vm/azureSystemApp/config/config.xml", "maxproc"));
 		queue = ProcessQueue.getInstance();
 		queue.setMaxProcess(maxProcess);
 	}

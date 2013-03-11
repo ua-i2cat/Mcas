@@ -83,7 +83,7 @@ public class MediaUtils {
 
 	private static void cleanTransco(Transco transco){
 		deleteFile(transco.getInputFile());
-		deleteFile(transco.getOutputDir());
+		deleteFile(transco.getOutputFile());
 	}
 	
 	private static void cleanTranscos(List<Transco> transcos){

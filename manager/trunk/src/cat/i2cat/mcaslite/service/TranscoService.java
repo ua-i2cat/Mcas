@@ -10,7 +10,7 @@ public class TranscoService {
 	private static CloudManager client;
 	private static Thread managerTh;
 	private static Thread clientTh;
-	private static String path = "config/";
+	private static String path = "/home/vm/azureSystemApp/config/";
 	
 	public static void main(String[] args){
 		

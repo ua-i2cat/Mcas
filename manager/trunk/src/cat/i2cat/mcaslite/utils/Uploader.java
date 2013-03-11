@@ -20,7 +20,7 @@ import cat.i2cat.mcaslite.management.Cancellable;
 
 public class Uploader implements Cancellable {
 
-	private static final int BLOCK_SIZE = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "uploader.ublocksize"));;
+	private static final int BLOCK_SIZE = Integer.parseInt(XMLReader.getXMLParameter("/home/vm/azureSystemApp/config/config.xml", "uploader.ublocksize"));;
 	
 	private boolean cancelled = false;
 	private URI destination;

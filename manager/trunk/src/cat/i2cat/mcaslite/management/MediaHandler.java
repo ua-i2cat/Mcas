@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.management;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,7 +12,7 @@ import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.NewUploader;
+import cat.i2cat.mcaslite.utils.Uploader;
 
 public class MediaHandler implements Cancellable {
 
@@ -19,7 +20,7 @@ public class MediaHandler implements Cancellable {
 	private TRequest request;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class); 
 	private Downloader downloader;
-	private NewUploader uploader;
+	private Uploader uploader;
 	private boolean cancelled = false;
 	private boolean done = false;
 	private Watcher watcher;
@@ -70,8 +71,8 @@ public class MediaHandler implements Cancellable {
 	public void outputHandle() throws MCASException {
 		try {
 			for (Transco transco : request.getTranscoded()){
-				uploader = new NewUploader(Paths.get(transco.getOutputDir()), new URI(request.getDst()));
-				uploader.upload();	
+				uploader = new Uploader(new URI(request.getDst()));
+				uploader.toDestinationUri(new File(transco.getOutputFile()));	
 			}	
 			
 		} catch (URISyntaxException e) {

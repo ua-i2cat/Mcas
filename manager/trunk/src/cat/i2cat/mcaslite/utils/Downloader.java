@@ -19,9 +19,9 @@ import cat.i2cat.mcaslite.management.Cancellable;
 
 public class Downloader implements Cancellable {
 
-	private static final int BLOCK_SIZE = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "downloader.dblocksize"));
-	private static final int HTTP_TIMEOUT = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "downloader.httptimeout"));
-	private static final String CLOUD_CONTAINER = XMLReader.getXMLParameter("config/config.xml", "cloud.container");
+	private static final int BLOCK_SIZE = Integer.parseInt(XMLReader.getXMLParameter("/home/vm/azureSystemApp/config/config.xml", "downloader.dblocksize"));
+	private static final int HTTP_TIMEOUT = Integer.parseInt(XMLReader.getXMLParameter("/home/vm/azureSystemApp/config/config.xml", "downloader.httptimeout"));
+	private static final String CLOUD_CONTAINER = XMLReader.getXMLParameter("/home/vm/azureSystemApp/config/config.xml", "cloud.container");
 	
 	
 	private boolean cancelled = false;

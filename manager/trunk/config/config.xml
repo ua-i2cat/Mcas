@@ -24,8 +24,8 @@
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
-                <input>/home/david/input</input>
-                <output>/home/david/output</output>
+                <input>/home/marc/input</input>
+                <output>/home/marc/output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>

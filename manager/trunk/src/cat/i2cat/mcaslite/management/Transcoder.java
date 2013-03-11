@@ -3,7 +3,6 @@ package cat.i2cat.mcaslite.management;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class Transcoder implements Runnable, Cancellable {
 		this.request = request;
 		try {
 			this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getId(), 
-					new URI(request.getSrc()));
+					new URI(request.getDst()), new URI(request.getSrc()));
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
@@ -106,7 +105,7 @@ public class Transcoder implements Runnable, Cancellable {
 				request.addTrancoded(transco);
 			} catch (MCASException e) {
 				e.printStackTrace();
-				MediaUtils.deleteFile(transco.getOutputDir());
+				MediaUtils.deleteFile(transco.getOutputFile());
 			}
 		}
 	}
