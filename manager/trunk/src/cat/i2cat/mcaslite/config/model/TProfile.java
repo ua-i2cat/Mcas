@@ -49,7 +49,7 @@ public class TProfile implements Serializable{
 	
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="tProfiles", referencedColumnName="id")
-	private List<TLevel> levels;
+	protected List<TLevel> levels;
 	
 	public List<TLevel> getLevels() {
 		return levels;

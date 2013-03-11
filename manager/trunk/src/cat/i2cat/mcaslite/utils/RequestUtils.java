@@ -16,14 +16,9 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
 
-public class RequestUtils {
-	
-<<<<<<< HEAD
-	public static final String CALLBACK = "http://localhost:8080/mcaslitefrontend";
-=======
+public class RequestUtils {	
 	public static final String PATH = Paths.get(System.getProperty("mcas.home"), "WEB-INF/config.xml").toString();
 	public static final String CALLBACK = XMLReader.getStringParameter(PATH, "callback");
->>>>>>> 4b7fb7dd75adb0317b0ca746698a77828c3d8071
 
 	public static boolean isValidSrcUri(URI uri) {
 		try {

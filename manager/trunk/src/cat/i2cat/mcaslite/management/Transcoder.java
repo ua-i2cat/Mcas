@@ -157,7 +157,7 @@ public class Transcoder implements Runnable, Cancellable {
 	}
 	
 	private void executeCommand(String cmd) throws MCASException{
-		CommandLine commandLine = CommandLine.parse("/usr/local/bin/" + cmd.trim());
+		CommandLine commandLine = CommandLine.parse("/Users/i2cat/Script_bash/" + cmd.trim());
 		System.out.println(commandLine.toString());
 		executor.setWatchdog(new ExecuteWatchdog(request.getTConfig().getTimeout() * 1000));
 		executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
