@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.service;
 
 import cat.i2cat.mcaslite.cloud.CloudManager;
+import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.TranscoHandler;
 import cat.i2cat.mcaslite.utils.DefaultsLoader;
 
@@ -10,12 +11,17 @@ public class TranscoService {
 	private static CloudManager client;
 	private static Thread managerTh;
 	private static Thread clientTh;
-	private static String path = "/home/vm/azureSystemApp/config/";
+	private static String path = "config/";
 	
 	public static void main(String[] args){
 		
 		DefaultsLoader loader = new DefaultsLoader(path);
-		loader.tConfigFeedDefaults();
+		try {
+			loader.tConfigFeedDefaults();
+		} catch (MCASException e) {
+			e.printStackTrace();
+			return;
+		}
 	
 		transcoH = TranscoHandler.getInstance();
 		managerTh = new Thread(transcoH);

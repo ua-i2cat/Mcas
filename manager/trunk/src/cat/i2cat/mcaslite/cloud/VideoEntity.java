@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 import com.microsoft.windowsazure.services.table.client.TableServiceEntity;
@@ -143,10 +142,10 @@ public class VideoEntity extends TableServiceEntity {
     private String getVideoBySuffix(TRequest request, String suffix) throws MCASException{
     	if (! request.getStatus().hasNext()) {
 	    	try {
-		    	List<Transco> transcos = request.getTranscoded();
-		    	for (Transco transco : transcos){
-		    		if (transco.getDestinationUri().endsWith(suffix)){
-		    			URI uri = new URI(transco.getDestinationUri());
+		    	List<String> uris = request.getUris();
+		    	for (String uriStr : uris){
+		    		if (uriStr.endsWith(suffix)){
+		    			URI uri = new URI(uriStr);
 		    			return (new URI(getScheme(), uri.getHost(), uri.getPath(), null)).toString();
 		    		}
 		    	}

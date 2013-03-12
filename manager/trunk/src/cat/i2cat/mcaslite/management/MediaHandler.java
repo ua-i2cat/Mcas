@@ -1,6 +1,5 @@
 package cat.i2cat.mcaslite.management;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,7 +11,7 @@ import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.Uploader;
+import cat.i2cat.mcaslite.utils.NewUploader;
 
 public class MediaHandler implements Cancellable {
 
@@ -20,7 +19,7 @@ public class MediaHandler implements Cancellable {
 	private TRequest request;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class); 
 	private Downloader downloader;
-	private Uploader uploader;
+	private NewUploader uploader;
 	private boolean cancelled = false;
 	private boolean done = false;
 	private Watcher watcher;
@@ -34,10 +33,19 @@ public class MediaHandler implements Cancellable {
 		copyToWorkingDir();
 	}
 	
-	public void initWatcher() throws IOException, MCASException, URISyntaxException{
-		String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
-		URI dst = new URI(request.getDst());
-		watcher = new Watcher(path, request.getTConfig(), dst);
+	public void initWatcher(String profile) throws MCASException {
+		try {
+			String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
+			URI dst = new URI(request.getDst());
+			watcher = new Watcher(path, request.getTConfig(), dst, profile, request.getTitle());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+		
 		(new Thread(watcher)).start();
 	}
 	
@@ -71,14 +79,13 @@ public class MediaHandler implements Cancellable {
 	public void outputHandle() throws MCASException {
 		try {
 			for (Transco transco : request.getTranscoded()){
-				uploader = new Uploader(new URI(request.getDst()));
-				uploader.toDestinationUri(new File(transco.getOutputFile()));	
+				uploader = new NewUploader(new URI(request.getDst()));
+				uploader.upload(Paths.get(transco.getOutputDir()));	
 			}	
 			
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
-		
 		try {
 			setDone(true);
 			if (! isCancelled()) {

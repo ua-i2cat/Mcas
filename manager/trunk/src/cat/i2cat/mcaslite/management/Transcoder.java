@@ -12,6 +12,7 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
+import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
@@ -34,7 +35,7 @@ public class Transcoder implements Runnable, Cancellable {
 		this.request = request;
 		try {
 			this.transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getId(), 
-					new URI(request.getDst()), new URI(request.getSrc()));
+					new URI(request.getSrc()), request.getTitle());
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
@@ -64,17 +65,27 @@ public class Transcoder implements Runnable, Cancellable {
 	}
 	
 	private void HTTPLive() throws MCASException, IOException, URISyntaxException {
-		//TODO: test input output?
 		try {
-			mediaH.initWatcher();
-			transcodify();
-			setDone(true);
-			if (! isCancelled()) {
-				stop(true);
-				//throw new MCASException();
+			Iterator<Transco> it = transcos.iterator();
+			while(! isCancelled() && it.hasNext()){
+				Transco transco = it.next();
+				try {
+					mediaH.initWatcher(transco.getProfileName());
+					transcodify(transco);
+				} catch (MCASException e) {
+					request.deleteTranscoded(transco);
+					queue.update(request);
+					e.printStackTrace();
+					MediaUtils.deleteFile(transco.getOutputDir());
+				}
 			}
-			request.increaseStatus();
-			queue.update(request);
+			if (request.isTranscodedEmpty() && ! isCancelled()){
+				manageError();
+			} else {
+				setDone(true);
+				request.increaseStatus();
+				queue.update(request);
+			}
 		} finally {
 			mediaH.cancelWatcher();
 		}
@@ -82,7 +93,18 @@ public class Transcoder implements Runnable, Cancellable {
 	
 	private void videoOnDemand() throws MCASException {
 		mediaH.inputHandle();
-		transcodify();
+		Iterator<Transco> it = transcos.iterator();
+		while(! isCancelled() && it.hasNext()){
+			Transco transco = it.next();
+			try {
+				transcodify(transco);
+			} catch (MCASException e) {
+				request.deleteTranscoded(transco);
+				queue.update(request);
+				e.printStackTrace();
+				MediaUtils.deleteFile(transco.getOutputDir());
+			}
+		}
 		setDone(true);
 		if (isCancelled()) {
 			MediaUtils.clean(request);
@@ -96,18 +118,11 @@ public class Transcoder implements Runnable, Cancellable {
 		mediaH.outputHandle();
 	}
 	
-	private void transcodify(){
-		Iterator<Transco> it = transcos.iterator();
-		while(! isCancelled() && it.hasNext()){
-			Transco transco = it.next();
-			try {
-				executeCommand(transco.getCommand().trim());				
-				request.addTrancoded(transco);
-			} catch (MCASException e) {
-				e.printStackTrace();
-				MediaUtils.deleteFile(transco.getOutputFile());
-			}
-		}
+	private void transcodify(Transco transco) throws MCASException{
+		request.addTrancoded(transco);
+		queue.update(request);
+		executeCommand(transco.getCommand().trim());
+		processManifest(transco);
 	}
 	
 	private void manageError(){
@@ -132,8 +147,18 @@ public class Transcoder implements Runnable, Cancellable {
 		}
 	}
 	
+	private void processManifest(Transco transco) throws MCASException{
+		for(TProfile profile : request.getTConfig().getProfiles()){
+			if (profile.getName().equals(transco.getProfileName())){
+				profile.processManifest(transco, request.getTitle());
+				return;
+			}
+		}
+	}
+	
 	private void executeCommand(String cmd) throws MCASException{
 		CommandLine commandLine = CommandLine.parse(cmd.trim());
+		System.out.println(commandLine.toString());
 		executor.setWatchdog(new ExecuteWatchdog(request.getTConfig().getTimeout() * 1000));
 		executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
 		try {
@@ -153,17 +178,17 @@ public class Transcoder implements Runnable, Cancellable {
 				case Status.PROCESS_MO:
 					return mediaH.cancel(mayInterruptIfRunning);
 				case Status.PROCESS_T:
+					MediaUtils.clean(request);
 					if (! isDone()){
 						return stop(mayInterruptIfRunning);
 					} else {
-						MediaUtils.clean(request);
 						return true;
 					}
 				case Status.PROCESS_L:
+					MediaUtils.clean(request);
 					if (! isDone()){
 						return stop(mayInterruptIfRunning);
 					} else {
-						MediaUtils.clean(request);
 						return true;
 					}
 				default:

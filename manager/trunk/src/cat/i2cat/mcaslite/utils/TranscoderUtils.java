@@ -17,40 +17,32 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class TranscoderUtils {
 	
-	public static List<Transco> transcoBuilder(TranscoderConfig config, String id, URI dst, URI src) throws MCASException{
+	public static List<Transco> transcoBuilder(TranscoderConfig config, String id, URI src, String title) throws MCASException{
 		List<Transco> commands = new ArrayList<Transco>();
 		for(TProfile profile : config.getProfiles()){
 			commands.addAll(profile.commandBuilder(
 				(config.isLive()) ? src.toString() : getInput(id,config.getInputWorkingDir()), 
-				getOutputFile(id, config.getOutputWorkingDir(), src.getPath()),
-				getDestination(src.getPath(), dst)));
+				getOutput(id, config.getOutputWorkingDir(), profile.getName()), 
+				config.isLive(),
+				title));
 		}
 		return commands;
 	}
 	
-	private static String getDestination(String src, URI dst) throws MCASException {
-		try {
-			String path = FilenameUtils.concat(getDestinationDir(dst).getPath(), FilenameUtils.getBaseName(src));
-			return (new URI(dst.getScheme(), dst.getHost(), path, null)).toString();
-		} catch (URISyntaxException e){
-			throw new MCASException();
-		}
-	}
-	
-	public static URI getDestinationDir(URI dst) throws MCASException {
+	public static URI getDestinationDir(URI dst, String id) throws MCASException {
 		try {
 			if (dst.getScheme().equals("file")){
 				File file = new File(dst);
 				if (! file.exists() && file.getParentFile().isDirectory() && file.getParentFile().canWrite()){
 					return new URI("file", dst.getHost() , file.getPath(), null);
 				} else if (file.exists() && file.isDirectory() && file.canWrite()) {
-					file = new File(dst.getPath());
+					file = new File(FilenameUtils.concat(dst.getPath(), id));
 					return new URI("file", dst.getHost() , file.getPath(), null);
 				} else {
 					throw new MCASException();
 				}
 			} else {
-				return new URI(dst.getScheme(), dst.getHost() , Paths.get(dst.getPath()).toString(), null);
+				return new URI(dst.getScheme(), dst.getHost() , Paths.get(dst.getPath(), id).toString(), null);
 			}
 		} catch (URISyntaxException e){
 			e.printStackTrace();
@@ -62,13 +54,9 @@ public class TranscoderUtils {
 		return FilenameUtils.concat(MediaUtils.getWorkDir(inWorkDir), id);
 	}
 	
-	public static String getOutputFile(String id, String outWorkDir, String src) throws MCASException{
-		return FilenameUtils.concat(
-				FilenameUtils.concat(MediaUtils.getWorkDir(outWorkDir), id), FilenameUtils.getBaseName(src));
-	}
-	
-	public static String getOutputDir(String id, String outWorkDir) throws MCASException{
-		return FilenameUtils.concat(MediaUtils.getWorkDir(outWorkDir), id);
+	public static String getOutput(String id, String outWorkDir, String profile) throws MCASException{
+		return MediaUtils.getWorkDir(FilenameUtils.concat(
+					MediaUtils.getWorkDir(FilenameUtils.concat(MediaUtils.getWorkDir(outWorkDir), id)), profile));
 	}
 
 
