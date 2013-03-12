@@ -33,10 +33,19 @@ public class MediaHandler implements Cancellable {
 		copyToWorkingDir();
 	}
 	
-	public void initWatcher() throws IOException, MCASException, URISyntaxException{
-		String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
-		URI dst = new URI(request.getDst());
-		watcher = new Watcher(path, request.getTConfig(), dst);
+	public void initWatcher(String profile) throws MCASException {
+		try {
+			String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
+			URI dst = new URI(request.getDst());
+			watcher = new Watcher(path, request.getTConfig(), dst, profile, request.getTitle());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+		
 		(new Thread(watcher)).start();
 	}
 	
@@ -70,14 +79,13 @@ public class MediaHandler implements Cancellable {
 	public void outputHandle() throws MCASException {
 		try {
 			for (Transco transco : request.getTranscoded()){
-				uploader = new NewUploader(Paths.get(transco.getOutputDir()), new URI(request.getDst()));
-				uploader.upload();	
+				uploader = new NewUploader(new URI(request.getDst()));
+				uploader.upload(Paths.get(transco.getOutputDir()));	
 			}	
 			
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
-		
 		try {
 			setDone(true);
 			if (! isCancelled()) {

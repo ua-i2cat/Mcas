@@ -1,6 +1,8 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +26,7 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileStatus;
 import cat.i2cat.mcaslite.management.LiveStatus;
 import cat.i2cat.mcaslite.management.Status;
+import cat.i2cat.mcaslite.utils.DefaultsLoader;
 import cat.i2cat.mcaslite.utils.RequestUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
@@ -173,7 +176,10 @@ public class TRequest implements Serializable {
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public void setTitle(String title) throws MCASException {
+		if (title.contains("_")){
+			throw new MCASException();
+		}
 		this.title = title;
 	}
 
@@ -203,7 +209,11 @@ public class TRequest implements Serializable {
 		try {
 			setTConfig(TranscoderUtils.loadConfig(config));
 		} catch (MCASException e){
-			setTConfig(null);
+			try {
+				setTConfig(TranscoderUtils.loadConfig(DefaultsLoader.DEFAULT));
+			} catch (MCASException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
@@ -239,16 +249,27 @@ public class TRequest implements Serializable {
 			json.put("status", status.toString());
 			if (transcoded.size() > 0) {
 				JSONArray jsonAr = new JSONArray();
-				for(Transco transco : transcoded){
-					JSONObject jsonObj = new JSONObject();
-					jsonObj.put("uri", transco.getDestinationUri());
-					jsonAr.put(jsonObj);
+				for (String uri : getUris()){
+					jsonAr.put(new JSONObject("{uri: '" + uri + "'}"));
 				}
 				json.put("uris", jsonAr);
 			}
 			return json.toString();
 		} catch (JSONException e){
+			e.printStackTrace();
 			throw new MCASException();
 		}
+	}
+	
+	public List<String> getUris() throws MCASException{
+		List<String> uris = new ArrayList<String>();
+		try {
+			for (TProfile profile : this.getTConfig().getProfiles()){
+				uris.addAll(profile.getUris(new URI(dst), getTitle()));
+			}
+		} catch (URISyntaxException e){
+			throw new MCASException();
+		}
+		return uris;
 	}
 }

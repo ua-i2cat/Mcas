@@ -1,13 +1,12 @@
 package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
-import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 public class XMLReader {
@@ -22,9 +21,9 @@ public class XMLReader {
  		Document doc=null;
 		try {
 			SAXBuilder builder = new SAXBuilder();
-			File xmlFile = new File(path.concat(docName));
+			File xmlFile = new File(Paths.get(path, docName).toString());
 			doc = (Document) builder.build(xmlFile);
-		} catch (JDOMException | IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
  		return doc;
@@ -52,40 +51,62 @@ public class XMLReader {
 		return el.getAttributeValue("name");
 	}
 	
-	public static String getParameter(Element el, String configAttribute){
-			
-	String returnItem = null;
-	
-	String[] children = configAttribute.split("\\.");	
-	for (String child : children){
-		el = el.getChild(child);
-	}	
-	returnItem =  el.getText();
-		
-	return returnItem;
-		
+	private static String getParameter(Element el, String configAttribute){	
+		String[] children = configAttribute.split("\\.");	
+		for (String child : children){
+			el = el.getChild(child);
+		}
+		if (el != null) {
+			return el.getText();
+		} else {
+			return null;
+		}
 	}
 	
-	public static String getXMLParameter(String path, String param){
-		String returnItem = null;
+	public static int getIntParameter(Element el, String configAttribute){
+		String str = getParameter(el, configAttribute);
+		if (str != null && ! str.isEmpty()){
+			try {
+				return Integer.parseInt(str);
+			} catch (Exception e) {}
+		}
+		return 0;
+	}
+	
+	public static String getStringParameter(Element el, String configAttribute){
+		String str = getParameter(el, configAttribute);
+		if (str == null){
+			return "";
+		} else {
+			return str;
+		}
+	}
+	
+	public static String getStringParameter(String path, String param){
 		try {
 			SAXBuilder builder = new SAXBuilder();
 			File xmlFile = new File(path);
 			Document doc;
-			
 			doc = (Document) builder.build(xmlFile);
-			Element el = doc.getRootElement();
-		
-			String[] children = param.split("\\.");	
-			for (String child : children){
-				el = el.getChild(child);
-			}	
-			returnItem =  el.getText();
-		} catch (JDOMException | IOException e) {
+			return getStringParameter(doc.getRootElement(), param);
+		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return returnItem;
-	}	
+	}
+	
+	public static int getIntParameter(String path, String param){
+		try {
+			SAXBuilder builder = new SAXBuilder();
+			File xmlFile = new File(path);
+			Document doc;
+			doc = (Document) builder.build(xmlFile);
+			return getIntParameter(doc.getRootElement(), param);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
 }
 	
 	

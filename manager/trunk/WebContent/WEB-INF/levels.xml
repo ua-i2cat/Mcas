@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- levels.xml -->
+<levels>
+    <level name="level1">
+        <width>-1</width>
+        <quality>30</quality>
+        <abitrate>64</abitrate>
+        <achannels>2</achannels>
+    </level>
+    <level name="level2">
+        <width>640</width>
+        <quality>28</quality>
+        <abitrate>128</abitrate>
+        <achannels>2</achannels>
+        <maxRate>8000</maxRate>
+    </level>
+    <level name="level3">
+        <width>640</width>
+        <quality>33</quality>
+        <abitrate>96</abitrate>
+        <achannels>2</achannels>
+        <maxRate>6000</maxRate>
+    </level>
+    <level name="level4">
+        <width>640</width>
+        <quality>42</quality>
+        <abitrate>64</abitrate>
+        <achannels>2</achannels>
+        <maxRate>2000</maxRate>
+    </level>
+</levels>

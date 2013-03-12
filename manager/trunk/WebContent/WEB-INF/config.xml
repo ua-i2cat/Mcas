@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- config.xml -->
+<system>
+    <maxreq>1000</maxreq>
+    <maxproc>2</maxproc>
+    <downloader>
+        <dblocksize>102400</dblocksize>
+        <httptimeout>30000</httptimeout>
+    </downloader>
+    <uploader>
+        <ublocksize>102400</ublocksize>
+    </uploader>
+    <callback>http://192.168.10.114:8080/mcasWeb</callback>
+    <transcoconfigs>
+        <tconfig name="default">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>false</live>
+            <profiles>
+                <profile name="profile1"/>
+                <profile name="profile2"/>
+                <profile name="profile4"/>
+                <profile name="profile3"/>
+            </profiles>
+        </tconfig>
+        <tconfig name="live">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>true</live>
+            <profiles>
+                <profile name="profile3"/>
+            </profiles>
+        </tconfig>
+    </transcoconfigs>
+</system>
