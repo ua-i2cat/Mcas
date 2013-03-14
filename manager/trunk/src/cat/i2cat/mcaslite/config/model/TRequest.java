@@ -44,7 +44,7 @@ public class TRequest implements Serializable {
 	private String title;
 	@Transient
 	private String config;
-	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name="tConfig", referencedColumnName="id")
 	private TranscoderConfig tConfig;
 	@Id

@@ -61,39 +61,8 @@ public class TranscoService {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("System overloaded, wait and retry.").build();
 		}
 	}
-//TODO Merge the two commented methods in only one that returns in a json id, status and uris
-//	@GET
-//	@Produces(MediaType.TEXT_PLAIN)
-//	public String getStatus(@QueryParam("id") String id){
-//		try {
-//			Status status = transcoH.getStatus(id);
-//			if (status == null){
-//				throw new WebApplicationException(Response.Status.NOT_FOUND);
-//			} else {
-//				return status.toString();
-//			}
-//		} catch (MCASException e){
-//			e.printStackTrace();
-//			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-//		}
-//	}
-//	
-//	@GET
-//	@Path("uris")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public String getDestinationUris(@QueryParam("id") String id){
-//		try {
-//			TRequest request = transcoH.getRequest(id);
-//			if (request == null){
-//				throw new WebApplicationException(Response.Status.NOT_FOUND);
-//			} else {
-//				return RequestUtils.destinationJSONbuilder(request);
-//			}
-//		} catch (MCASException e) {
-//			e.printStackTrace();
-//			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-//		}	
-//	}
+
+	//TODO: status method
 	
 	@POST
 	@Path("cancel")

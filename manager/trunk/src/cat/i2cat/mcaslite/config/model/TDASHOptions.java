@@ -17,7 +17,7 @@ import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 
 @Entity
-@DiscriminatorValue("tDashOptions")
+@DiscriminatorValue("Dash")
 
 public class TDASHOptions extends TProfile {
 

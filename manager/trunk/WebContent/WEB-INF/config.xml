@@ -20,10 +20,22 @@
             <timeout>86400</timeout>
             <live>false</live>
             <profiles>
-                <profile name="profile1"/>
-                <profile name="profile2"/>
-                <profile name="profile4"/>
-                <profile name="profile3"/>
+                <profile name="H264"/>
+                <profile name="WebM"/>
+            </profiles>
+        </tconfig>
+        <tconfig name="all">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>false</live>
+            <profiles>
+                <profile name="H264"/>
+                <profile name="WebM"/>
+                <profile name="Dash"/>
+                <profile name="HLS"/>
             </profiles>
         </tconfig>
         <tconfig name="live">
@@ -34,7 +46,7 @@
             <timeout>86400</timeout>
             <live>true</live>
             <profiles>
-                <profile name="profile3"/>
+                <profile name="HLS"/>
             </profiles>
         </tconfig>
     </transcoconfigs>
