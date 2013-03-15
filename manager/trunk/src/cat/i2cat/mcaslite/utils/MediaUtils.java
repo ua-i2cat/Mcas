@@ -2,6 +2,7 @@ package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -14,14 +15,37 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class MediaUtils {
 	
-	public static String createOutputWorkingDir(String id, String outputWorkingDir) throws MCASException {
-		String path = TranscoderUtils.getOutputDir(id, outputWorkingDir);
-		File file = new File(path);
-		if (! file.mkdirs()){
-			throw new MCASException();
-		} else {
-			return path;
+	private static String fileNameMaker(String... pieces) throws MCASException{
+		String fileName = "";
+		boolean first = true;
+		for (String piece : pieces){
+			if (! piece.contains("_")){
+				fileName += (first ? piece : "_" + piece);
+			} else {
+				throw new MCASException();
+			}
+			first = false;
 		}
+		return fileName; 
+	}
+	
+	public static String fileNameMakerByProfile(String title, String profile) throws MCASException{
+		return fileNameMaker(title, profile);
+	}
+	
+	public static String fileNameMakerByLevel(String title, String profile, String level) throws MCASException{
+		return fileNameMaker(title, profile, level);
+	}
+	
+	public static String createOutputWorkingDir(String id, String outputWorkingDir) throws MCASException {
+		String path = FilenameUtils.concat(outputWorkingDir, id);
+		File file = new File(path);
+		if (file.isDirectory() && file.canWrite()){
+			return path;
+		} else if(!file.exists() && file.mkdirs()){
+			return path;
+		} 
+		throw new MCASException();
 	}
 	
 	public static boolean deleteInputFile(String requestId, String inputWorkingDir) {
@@ -36,8 +60,7 @@ public class MediaUtils {
 		File file = new File(workDir);
 		if (file.isDirectory() && file.canWrite()){
 			return workDir;
-		}
-		else if(!file.exists() && file.getParentFile().canWrite() && file.mkdirs()){
+		} else if(!file.exists() && file.mkdirs()){
 			return workDir;
 		}
 		throw new MCASException();
@@ -81,7 +104,7 @@ public class MediaUtils {
 
 	private static void cleanTransco(Transco transco){
 		deleteFile(transco.getInputFile());
-		deleteFile(transco.getOutputFile());
+		deleteFile(Paths.get(transco.getOutputDir()).getParent().toString());
 	}
 	
 	private static void cleanTranscos(List<Transco> transcos){

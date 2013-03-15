@@ -1,11 +1,11 @@
 package cat.i2cat.mcaslite.cloud;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.util.EnumSet;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.XMLReader;
 
 import com.microsoft.windowsazure.services.blob.client.BlobContainerPermissions;
 import com.microsoft.windowsazure.services.blob.client.BlobContainerPublicAccessType;
@@ -26,13 +26,11 @@ import com.microsoft.windowsazure.services.table.client.TableOperation;
 
 public class AzureUtils {
 	
+	private static final String path = "config/config.xml";
 	private static final String storageConnectionString = 
-		    "DefaultEndpointsProtocol=http;" + 
-	   	    "AccountName=storagevideos;" + 
-	  	    "AccountKey=qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==";
-	//private static final String cloudQueue = "videoqueue";
-	//private static final String inputCont = "input";
-	//private static final String outputCont = "output";
+		    "DefaultEndpointsProtocol=" + XMLReader.getStringParameter(path, "cloud.connection.protocol") + ";" + 
+	   	    "AccountName=" + XMLReader.getStringParameter(path, "cloud.connection.accountName") + ";" + 
+	  	    "AccountKey=" + XMLReader.getStringParameter(path, "cloud.connection.accountKey");
 
 	public static CloudQueueMessage retrieveMessage(int timeout, String cloudQueue) throws MCASException {
 		try {
@@ -131,17 +129,15 @@ public class AzureUtils {
 		throw new MCASException();
 	}
 	
-	public static BlobOutputStream fileToOutputStream(File file, String cloudCont, String fileName) throws MCASException{
+	public static BlobOutputStream fileToOutputStream(String cloudCont, String fileName) throws MCASException{
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
 			CloudBlobContainer container = blobClient.getContainerReference(cloudCont);
-			if (container.exists()){
-				CloudBlockBlob blob = container.getBlockBlobReference(fileName);
-				return blob.openOutputStream();
-			} else {
-				throw new MCASException();
-			}
+			container.createIfNotExist();
+			//TODO: I should'nt create that container
+			CloudBlockBlob blob = container.getBlockBlobReference(fileName);
+			return blob.openOutputStream();
 		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();
@@ -209,8 +205,4 @@ public class AzureUtils {
 			return false;
 		}
 	}
-	
-//	private static String trimBottomDir(String fileName) {
-//		return Paths.get(fileName).getName(0).toString();
-//	}
 }

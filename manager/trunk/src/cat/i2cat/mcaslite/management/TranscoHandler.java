@@ -15,8 +15,8 @@ public class TranscoHandler implements Runnable {
 
 	private static final TranscoHandler INSTANCE = new TranscoHandler();
 	
-	private int maxRequests; 
-	private int maxProcess; 
+	private int maxRequests;
+	
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
 	private List<SimpleEntry<String, Cancellable>> workers = new ArrayList<SimpleEntry<String, Cancellable>>();
@@ -24,10 +24,10 @@ public class TranscoHandler implements Runnable {
 	private boolean run = true;
 	
 	private TranscoHandler() {
-		maxRequests = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "maxreq"));
-		maxProcess = Integer.parseInt(XMLReader.getXMLParameter("config/config.xml", "maxproc"));
+		String path = "config/config.xml";
+		maxRequests = XMLReader.getIntParameter(path, "maxreq");
 		queue = ProcessQueue.getInstance();
-		queue.setMaxProcess(maxProcess);
+		queue.setMaxProcess(XMLReader.getIntParameter(path, "maxproc"));
 	}
 	
 	public static TranscoHandler getInstance(){
@@ -48,7 +48,7 @@ public class TranscoHandler implements Runnable {
 				if (queue.remove(request)){
 						requestDao.save(request);
 				}
-				e.printStackTrace(); 
+				e.printStackTrace();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -66,8 +66,8 @@ public class TranscoHandler implements Runnable {
 				} catch (Exception e) {
 					return false;
 				}
+				request.setCancelled();
 				if (queue.remove(request)) {
-					request.setCancelled();
 					requestDao.save(request);
 					return true;
 				}

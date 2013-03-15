@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 
 
@@ -54,7 +55,10 @@ public class TranscoderConfig implements Serializable {
 		return name;
 	}
 	
-	public void setName(String name) {
+	public void setName(String name) throws MCASException{
+		if (name.contains("_")){
+			throw new MCASException();
+		}
 		this.name = name;
 	}
 	
@@ -100,16 +104,17 @@ public class TranscoderConfig implements Serializable {
 	
 	@Transient
 	public int getNumOutputs(){
-		int i = 0;
-		for(TProfile profile : profiles){
-			i += profile.getNumOutputs();
-		}
-		return i;
+		return profiles.size();
 	}
 	
 	@Transient
-	public FileEventProcessor getFileEP(URI dst){
-		return profiles.get(0).getFileEP(dst);
+	public FileEventProcessor getFileEP(URI dst, String profileName, String title) throws MCASException{
+		for(TProfile profile : profiles){
+			if (profile.getName().equals(profileName)){
+				return profile.getFileEP(dst, title);
+			}
+		}
+		throw new MCASException();
 	}
 	
 }

@@ -1,0 +1,43 @@
+MCAS AS SYSTEM SERVICE
+
+1. Export project from IDE as .jar
+
+2. Make new dir (config) which contains configuration XMLs
+
+3. Make new dir (lib) which contains external libraries
+
+Folder system -->  /some/folder/project.jar
+			       /config/
+			       /lib/
+			       
+			       
+4. Put MCASservice.sh into /etc/init.d/
+
+5. Execute this command to enable MCAS as system service
+  $ sudo update-rc.d MCASservice defaults
+
+6. Update script variables for your system
+  PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin
+  DESC="Description of the service"
+  NAME=MCASservice
+  PIDFILE=/home/vm/azureSystemApp/$NAME.pid
+  SCRIPTNAME=/etc/init.d/$NAME
+  INSTALLATION_PATH=/home/vm/azureSystemApp
+  LOGFILE="$INSTALLATION_PATH/logfile"
+  CLASSPATH="lib/*:azure.jar"
+  MAINCLASS='cat.i2cat.mcaslite.service.TranscoService'
+
+  
+*External dependencies
+
+OpenJDK 7
+
+  $ sudo apt-get install openjdk-7-jdk (Ubuntu)
+  
+FFMPEG (includes installation of Yasm, X264, fdk-aac and libvpx)
+
+  http://ffmpeg.org/trac/ffmpeg/wiki/UbuntuCompilationGuide
+  
+GPAC (MP4Box)
+
+  http://gpac.wp.mines-telecom.fr/2011/04/20/compiling-gpac-on-ubuntu/
