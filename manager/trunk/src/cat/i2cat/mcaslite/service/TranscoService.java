@@ -9,6 +9,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -60,6 +61,19 @@ public class TranscoService {
 		} else {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("System overloaded, wait and retry.").build();
 		}
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("{profile}/{level}")
+	public Response addCustomTransco(TRequest request, @PathParam("profile") String profile, @PathParam("level") String level) throws MCASException {
+		request.setConfig("custom");
+		try {
+			request.setTConfig(RequestUtils.getCustomTranscoderConfig(profile, level));
+		} catch (MCASException e){
+			return Response.status(Response.Status.BAD_REQUEST).entity("Check defined configuration.").build();
+		}
+		return addTransco(request);
 	}
 
 	//TODO: status method

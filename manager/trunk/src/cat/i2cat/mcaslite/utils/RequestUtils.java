@@ -4,11 +4,17 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 
+import cat.i2cat.mcaslite.config.dao.DAO;
+import cat.i2cat.mcaslite.config.model.TLevel;
+import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TRequest;
+import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
 import com.sun.jersey.api.client.Client;
@@ -71,8 +77,30 @@ public class RequestUtils {
 		return true;
 	}
 	
+	public static TranscoderConfig getCustomTranscoderConfig(String profile, String level) throws MCASException{
+		DAO<TranscoderConfig> configDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+		TranscoderConfig config = configDao.findByName(DefaultsLoader.DEFAULT);
+		List<TProfile> profiles = new ArrayList<TProfile>();
+		profiles.add(getProfile(profile, level));
+		config.setProfiles(profiles);
+		return config;
+	}
 	
-
+	private static TProfile getProfile(String profile, String level) throws MCASException {
+		DAO<TProfile> profileDao = new DAO<TProfile>(TProfile.class);
+		TProfile tProfile = profileDao.findByName(profile);
+		List<TLevel> levels = new ArrayList<TLevel>();
+		levels.add(getLevel(level));
+		tProfile.setLevels(levels);
+		return tProfile;
+	}
+	
+	private static TLevel getLevel(String level) throws MCASException{
+		DAO<TLevel> levelDao = new DAO<TLevel>(TLevel.class);
+		TLevel tLevel = levelDao.findByName(level);
+		return tLevel;
+	}
+	
 	public static void callback(TRequest request) throws MCASException{
 		Client client = Client.create();
 		WebResource service = client.resource(CALLBACK);
