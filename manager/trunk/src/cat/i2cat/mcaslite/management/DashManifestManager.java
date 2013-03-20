@@ -80,6 +80,5 @@ public class DashManifestManager implements FileEventProcessor {
 	@Override
 	public void eventHandle(WatchEvent<?> event, Path path)
 			throws MCASException {
-		// TODO Auto-generated method stub	
 	}	
 }

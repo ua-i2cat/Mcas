@@ -10,10 +10,8 @@ import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -44,8 +42,7 @@ public class TRequest implements Serializable {
 	private String title;
 	@Transient
 	private String config;
-	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name="tConfig", referencedColumnName="id")
+	@Transient
 	private TranscoderConfig tConfig;
 	@Id
 	private String id = UUID.randomUUID().toString();
@@ -237,7 +234,7 @@ public class TRequest implements Serializable {
 	public void callback() {
 		try {
 			RequestUtils.callback(this);
-		} catch (MCASException e){
+		} catch (Exception e){
 			e.printStackTrace();
 		}
 	}
