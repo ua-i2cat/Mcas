@@ -26,8 +26,8 @@
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
-                <input>/Users/i2cat/input</input>
-                <output>/Users/i2cat/output</output>
+                <input>input</input>
+                <output>output</output>
 
             </workdir>
             <timeout>86400</timeout>

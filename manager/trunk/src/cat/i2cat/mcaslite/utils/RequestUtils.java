@@ -66,13 +66,7 @@ public class RequestUtils {
 
 	public static void callback(TRequest request) throws MCASException {
 		try {
-			if (request.getStatus().isDone()) {
-				if (AzureUtils.updateVideoEntity(request)) {
-					AzureUtils.deleteQueueMessage(
-							CloudManager.getInstance().popCloudMessage(request.getId()),
-							XMLReader.getStringParameter("config/config.xml", "cloud.processqueue"));
-				}
-			} else if (! request.getStatus().hasNext()) {
+			if (! request.getStatus().hasNext()) {
 				if (AzureUtils.updateVideoEntity(request)) {
 					AzureUtils.deleteQueueMessage(
 							CloudManager.getInstance().popCloudMessage(request.getId()),
