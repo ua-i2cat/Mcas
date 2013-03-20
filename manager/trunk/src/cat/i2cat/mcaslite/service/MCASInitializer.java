@@ -1,6 +1,8 @@
 package cat.i2cat.mcaslite.service;
 
 
+import java.io.File;
+
 import javax.servlet.ServletContextEvent;
 
 import javax.servlet.ServletContextListener;
@@ -18,7 +20,7 @@ public class MCASInitializer implements ServletContextListener{
 
     public void contextInitialized(ServletContextEvent arg0) {
 
-        System.setProperty("mcas.home", arg0.getServletContext().getRealPath("/"));
+        System.setProperty("mcas.home", arg0.getServletContext().getRealPath(File.separator));
 
     }   
 }

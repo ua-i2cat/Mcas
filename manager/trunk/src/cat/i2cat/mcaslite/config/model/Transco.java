@@ -73,17 +73,4 @@ public class Transco {
 		this.inputFile = inputFile;
 	}
 	
-//	@Override
-//	public boolean equals(Object o){
-//		try {
-//			Transco transco = (Transco) o;
-//			if (transco.getCommand().equals(this.command) || transco.getOutputFile().equals(this.outputFile)){
-//				return true;
-//			}
-//		} catch (Exception e){
-//			e.printStackTrace();
-//			return false;
-//		}
-//		return false;
-//	}
 }

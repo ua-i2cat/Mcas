@@ -21,12 +21,12 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.NewUploader;
+import cat.i2cat.mcaslite.utils.Uploader;
 
 public class HLSManifestManager implements FileEventProcessor {
 	private int windowLength;
 	private int segDuration;
-	private NewUploader uploader;
+	private Uploader uploader;
 	private Map<String, TLevel> levels = new HashMap<String, TLevel>();
 	private String profileName;
 	private boolean mainCreated = false;
@@ -39,7 +39,7 @@ public class HLSManifestManager implements FileEventProcessor {
 				this.levels.put(level.getName(), level);
 			}
 			this.segDuration = segDuration;
-			this.uploader = new NewUploader(dst);
+			this.uploader = new Uploader(dst);
 			this.profileName = profileName;
 			this.title = title;
 		} catch (Exception e) {

@@ -24,14 +24,15 @@ import com.sun.jersey.api.client.WebResource;
 
 public class RequestUtils {
 	
-	public static final String PATH = Paths.get(System.getProperty("mcas.home"), "WEB-INF/config.xml").toString();
+	public static final String PATH = Paths.get(System.getProperty("mcas.home"), "WEB-INF" + File.separator + "config.xml").toString();
 	public static final String CALLBACK = XMLReader.getStringParameter(PATH, "callback");
+	public static final String URIseparator = "/";
 
 	public static boolean isValidSrcUri(URI uri) {
 		try {
 			if (isValidUri(uri)){
 				if (uri.getScheme().equals("file")) {
-					File file = new File(uri.getPath());
+					File file = new File(uri);
 					return file.exists();
 				} else if (uri.getScheme().equals("http")) {
 					HttpURLConnection httpCon = (HttpURLConnection) uri.toURL().openConnection();
@@ -71,7 +72,7 @@ public class RequestUtils {
 	}
 	
 	public static boolean isValidDestination(URI uri){
-		if (! isValidUri(uri) || FilenameUtils.getBaseName(uri.getPath()).equals("")){
+		if (! isValidUri(uri) || uri.getPath() == null  || FilenameUtils.getBaseName(uri.getPath()).isEmpty()){
 			return false;
 		}
 		return true;

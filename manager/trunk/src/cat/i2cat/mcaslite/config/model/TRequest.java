@@ -234,7 +234,7 @@ public class TRequest implements Serializable {
 	public void callback() {
 		try {
 			RequestUtils.callback(this);
-		} catch (MCASException e){
+		} catch (Exception e){
 			e.printStackTrace();
 		}
 	}

@@ -1,8 +1,8 @@
 package cat.i2cat.mcaslite.config.model;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,15 +15,13 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.DashManifestManager;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.MediaUtils;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Entity
 @DiscriminatorValue("Dash")
 
 public class TDASHOptions extends TProfile {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Column(length = 100)
@@ -42,7 +40,7 @@ public class TDASHOptions extends TProfile {
 		String cmd = "MP4Box -rap -frag-rap";
 		cmd += " -dash " + this.segDuration + " -frag " + this.fragDuration;
 		cmd += " -segment-name " + MediaUtils.fileNameMakerByProfile(title, getName()) + "_seg";
-		cmd += " -out " + output + "/" + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat();
+		cmd += " -out " + output + File.separator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat();
 		cmd += " " + input;
 		
 		transcos.add(new Transco(cmd, output, input, this.getName()));
@@ -62,7 +60,7 @@ public class TDASHOptions extends TProfile {
 		try {
 			URI dst = new URI(destination.getScheme(), 
 				destination.getHost(), 
-				Paths.get(destination.getPath(), MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat()).toString(), 
+				destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat().toString(), 
 				null);
 			uris.add(dst.toString());
 		} catch (URISyntaxException e){
