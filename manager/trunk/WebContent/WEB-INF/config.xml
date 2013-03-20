@@ -49,5 +49,27 @@
                 <profile name="HLS"/>
             </profiles>
         </tconfig>
+        <tconfig name="live640">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>true</live>
+            <profiles>
+                <profile name="HLS640"/>
+            </profiles>
+        </tconfig>
+        <tconfig name="live360">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>true</live>
+            <profiles>
+                <profile name="HLS360"/>
+            </profiles>
+        </tconfig>
     </transcoconfigs>
 </system>
