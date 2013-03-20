@@ -9,15 +9,19 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.UUID;
 
+import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.cloud.VideoEntity;
+import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.XMLReader;
 
 import com.microsoft.windowsazure.services.blob.client.CloudBlobClient;
 import com.microsoft.windowsazure.services.blob.client.CloudBlobContainer;
 import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
-import com.microsoft.windowsazure.services.blob.client.ListBlobItem;
 import com.microsoft.windowsazure.services.core.storage.CloudStorageAccount;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.windowsazure.services.queue.client.CloudQueue;
+import com.microsoft.windowsazure.services.queue.client.CloudQueueClient;
+import com.microsoft.windowsazure.services.queue.client.CloudQueueMessage;
 import com.microsoft.windowsazure.services.table.client.CloudTableClient;
 import com.microsoft.windowsazure.services.table.client.TableOperation;
 
@@ -29,14 +33,13 @@ public class TranscoServiceAzureClient {
 	   	    "AccountName=" + XMLReader.getStringParameter(path, "cloud.connection.accountName") + ";" + 
 	  	    "AccountKey=" + XMLReader.getStringParameter(path, "cloud.connection.accountKey");
 	
-	public static void UploadContent() {
+	public static String uploadContent() {
 		try{
 			CloudStorageAccount storageAccount = 
 			CloudStorageAccount.parse(storageConnectionString);
-			CloudTableClient tableClient = storageAccount.createCloudTableClient();
-			
+
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference("videoentity"); //review container name
+			CloudBlobContainer container = blobClient.getContainerReference("videoentity");
 			container.createIfNotExist();
 			
 			System.out.println("Write a Source to transcode:");
@@ -45,12 +48,46 @@ public class TranscoServiceAzureClient {
 			CloudBlockBlob blob = container.getBlockBlobReference("mediafile");
 			File source = new File(src);
 			blob.upload(new FileInputStream(source), source.length());
-			String blobUrl = blob.getUri().toString();
+			return (blob.getUri().toString());
+		}
+		catch (FileNotFoundException fileNotFoundException){
+		    System.out.print("FileNotFoundException encountered: ");
+		    System.out.println(fileNotFoundException.getMessage());
+		    return("Error");		    
+		}
+		catch (StorageException storageException){
+		    System.out.print("StorageException encountered: ");
+		    System.out.println(storageException.getMessage());	
+		    return("Error");
+		}
+		catch (URISyntaxException uriSyntaxException){
+		    System.out.print("URISyntaxException encountered: ");
+		    System.out.println(uriSyntaxException.getMessage());
+		    return("Error");
+		}
+		catch (Exception e){
+		    System.out.print("Exception encountered: ");
+		    System.out.println(e.getMessage());
+		    return("Error");		    
+		}
+	}
+	
+	public static String addVideoEntity(String blobUrl){
+		try{
+			CloudStorageAccount storageAccount = 
+			CloudStorageAccount.parse(storageConnectionString);
+					
+			CloudTableClient tableClient = storageAccount.createCloudTableClient();
+					
+			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
+			CloudBlobContainer container = blobClient.getContainerReference("videoentity");
+			container.createIfNotExist();
 			
+			String partitionKey = (new Date()).toString();
+			String rowKey = UUID.randomUUID().toString();
 			
-			
-			VideoEntity ventity = new VideoEntity((new Date()).toString(), UUID.randomUUID().toString());
-			ventity.setFileName("video.avi");
+			VideoEntity ventity = new VideoEntity(partitionKey, rowKey);
+			ventity.setFileName("video2.avi");
 			ventity.setDescription("");
 			ventity.setCategory("");
 			ventity.setTitle("");
@@ -61,55 +98,100 @@ public class TranscoServiceAzureClient {
 			
 			TableOperation insertVideoEntity = TableOperation.insert(ventity);
 			tableClient.execute(VideoEntity.class.getSimpleName(), insertVideoEntity);
-			//tableClient.execute(tableName, insertVideoEntity);
 			
-			System.out.println("Processing complete.");
-			System.exit(0);
-			
-		} catch (FileNotFoundException fileNotFoundException)
-		{
-		    System.out.print("FileNotFoundException encountered: ");
-		    System.out.println(fileNotFoundException.getMessage());
-		    System.exit(-1);
+			System.out.println("Processing complete.");			
+			return(partitionKey + "*" + rowKey);				
 		}
-		catch (StorageException storageException)
-		{
+		catch (StorageException storageException){
 		    System.out.print("StorageException encountered: ");
-		    System.out.println(storageException.getMessage());
-		    System.exit(-1);
+		    System.out.println(storageException.getMessage());	
+		    return("Error");
 		}
-		catch (URISyntaxException uriSyntaxException)
-		{
+		catch (URISyntaxException uriSyntaxException){
 		    System.out.print("URISyntaxException encountered: ");
 		    System.out.println(uriSyntaxException.getMessage());
-		    System.exit(-1);
+		    return("Error");
 		}
-		catch (Exception e)
-		{
+		catch (Exception e){
 		    System.out.print("Exception encountered: ");
 		    System.out.println(e.getMessage());
-		    System.exit(-1);
+		    return("Error");		    
+		}		
+	}
+	
+	public static String addMessageQueue(String msg){
+		try{
+			CloudStorageAccount storageAccount = 
+				    CloudStorageAccount.parse(storageConnectionString);
+			
+			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
+			
+			CloudQueue queue = queueClient.getQueueReference("videoqueue");
+			
+			queue.createIfNotExist();
+			
+			CloudQueueMessage message = new CloudQueueMessage(msg);
+
+			queue.addMessage(message);
+			return("OK");			
+		}catch (Exception e){
+			e.printStackTrace();
+			return("KO");
 		}
 	}
 	
-	public static String ListTheBlobs()
-	{
-		try	{
-			CloudStorageAccount storageAccount =
+	public static CloudQueueMessage retrieveMessage(int timeOut){
+		try{
+			CloudStorageAccount storageAccount = 
 				    CloudStorageAccount.parse(storageConnectionString);
-			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference("videoentity");
-			for (ListBlobItem blobItem : container.listBlobs()){
-				System.out.println(blobItem.getUri());
-			} System.exit(0);
-		} catch (Exception e){
-			System.exit(-1);
-			}
-		return null;
+			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
+			CloudQueue queue = queueClient.getQueueReference("videoqueue");
+			CloudQueueMessage retrievedMessage = queue.retrieveMessage(timeOut, null, null);
+			return(retrievedMessage);
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			return(null);	
+		}			
 	}
 	
+	public static String cancelTask(String cancelId){
+		try {
+			CloudStorageAccount storageAccount = 
+				    CloudStorageAccount.parse(storageConnectionString);
+			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
+			CloudQueue queue = queueClient.getQueueReference("cancelqueue");
+			queue.createIfNotExist();
+			CloudQueueMessage cancelMessage = new CloudQueueMessage(cancelId);
+			queue.addMessage(cancelMessage);			
+			return("OK");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return("KO");
+		}		
+	}
+
 	public static void main (String...args){
-		UploadContent();
-		//ListTheBlobs();
+		String blobUrl, msg, message;
+		int timeOut = 5;
+		blobUrl = uploadContent();
+		System.out.println(blobUrl);
+		msg = addVideoEntity(blobUrl);
+		System.out.println(msg);
+			
+		message = addMessageQueue(msg);
+		System.out.println(message);
+		
+		try{
+			String msg2 = retrieveMessage(timeOut).getMessageContentAsString();
+			System.out.println(msg2);
+			String[] keys = msg.split("\\*");
+			VideoEntity video = AzureUtils.getEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), VideoEntity.class);
+			String cancel = video.getCancelId();
+			String msg3 = cancelTask(cancel);
+			System.out.println(msg3);
+		}catch(Exception e){
+			e.printStackTrace();
+		}		
 	}	
 }
