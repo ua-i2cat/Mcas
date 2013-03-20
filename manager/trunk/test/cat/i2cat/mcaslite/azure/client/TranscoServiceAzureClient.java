@@ -72,7 +72,7 @@ public class TranscoServiceAzureClient {
 		}
 	}
 	
-	public static String addVideoEntity(String blobUrl){
+	private static String addVideoEntity(String blobUrl){
 		try{
 			CloudStorageAccount storageAccount = 
 			CloudStorageAccount.parse(storageConnectionString);
@@ -140,7 +140,7 @@ public class TranscoServiceAzureClient {
 		}
 	}
 	
-	public static CloudQueueMessage retrieveMessage(int timeOut){
+	private static CloudQueueMessage retrieveMessage(int timeOut){
 		try{
 			CloudStorageAccount storageAccount = 
 				    CloudStorageAccount.parse(storageConnectionString);
