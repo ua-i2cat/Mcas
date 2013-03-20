@@ -3,7 +3,6 @@ package cat.i2cat.mcaslite.utils;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,13 +35,13 @@ public class TranscoderUtils {
 				if (! file.exists() && file.getParentFile().isDirectory() && file.getParentFile().canWrite()){
 					return new URI("file", dst.getHost() , file.getPath(), null);
 				} else if (file.exists() && file.isDirectory() && file.canWrite()) {
-					file = new File(FilenameUtils.concat(dst.getPath(), id));
+					file = new File(new URI(dst.getPath() + RequestUtils.URIseparator + id));
 					return new URI("file", dst.getHost() , file.getPath(), null);
 				} else {
 					throw new MCASException();
 				}
 			} else {
-				return new URI(dst.getScheme(), dst.getHost() , Paths.get(dst.getPath(), id).toString(), null);
+				return new URI(dst.getScheme(), dst.getHost() , dst.getPath() + RequestUtils.URIseparator + id, null);
 			}
 		} catch (URISyntaxException e){
 			e.printStackTrace();

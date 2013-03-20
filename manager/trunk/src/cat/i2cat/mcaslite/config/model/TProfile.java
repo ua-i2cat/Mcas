@@ -1,9 +1,9 @@
 package cat.i2cat.mcaslite.config.model;
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +21,11 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.MediaUtils;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -119,7 +121,7 @@ public class TProfile implements Serializable{
 			cmd += "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + "k -b:a " + level.getaBitrate() + "k ";
 			cmd += getAdditionalFlags() + " -c:v " + getvCodec() + " -c:a " + getaCodec() + " -f " + getFormat();
-			cmd += " -y " + output + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + getFormat();
+			cmd += " -y " + output + File.separator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + getFormat();
 		}
 		transcos.add(new Transco(cmd, output, input, this.getName()));
 		return transcos;
@@ -130,8 +132,8 @@ public class TProfile implements Serializable{
 		try {
 			for (TLevel level : this.getLevels()){
 				URI dst = new URI(destination.getScheme(), 
-						destination.getHost(), 
-						Paths.get(destination.getPath(), MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat()).toString(), 
+						destination.getHost(),
+						destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat().toString(), 
 						null);
 				uris.add(dst.toString());
 			}

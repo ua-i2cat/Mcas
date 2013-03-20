@@ -24,7 +24,7 @@ public class Downloader implements Cancellable {
 	private boolean done = false;
 	
 	public Downloader(URI input, File destination){
-		String path = Paths.get(System.getProperty("mcas.home"), "WEB-INF/config.xml").toString();
+		String path = Paths.get(System.getProperty("mcas.home"), "WEB-INF" + File.separator + "config.xml").toString();
 		this.blockSize = XMLReader.getIntParameter(path, "downloader.dblocksize");
 		this.httpTimeout = XMLReader.getIntParameter(path, "downloader.httptimeout");
 		this.input = input;
@@ -50,7 +50,7 @@ public class Downloader implements Cancellable {
 
 	private void fileToFile() throws MCASException{
 		try {
-			inputStreamToFile(new FileInputStream(new File(input.getPath())));
+			inputStreamToFile(new FileInputStream(new File(input)));
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new MCASException();

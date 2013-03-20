@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.config.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,6 +16,7 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.management.HLSManifestManager;
 import cat.i2cat.mcaslite.utils.MediaUtils;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Entity
 @DiscriminatorValue("HLS")
@@ -34,6 +36,7 @@ public class THLSOptions extends TProfile {
 		if (live){
 			try {
 				fileSrc = (new URI(input)).getScheme().equals("file");
+				input = (new File(new URI(input))).toString();
 			} catch (URISyntaxException e) {
 				throw new MCASException();
 			}
@@ -47,9 +50,9 @@ public class THLSOptions extends TProfile {
 			cmd += " -c:v " + getvCodec() + " -c:a " + getaCodec() + " " + getAdditionalFlags();
 			cmd += " -f segment -segment_time_delta 0.03";
 			if (! live){
-				cmd += " -segment_list "+ output + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + ".csv";
+				cmd += " -segment_list "+ output + File.separator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + ".csv";
 			}
-			cmd += " -segment_time " + getSegDuration() + " " + output + "/";
+			cmd += " -segment_time " + getSegDuration() + " " + output + File.separator;
 			cmd += MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "_%d.ts";
 		}
 		transcos.add(new Transco(cmd, output, input, this.getName()));
@@ -78,7 +81,7 @@ public class THLSOptions extends TProfile {
 		try {
 			URI dst = new URI(destination.getScheme(), 
 				destination.getHost(), 
-				Paths.get(destination.getPath(), MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat()).toString(), 
+				destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat().toString(), 
 				null);
 			uris.add(dst.toString());
 		} catch (URISyntaxException e){
