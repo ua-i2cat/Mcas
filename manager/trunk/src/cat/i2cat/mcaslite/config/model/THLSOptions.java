@@ -45,7 +45,7 @@ public class THLSOptions extends TProfile {
 		for (TLevel level : getLevels()){
 			cmd += " -r 15 -g 30 -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
 			cmd += " -b:v " + level.getMaxRate() + "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k";
-			cmd += " -qmin " + level.getQuality() + " -qmax " + level.getQuality();
+			cmd += " -qmin 5 -qmax 60 -crf " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 			cmd += " -c:v " + getvCodec() + " -c:a " + getaCodec() + " " + getAdditionalFlags();
 			cmd += " -f segment -segment_time_delta 0.03";
