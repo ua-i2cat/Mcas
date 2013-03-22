@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.microsoft.windowsazure.services.queue.client.CloudQueueMessage;
-
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
@@ -13,6 +11,8 @@ import cat.i2cat.mcaslite.management.ProcessQueue;
 import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.management.TranscoHandler;
 import cat.i2cat.mcaslite.utils.XMLReader;
+
+import com.microsoft.windowsazure.services.queue.client.CloudQueueMessage;
 
 public class CloudManager implements Runnable, Cancellable {
 	
@@ -139,5 +139,9 @@ public class CloudManager implements Runnable, Cancellable {
 			return messages.remove(requestId);
 		}
 		throw new MCASException();
+	}
+	
+	public Map<String, CloudQueueMessage> getMessages(){
+		return messages;
 	}
 }
