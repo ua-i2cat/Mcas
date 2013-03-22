@@ -11,7 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -36,9 +37,8 @@ public class TranscoderConfig implements Serializable {
 	private String outputWorkingDir;
 	@Column(nullable = false)
 	private int timeout;
-	
-	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="tConfig", referencedColumnName="id")
+	@ManyToMany(cascade=CascadeType.ALL)
+	@JoinTable(name="config_profile", joinColumns={@JoinColumn(name="config")}, inverseJoinColumns={@JoinColumn(name="profile")})
 	private List<TProfile> profiles;
 	@Column
 	private boolean live = false;

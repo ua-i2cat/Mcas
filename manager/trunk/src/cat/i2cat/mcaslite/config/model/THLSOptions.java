@@ -16,9 +16,10 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.management.HLSManifestManager;
 import cat.i2cat.mcaslite.utils.MediaUtils;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Entity
-@DiscriminatorValue("tHLSOptions")
+@DiscriminatorValue("HLS")
 public class THLSOptions extends TProfile {
 
 	private static final long serialVersionUID = 1L;
@@ -27,15 +28,24 @@ public class THLSOptions extends TProfile {
 	private int segDuration;
 	@Column
 	private int windowLength;
-
 	
 	@Override
 	 public List<Transco> commandBuilder(String input, String output, boolean live, String title) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
-		String cmd = "ffmpeg " + (live ? "-re" : "") + " -analyzeduration 10 -i " + input;
+		boolean fileSrc = false;
+		if (live){
+			try {
+				fileSrc = (new URI(input)).getScheme().equals("file");
+				input = (new File(new URI(input))).toString();
+			} catch (URISyntaxException e) {
+				throw new MCASException();
+			}
+		}
+		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input;
 		for (TLevel level : getLevels()){
-			cmd += " -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
-			cmd += " -g 50 -r 25 -qmin " + level.getQuality() + " -qmax " + level.getQuality();
+			cmd += " -r 15 -g 30 -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
+			cmd += " -b:v " + level.getMaxRate() + "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k";
+			cmd += " -qmin 5 -qmax 60 -crf " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 			cmd += " -c:v " + getvCodec() + " -c:a " + getaCodec() + " " + getAdditionalFlags();
 			cmd += " -f segment -segment_time_delta 0.03";
@@ -61,11 +71,6 @@ public class THLSOptions extends TProfile {
 		return windowLength;
 	}
 	
-//	@Transient
-//	public double getTimeDelta() {
-//		return this.segDuration*0.05;
-//	}
-	
 	public void setWindowLength(int windowLength) {
 		this.windowLength = windowLength;
 	}
@@ -76,7 +81,7 @@ public class THLSOptions extends TProfile {
 		try {
 			URI dst = new URI(destination.getScheme(), 
 				destination.getHost(), 
-				Paths.get(destination.getPath(), MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat()).toString(), 
+				destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat().toString(), 
 				null);
 			uris.add(dst.toString());
 		} catch (URISyntaxException e){

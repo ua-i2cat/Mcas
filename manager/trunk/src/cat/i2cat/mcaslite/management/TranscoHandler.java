@@ -57,7 +57,7 @@ public class TranscoHandler implements Runnable {
 	}
 	
 	public synchronized boolean cancelRequest(TRequest request, boolean mayInterruptIfRunning) {
-		synchronized(queue){//TODO: is is needed?
+		synchronized(queue){//TODO: is this needed?
 			request = queue.getProcessObject(request);
 			if (request != null && (request.isProcessing() || request.isWaiting())){
 				try {

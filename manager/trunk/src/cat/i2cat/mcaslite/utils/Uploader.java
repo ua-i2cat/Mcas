@@ -8,11 +8,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
 
-public class NewUploader implements Cancellable {
+public class Uploader implements Cancellable {
 	
 	private int blockSize;
 	private boolean cancelled = false;
