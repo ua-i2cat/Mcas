@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.exceptions.MCASException;

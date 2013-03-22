@@ -3,7 +3,6 @@ package cat.i2cat.mcaslite.utils;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +20,8 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 
 public class RequestUtils {
+
+	public static final String URIseparator = "/";
 
 	public static boolean isValidSrcUri(URI uri) {
 		try {
