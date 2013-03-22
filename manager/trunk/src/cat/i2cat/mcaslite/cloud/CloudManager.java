@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.cloud;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,13 +22,13 @@ public class CloudManager implements Runnable, Cancellable {
 	private boolean cancelled = false;
 	private ProcessQueue queue;
 
-	private int pollInterval = XMLReader.getIntParameter("config/config.xml", "cloud.pollInterval");
-	private int pollFactor = XMLReader.getIntParameter("config/config.xml", "cloud.pollFactor");
+	private int pollInterval = XMLReader.getIntParameter("config" + File.separator + "config.xml", "cloud.pollInterval");
+	private int pollFactor = XMLReader.getIntParameter("config" + File.separator + "config.xml", "cloud.pollFactor");
 
-	private String videoQueue = XMLReader.getStringParameter("config/config.xml", "cloud.processqueue");
-	private String cancelQueue = XMLReader.getStringParameter("config/config.xml", "cloud.cancelqueue");
+	private String videoQueue = XMLReader.getStringParameter("config" + File.separator + "config.xml", "cloud.processqueue");
+	private String cancelQueue = XMLReader.getStringParameter("config" + File.separator + "config.xml", "cloud.cancelqueue");
 	
-	private int cancelTryout = XMLReader.getIntParameter("config/config.xml", "cloud.cancelTryout");
+	private int cancelTryout = XMLReader.getIntParameter("config" + File.separator + "config.xml", "cloud.cancelTryout");
 	
 	private Map<String, CloudQueueMessage> messages; 
 	private String cancelId = "";

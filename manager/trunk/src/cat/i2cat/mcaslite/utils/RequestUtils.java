@@ -15,6 +15,8 @@ import cat.i2cat.mcaslite.management.Status;
 
 
 public class RequestUtils {
+	
+	public static final String URIseparator = "/";
 
 	public static boolean isValidSrcUri(URI uri) {
 		try {
@@ -75,7 +77,7 @@ public class RequestUtils {
 					} else {
 						AzureUtils.deleteQueueMessage(
 								CloudManager.getInstance().popCloudMessage(request.getId()),
-								XMLReader.getStringParameter("config/config.xml", "cloud.processqueue"));
+								XMLReader.getStringParameter("config" + File.separator + "config.xml", "cloud.processqueue"));
 					}
 				}
 			} else {

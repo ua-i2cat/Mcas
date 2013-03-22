@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.config.model;
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,6 +23,7 @@ import javax.persistence.OneToMany;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.MediaUtils;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -117,7 +119,7 @@ public class TProfile implements Serializable{
 			cmd += " -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"" + " -qmin " + level.getQuality() + " -qmax " + level.getQuality() + " -ac "; 
 			cmd += level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + " -f " + getFormat() + " ";
 			cmd += getAdditionalFlags() + " -codec:v " + getvCodec() + " -codec:a " + getaCodec();
-			cmd += " -y " + output + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + getFormat();
+			cmd += " -y " + output + File.separator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + getFormat();
 		}
 		transcos.add(new Transco(cmd, output, input, this.getName()));
 		return transcos;
@@ -129,7 +131,7 @@ public class TProfile implements Serializable{
 			for (TLevel level : this.getLevels()){
 				URI dst = new URI(destination.getScheme(), 
 						destination.getHost(), 
-						Paths.get(destination.getPath(), MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat()).toString(), 
+						destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat(), 
 						null);
 				uris.add(dst.toString());
 			}

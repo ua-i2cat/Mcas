@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.cloud;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -30,7 +31,7 @@ import com.microsoft.windowsazure.services.table.client.TableOperation;
 
 public class AzureUtils {
 	
-	private static final String path = "config/config.xml";
+	private static final String path = "config" + File.separator + "config.xml";
 	private static final String storageConnectionString = 
 		    "DefaultEndpointsProtocol=" + XMLReader.getStringParameter(path, "cloud.connection.protocol") + ";" + 
 	   	    "AccountName=" + XMLReader.getStringParameter(path, "cloud.connection.accountName") + ";" + 

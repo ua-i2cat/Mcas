@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.config.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,9 +40,9 @@ public class THLSOptions extends TProfile {
 			cmd += " -c:v " + getvCodec() + " -c:a " + getaCodec() + " " + getAdditionalFlags();
 			cmd += " -f segment -segment_time_delta 0.03";
 			if (! live){
-				cmd += " -segment_list "+ output + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + ".csv";
+				cmd += " -segment_list "+ output + File.separator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + ".csv";
 			}
-			cmd += " -segment_time " + getSegDuration() + " " + output + "/";
+			cmd += " -segment_time " + getSegDuration() + " " + output + File.separator;
 			cmd += MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "_%d.ts";
 		}
 		transcos.add(new Transco(cmd, output, input, this.getName()));
