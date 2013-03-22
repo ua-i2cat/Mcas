@@ -31,13 +31,22 @@ public class AzureUtils {
 		    "DefaultEndpointsProtocol=" + XMLReader.getStringParameter(path, "cloud.connection.protocol") + ";" + 
 	   	    "AccountName=" + XMLReader.getStringParameter(path, "cloud.connection.accountName") + ";" + 
 	  	    "AccountKey=" + XMLReader.getStringParameter(path, "cloud.connection.accountKey");
-
+	private static final int retryTryout = XMLReader.getIntParameter(path, "cloud.retryTryout");
+			
 	public static CloudQueueMessage retrieveMessage(int timeout, String cloudQueue) throws MCASException {
 		try {
 			CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
 			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
 			CloudQueue queue = queueClient.getQueueReference(cloudQueue);
-			return queue.retrieveMessage(timeout, null, null);
+			CloudQueueMessage message = queue.retrieveMessage(timeout, null, null);
+			if (message != null) {
+				if (message.getDequeueCount() <= retryTryout) {
+					return message;
+				} else {
+					deleteQueueMessage(message, cloudQueue);
+					return null;
+				}
+			} return null; 	
 		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();

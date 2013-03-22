@@ -33,7 +33,7 @@ public class TranscoServiceAzureClient {
 		    "DefaultEndpointsProtocol=" + XMLReader.getStringParameter(path, "cloud.connection.protocol") + ";" + 
 	   	    "AccountName=" + XMLReader.getStringParameter(path, "cloud.connection.accountName") + ";" + 
 	  	    "AccountKey=" + XMLReader.getStringParameter(path, "cloud.connection.accountKey");
-	public static String uploadContent(String src) {
+	public static String uploadContent(String src, String nom) {
 		try{
 			CloudStorageAccount storageAccount = 
 			CloudStorageAccount.parse(storageConnectionString);
@@ -42,7 +42,7 @@ public class TranscoServiceAzureClient {
 			CloudBlobContainer container = blobClient.getContainerReference("videoentity");
 			//container.createIfNotExist();
 
-			CloudBlockBlob blob = container.getBlockBlobReference("mediafile");
+			CloudBlockBlob blob = container.getBlockBlobReference(nom);
 			File source = new File(src);
 			blob.upload(new FileInputStream(source), source.length());
 			return (blob.getUri().toString());
@@ -170,13 +170,14 @@ public class TranscoServiceAzureClient {
 	public static void main (String...args){
 		String blobUrl, msg, message;
 		String container = "videoentity";
+		String nom = "media";
 		int timeOut = 5;
 		System.out.println("Write a Source to transcode:");
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String src;
 		try {
 			src = br.readLine();
-			blobUrl = uploadContent(src);
+			blobUrl = uploadContent(src, nom);
 			System.out.println(blobUrl);
 			String partitionKey = (new Date()).toString();
 			String rowKey = UUID.randomUUID().toString();
@@ -193,13 +194,10 @@ public class TranscoServiceAzureClient {
 			String msg3 = cancelTask(cancel);
 			System.out.println(msg3);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (StorageException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MCASException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}				
 	}	

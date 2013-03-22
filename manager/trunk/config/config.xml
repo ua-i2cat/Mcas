@@ -12,8 +12,8 @@
     </uploader>
    <cloud>
 		<connection>
-			<accountName>storagevideos</accountName>
-			<accountKey>qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==</accountKey>
+			<accountName>uai2cat</accountName>
+			<accountKey>b3fx1IkaXwaljZD5vbIc4gf2Luw7JNeZDPNjGPCFIAHpDfPabA0VWMgSKkiHA5U0Zpq4pXLUauGm0vx99mSb0w==</accountKey>
 			<protocol>http</protocol>
 		</connection>
 		<pollFactor>2</pollFactor>
@@ -22,6 +22,7 @@
 		<cancelqueue>cancelqueue</cancelqueue>
 		<inContainer>videoentity</inContainer>
 		<cancelTryout>3</cancelTryout>
+		<retryTryout>3</retryTryout>
 	</cloud>
     <transcoconfigs>
         <tconfig name="default">
