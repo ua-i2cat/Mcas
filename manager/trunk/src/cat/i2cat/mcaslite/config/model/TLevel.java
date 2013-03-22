@@ -80,7 +80,7 @@ public class TLevel implements Serializable{
 	}
 	
 	public void setName(String name) throws MCASException{
-		if (name.contains("_")){
+		if (name == null || name.contains("_")){
 			throw new MCASException();
 		}
 		this.name = name;
