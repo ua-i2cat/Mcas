@@ -56,12 +56,7 @@ public class VideoEntity extends TableServiceEntity {
     }
 
 	public void setUrlEntities(boolean hasUrlEntities) throws MCASException {
-		if (hasUrlEntities){
-			List<URLEntity> urlEntities = urlEntitiesFromRequest(searchRequestFromEntity());
-			AzureUtils.insertEntities(URLEntity.class.getSimpleName(), urlEntities);
-		} else {
-			return;
-		}
+		
 	}
     
 	public String getUniqueFileName() {

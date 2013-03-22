@@ -24,8 +24,6 @@ public class RequestUtils {
 	
 	public static final String URIseparator = "/";
 
-	public static final String URIseparator = "/";
-
 	public static boolean isValidSrcUri(URI uri) {
 		try {
 			if (isValidUri(uri)){
