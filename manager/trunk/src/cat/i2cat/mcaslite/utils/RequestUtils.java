@@ -11,6 +11,7 @@ import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.cloud.CloudManager;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.Status;
 
 
 public class RequestUtils {
@@ -69,9 +70,13 @@ public class RequestUtils {
 		try {
 			if (! request.getStatus().hasNext()) {
 				if (AzureUtils.updateVideoEntity(request)) {
-					AzureUtils.deleteQueueMessage(
-							CloudManager.getInstance().popCloudMessage(request.getId()),
-							XMLReader.getStringParameter("config/config.xml", "cloud.processqueue"));
+					if (request.getStatus().equals(Status.ERROR)){
+						return;
+					} else {
+						AzureUtils.deleteQueueMessage(
+								CloudManager.getInstance().popCloudMessage(request.getId()),
+								XMLReader.getStringParameter("config/config.xml", "cloud.processqueue"));
+					}
 				}
 			} else {
 				AzureUtils.updateVideoEntity(request);

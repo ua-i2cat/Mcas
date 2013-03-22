@@ -29,13 +29,14 @@ public class CloudManager implements Runnable, Cancellable {
 	
 	private int cancelTryout = XMLReader.getIntParameter("config/config.xml", "cloud.cancelTryout");
 	
-	private Map<String, CloudQueueMessage> messages = new ConcurrentHashMap<String, CloudQueueMessage>();
+	private Map<String, CloudQueueMessage> messages; 
 	private String cancelId = "";
 	private int cancelRetry;
 	
 
 	private CloudManager(){
 		queue = ProcessQueue.getInstance();
+		messages = new ConcurrentHashMap<String, CloudQueueMessage>();
 	}
 	
 	public static CloudManager getInstance(){

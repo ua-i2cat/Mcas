@@ -46,13 +46,22 @@ public class VideoEntity extends TableServiceEntity {
         this.rowKey = rowKey;
     }
     
-    public List<URLEntity> getUrlEntities() throws MCASException{
-    	TRequest request = searchRequestFromEntity();
-    	return urlEntitiesFromRequest(request);	
+    public boolean getUrlEntities() throws MCASException{
+    	List<URLEntity> urlEntities = urlEntitiesFromRequest(searchRequestFromEntity());	
+    	if (urlEntities.isEmpty()){
+    		return false;
+    	} else {
+    		return true;
+    	}
     }
 
-	public void setUrlEntities(List<URLEntity> urlEntities) throws MCASException {
-		AzureUtils.insertEntities(URLEntity.class.getSimpleName(), urlEntities);
+	public void setUrlEntities(boolean hasUrlEntities) throws MCASException {
+		if (hasUrlEntities){
+			List<URLEntity> urlEntities = urlEntitiesFromRequest(searchRequestFromEntity());
+			AzureUtils.insertEntities(URLEntity.class.getSimpleName(), urlEntities);
+		} else {
+			return;
+		}
 	}
     
 	public String getUniqueFileName() {
@@ -214,54 +223,45 @@ public class VideoEntity extends TableServiceEntity {
     public void updateFromRequest(TRequest request) throws MCASException{
     	this.status = request.getStatus().toString();
     	this.cancelId = request.getId();
-    	setUrlEntities(getUrlEntities());
+    	AzureUtils.insertEntities(URLEntity.class.getSimpleName(), urlEntitiesFromRequest(request));
     	this.videoConvertedUrlMp4 = getVideoBySuffix(request, ".mp4");
     	this.videoConvertedUrlWebM = getVideoBySuffix(request, ".webm");	
     }
     
     private List<URLEntity> urlEntitiesFromRequest (TRequest request) throws MCASException{
-    	if (! request.getStatus().hasNext()) {
-	    	try {
-	    		List<URLEntity> urlEntities = new ArrayList<URLEntity>();
-		    	List<String> uris = request.getUris();
-		    	for (String uriStr : uris){
-		    		URLEntity urlEntity = new URLEntity(new Date().toString(), UUID.randomUUID().toString());
-		    		URI uri = new URI(uriStr);
-		    		urlEntity.setUrl(new URI(getScheme(), uri.getHost(), uri.getPath(), null).toString());
-		    		urlEntity.setVideoEntityPartitionKey(this.partitionKey);
-		    		urlEntity.setVideoEntityRowKey(this.rowKey);
-		    		urlEntities.add(urlEntity);
+    	List<URLEntity> urlEntities = new ArrayList<URLEntity>();
+	    	if (request != null && !request.getStatus().hasNext()) {
+		    	try {
+			    	List<String> uris = request.getUris();
+			    	for (String uriStr : uris){
+			    		URLEntity urlEntity = new URLEntity(new Date().toString(), UUID.randomUUID().toString());
+			    		URI uri = new URI(uriStr);
+			    		urlEntity.setUrl(new URI(getScheme(), uri.getHost(), uri.getPath(), null).toString());
+			    		urlEntity.setVideoEntityPartitionKey(this.partitionKey);
+			    		urlEntity.setVideoEntityRowKey(this.rowKey);
+			    		urlEntities.add(urlEntity);
+			    	}
+		    	} catch (Exception e) {
+		    		throw new MCASException();
 		    	}
-		    return urlEntities;
-		    	
-	    	} catch (Exception e) {
-	    		throw new MCASException();
-	    	}
-    	} else {
-    		return null;
-    	}
+	    	} 
+    	return urlEntities;
     }
     
     private TRequest searchRequestFromEntity() throws MCASException {
 		try{
-			TRequest request = null;
 			Map<String, CloudQueueMessage> messages = CloudManager.getInstance().getMessages();
 	    	for (CloudQueueMessage message : messages.values()){
 	    		String[] keys = message.getMessageContentAsString().split("\\*");
 	    		if (keys[0].equals(this.partitionKey) && keys[1].equals(this.rowKey)){
 	    			for (String requestId : messages.keySet()){
 	    				if(messages.get(requestId).equals(message)){
-	    					request = TranscoHandler.getInstance().getRequest(requestId);
+	    					return TranscoHandler.getInstance().getRequest(requestId);
 	    				}
 	    			}
 	    		}
 	    	}
-	    	if (request == null){
-	    		throw new MCASException();
-	    	} else {
-	    		return request;
-	    	}
-	    	
+	    	return null;	
 		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();

@@ -12,13 +12,13 @@
     </uploader>
    <cloud>
 		<connection>
-			<accountName>storagevideos</accountName>
-			<accountKey>qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==</accountKey>
+			<accountName>uai2cat</accountName>
+			<accountKey>b3fx1IkaXwaljZD5vbIc4gf2Luw7JNeZDPNjGPCFIAHpDfPabA0VWMgSKkiHA5U0Zpq4pXLUauGm0vx99mSb0w==</accountKey>
 			<protocol>http</protocol>
 		</connection>
 		<pollFactor>2</pollFactor>
 		<pollInterval>10</pollInterval>
-		<processqueue>videoqueue</processqueue>
+		<processqueue>video2queue</processqueue>
 		<cancelqueue>cancelqueue</cancelqueue>
 		<inContainer>videoentity</inContainer>
 		<cancelTryout>3</cancelTryout>
@@ -26,9 +26,8 @@
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
-                <input>/Users/i2cat/input</input>
-                <output>/Users/i2cat/output</output>
-
+                <input>input</input>
+                <output>output</output>
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>

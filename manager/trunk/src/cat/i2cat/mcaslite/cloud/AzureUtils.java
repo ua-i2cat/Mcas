@@ -104,7 +104,7 @@ public class AzureUtils {
 	
 	public static <T extends TableEntity> void insertEntities(String tableName, List<T> entities) throws MCASException {
 		try {
-			if (entities==null){
+			if (entities.isEmpty()){
 				return;
 			} else {
 				CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
