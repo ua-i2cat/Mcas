@@ -61,7 +61,7 @@ public class CloudManager implements Runnable, Cancellable {
 	private void processCancelMessage(CloudQueueMessage msg) throws MCASException {
 		if (msg != null){
 			try {
-				if (! msg.getMessageContentAsString().equals(cancelId)) {
+				if (msg.getMessageContentAsString() != null && ! msg.getMessageContentAsString().equals(cancelId)) {
 					cancelId =  msg.getMessageContentAsString();
 					cancelRetry = 0;
 				}

@@ -20,14 +20,15 @@
 		<pollInterval>10</pollInterval>
 		<processqueue>videoqueue</processqueue>
 		<cancelqueue>cancelqueue</cancelqueue>
-		<inContainer>input</inContainer>
+		<inContainer>videoentity</inContainer>
 		<cancelTryout>3</cancelTryout>
 	</cloud>
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
-                <input>input</input>
-                <output>output</output>
+                <input>/Users/i2cat/input</input>
+                <output>/Users/i2cat/output</output>
+
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>
