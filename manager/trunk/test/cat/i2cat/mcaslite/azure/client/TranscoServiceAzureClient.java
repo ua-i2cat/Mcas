@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.Date;
@@ -12,7 +11,6 @@ import java.util.UUID;
 
 import cat.i2cat.mcaslite.cloud.AzureUtils;
 import cat.i2cat.mcaslite.cloud.VideoEntity;
-import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.XMLReader;
 
 import com.microsoft.windowsazure.services.blob.client.CloudBlobClient;
@@ -28,7 +26,7 @@ import com.microsoft.windowsazure.services.table.client.TableOperation;
 
 public class TranscoServiceAzureClient {
 	
-	private static final String path = "config/config.xml";
+	private static final String path = "config" + File.separator + "config.xml";
 	private static final String storageConnectionString = 
 		    "DefaultEndpointsProtocol=" + XMLReader.getStringParameter(path, "cloud.connection.protocol") + ";" + 
 	   	    "AccountName=" + XMLReader.getStringParameter(path, "cloud.connection.accountName") + ";" + 
@@ -138,21 +136,6 @@ public class TranscoServiceAzureClient {
 		}
 	}
 	
-	private static CloudQueueMessage retrieveMessage(int timeOut){
-		try{
-			CloudStorageAccount storageAccount = 
-				    CloudStorageAccount.parse(storageConnectionString);
-			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
-			CloudQueue queue = queueClient.getQueueReference("videoqueue");
-			CloudQueueMessage retrievedMessage = queue.retrieveMessage(timeOut, null, null);
-			return(retrievedMessage);
-			
-		}catch(Exception e){
-			e.printStackTrace();
-			return(null);	
-		}			
-	}
-	
 	public static String cancelTask(String cancelId){
 		try {
 			CloudStorageAccount storageAccount = 
@@ -170,11 +153,10 @@ public class TranscoServiceAzureClient {
 	}
 
 	public static void main (String...args){
+
 		String blobUrl, msg, message;
 		String container = "videoentity";
 		String nom = "media";
-
-		int timeOut = 5;
 		try {
 			while(true){
 				System.out.println("Choose an option:");

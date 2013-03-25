@@ -1,5 +1,7 @@
 package cat.i2cat.mcaslite.service;
 
+import java.io.File;
+
 import cat.i2cat.mcaslite.cloud.CloudManager;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.TranscoHandler;
@@ -11,7 +13,7 @@ public class TranscoService {
 	private static CloudManager client;
 	private static Thread managerTh;
 	private static Thread clientTh;
-	private static String path = "config/";
+	private static String path = "config" + File.separator;
 	
 	public static void main(String[] args){
 		

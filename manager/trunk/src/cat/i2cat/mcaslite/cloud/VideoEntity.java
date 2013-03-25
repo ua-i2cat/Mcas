@@ -2,7 +2,6 @@ package cat.i2cat.mcaslite.cloud;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.UUID;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.TranscoHandler;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 
 import com.microsoft.windowsazure.services.queue.client.CloudQueueMessage;
 import com.microsoft.windowsazure.services.table.client.TableServiceEntity;
@@ -56,12 +56,7 @@ public class VideoEntity extends TableServiceEntity {
     }
 
 	public void setUrlEntities(boolean hasUrlEntities) throws MCASException {
-		if (hasUrlEntities){
-			List<URLEntity> urlEntities = urlEntitiesFromRequest(searchRequestFromEntity());
-			AzureUtils.insertEntities(URLEntity.class.getSimpleName(), urlEntities);
-		} else {
-			return;
-		}
+		
 	}
     
 	public String getUniqueFileName() {
@@ -212,7 +207,7 @@ public class VideoEntity extends TableServiceEntity {
 	    	TRequest request = new TRequest();
 	    	request.setConfig("default");
 			request.setSrc(uriToBlob(new URI(videoUploadedUrl)));
-			request.setDst((new URI("blob", getHost(), Paths.get("/",tenantContainer).toString(), null)).toString());
+			request.setDst((new URI("blob", getHost(), RequestUtils.URIseparator + tenantContainer, null)).toString());
 			request.setTitle(uniqueFileName);
 			return request;
     	} catch (URISyntaxException e) {

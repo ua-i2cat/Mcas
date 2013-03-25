@@ -62,12 +62,7 @@ public class MediaUtils {
 	}
 	
 	public static String getWorkDir(String workDir) throws MCASException{
-		File file = null;
-		if (Paths.get(workDir).isAbsolute()){
-			file = Paths.get(workDir).toFile();
-		} else {
-			file = Paths.get(System.getProperty("mcas.home"),workDir).toFile();
-		}
+		File file = Paths.get(workDir).toFile();
 		if (file.isDirectory() && file.canWrite()){
 			return file.toString();
 		} else if(!file.exists() && file.mkdirs()){

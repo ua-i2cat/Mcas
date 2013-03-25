@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.Cancellable;
@@ -21,7 +20,7 @@ public class Uploader implements Cancellable {
 	private boolean done = false;
 	
 	public Uploader(URI destination){
-		String path = Paths.get(System.getProperty("mcas.home"), "WEB-INF" + File.separator + "config.xml").toString();
+		String path = "config" + File.separator + "config.xml";
 		this.blockSize = XMLReader.getIntParameter(path, "uploader.ublocksize");
 		this.destination = destination;
 	}

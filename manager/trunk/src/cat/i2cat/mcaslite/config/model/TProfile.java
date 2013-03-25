@@ -127,13 +127,13 @@ public class TProfile implements Serializable{
 		return transcos;
 	}
 	
-	public List<String> getUris(URI destination, String title) throws MCASException {
+	public List<String> getUris(URI destination, String title) throws MCASException{
 		List<String> uris = new ArrayList<String>();
 		try {
 			for (TLevel level : this.getLevels()){
 				URI dst = new URI(destination.getScheme(), 
-						destination.getHost(),
-						destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat().toString(), 
+						destination.getHost(), 
+						destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat(), 
 						null);
 				uris.add(dst.toString());
 			}
