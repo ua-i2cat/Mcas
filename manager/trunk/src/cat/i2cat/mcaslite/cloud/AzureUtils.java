@@ -1,10 +1,13 @@
 package cat.i2cat.mcaslite.cloud;
 
 import java.io.ByteArrayInputStream;
+import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.utils.XMLReader;
 
 import com.microsoft.windowsazure.services.blob.client.BlobContainerPermissions;
@@ -21,6 +24,7 @@ import com.microsoft.windowsazure.services.queue.client.CloudQueueClient;
 import com.microsoft.windowsazure.services.queue.client.CloudQueueMessage;
 import com.microsoft.windowsazure.services.queue.client.MessageUpdateFields;
 import com.microsoft.windowsazure.services.table.client.CloudTableClient;
+import com.microsoft.windowsazure.services.table.client.TableBatchOperation;
 import com.microsoft.windowsazure.services.table.client.TableEntity;
 import com.microsoft.windowsazure.services.table.client.TableOperation;
 
@@ -101,6 +105,25 @@ public class AzureUtils {
 			CloudTableClient tableClient = storageAccount.createCloudTableClient();
 			TableOperation retrieveEntity =  TableOperation.retrieve(partitonKey, rowKey, type);
 			return  tableClient.execute(tableName, retrieveEntity).getResultAsType();
+		} catch (Exception e){
+			e.printStackTrace();
+			throw new MCASException();
+		}
+	}
+	
+	public static <T extends TableEntity> void insertEntities(String tableName, List<T> entities) throws MCASException {
+		try {
+			if (entities.isEmpty()){
+				return;
+			} else {
+				CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
+				CloudTableClient tableClient = storageAccount.createCloudTableClient();
+				TableBatchOperation batchOperation = new TableBatchOperation();
+				for (TableEntity entity : entities){
+					batchOperation.insert(entity);
+				}
+				tableClient.execute(tableName,batchOperation);
+			}
 		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();
@@ -192,10 +215,20 @@ public class AzureUtils {
 		try{ 
 			String[] keys = CloudManager.getInstance().getCloudMessage(request.getId()).getMessageContentAsString().split("\\*");
 			VideoEntity video = AzureUtils.getEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), VideoEntity.class);
+			updateDateTime(request, video);
 			video.updateFromRequest(request);
 			return updateEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), video);
 		} catch (Exception e){
 			return false;
+		}
+	}
+	
+	private static void updateDateTime(TRequest request, VideoEntity video){
+		if (request.getStatus().getInt() == Status.PROCESS_T || request.getStatus().getInt() == Status.PROCESS_L){
+			video.setStartConvertion(new Date());
+		} else if (request.getStatus().getInt() == Status.DONE){
+			video.setEndConvertion(new Date());
+			video.setEndJob(new Date());
 		}
 	}
 	
@@ -214,4 +247,5 @@ public class AzureUtils {
 			return false;
 		}
 	}
+	
 }

@@ -1,6 +1,5 @@
 package cat.i2cat.mcaslite.management;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
@@ -46,32 +45,22 @@ public class Transcoder implements Runnable, Cancellable {
 	@Override
 	public void run() {
 		try {
-			if (! request.isLive()){
-				videoOnDemand();
-			} else {
-				HTTPLive();
-			}
+			transcodify();
 		} catch (MCASException e){
 			manageError();
 			setDone(true);
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	
-	private void HTTPLive() throws MCASException, IOException, URISyntaxException {
+	private void transcodify() throws MCASException{
 		try {
 			Iterator<Transco> it = transcos.iterator();
 			while(! isCancelled() && it.hasNext()){
 				Transco transco = it.next();
 				try {
-					mediaH.initWatcher(transco.getProfileName());
-					transcodify(transco);
+					mediaH.inputHandle(request.isLive(), transco.getProfileName());
+					execute(transco, request.isLive());
 				} catch (MCASException e) {
 					request.deleteTranscoded(transco);
 					queue.update(request);
@@ -79,50 +68,29 @@ public class Transcoder implements Runnable, Cancellable {
 					MediaUtils.deleteFile(transco.getOutputDir());
 				}
 			}
+			setDone(true);
+			if (isCancelled()) {
+				MediaUtils.clean(request);
+				return;
+			}
 			if (request.isTranscodedEmpty() && ! isCancelled()){
 				manageError();
 			} else {
-				setDone(true);
 				request.increaseStatus();
 				queue.update(request);
 			}
 		} finally {
-			mediaH.cancelWatcher();
+			mediaH.outputHandle(request.isLive());
 		}
 	}
 	
-	private void videoOnDemand() throws MCASException {
-		mediaH.inputHandle();
-		Iterator<Transco> it = transcos.iterator();
-		while(! isCancelled() && it.hasNext()){
-			Transco transco = it.next();
-			try {
-				transcodify(transco);
-			} catch (MCASException e) {
-				request.deleteTranscoded(transco);
-				queue.update(request);
-				e.printStackTrace();
-				MediaUtils.deleteFile(transco.getOutputDir());
-			}
-		}
-		setDone(true);
-		if (isCancelled()) {
-			MediaUtils.clean(request);
-			return;
-		}
-		if (request.isTranscodedEmpty()){
-			manageError();
-		}
-		request.increaseStatus();
-		queue.update(request);
-		mediaH.outputHandle();
-	}
-	
-	private void transcodify(Transco transco) throws MCASException{
+	private void execute(Transco transco, boolean live) throws MCASException{
 		request.addTrancoded(transco);
 		queue.update(request);
 		executeCommand(transco.getCommand().trim());
-		processManifest(transco);
+		if (! live){
+			processManifest(transco);
+		}
 	}
 	
 	private void manageError(){

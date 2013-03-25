@@ -28,7 +28,7 @@ public class Downloader implements Cancellable {
 	private boolean done = false;
 	
 	public Downloader(URI input, File destination){
-		String path = "config/config.xml";
+		String path = "config" + File.separator + "config.xml";
 		this.blockSize = XMLReader.getIntParameter(path, "downloader.dblocksize");
 		this.httpTimeout = XMLReader.getIntParameter(path, "downloader.httptimeout");
 		this.cloudContainer = XMLReader.getStringParameter("config/config.xml", "cloud.inContainer");
@@ -69,7 +69,7 @@ public class Downloader implements Cancellable {
 
 	private void fileToFile() throws MCASException{
 		try {
-			inputStreamToFile(new FileInputStream(new File(input.getPath())));
+			inputStreamToFile(new FileInputStream(new File(input)));
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new MCASException();

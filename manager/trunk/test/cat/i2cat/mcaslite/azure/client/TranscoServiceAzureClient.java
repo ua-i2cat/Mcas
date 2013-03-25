@@ -43,6 +43,7 @@ public class TranscoServiceAzureClient {
 			//container.createIfNotExist();
 
 			CloudBlockBlob blob = container.getBlockBlobReference(nom);
+
 			File source = new File(src);
 			blob.upload(new FileInputStream(source), source.length());
 			return (blob.getUri().toString());
@@ -84,6 +85,7 @@ public class TranscoServiceAzureClient {
 			ventity.setDescription("");
 			ventity.setCategory("");
 			ventity.setTitle("");
+			ventity.setUniqueFileName("uniqueFileName");
 			ventity.setVideoUploadedUrl(blobUrl); 
 			ventity.setStatus("");
 			ventity.setCancelId("");
@@ -122,7 +124,7 @@ public class TranscoServiceAzureClient {
 			
 			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
 			
-			CloudQueue queue = queueClient.getQueueReference("videoqueue");
+			CloudQueue queue = queueClient.getQueueReference("video2queue");
 			
 			queue.createIfNotExist();
 			
@@ -171,34 +173,47 @@ public class TranscoServiceAzureClient {
 		String blobUrl, msg, message;
 		String container = "videoentity";
 		String nom = "media";
+
 		int timeOut = 5;
-		System.out.println("Write a Source to transcode:");
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		String src;
 		try {
-			src = br.readLine();
-			blobUrl = uploadContent(src, nom);
-			System.out.println(blobUrl);
-			String partitionKey = (new Date()).toString();
-			String rowKey = UUID.randomUUID().toString();
-			msg = addVideoEntity(blobUrl, partitionKey, rowKey, container);
-			System.out.println(msg);
+			while(true){
+				System.out.println("Choose an option:");
+				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+				int option = Integer.parseInt(br.readLine());
+				switch (option){
+				case 1:
+					System.out.println("Insert a source to upload:");
+					String src = br.readLine();
+					blobUrl = uploadContent(src, nom);
+					System.out.println(blobUrl);
+					String partitionKey = (new Date()).toString();
+					String rowKey = UUID.randomUUID().toString();
+					msg = addVideoEntity(blobUrl, partitionKey, rowKey, container);
+					System.out.println(msg);
+					break;
 				
-			message = addMessageQueue(msg);
-			System.out.println(message);
-			String msg2 = retrieveMessage(timeOut).getMessageContentAsString();
-			System.out.println(msg2);
-			String[] keys = msg.split("\\*");
-			VideoEntity video = AzureUtils.getEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), VideoEntity.class);
-			String cancel = video.getCancelId();
-			String msg3 = cancelTask(cancel);
-			System.out.println(msg3);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} catch (StorageException e) {
+				case 2:
+					System.out.println("Insert message in the queue:");
+					message = br.readLine();
+					System.out.println(addMessageQueue(message));
+					break;
+					
+				case 3:
+					System.out.println("Message to cancel:");
+					String cancelMessage = br.readLine();
+					String[] keys = cancelMessage.split("\\*");
+					VideoEntity video = AzureUtils.getEntity(keys[0], keys[1], VideoEntity.class.getSimpleName(), VideoEntity.class);
+					System.out.println(cancelTask(video.getCancelId()));
+					
+				
+				default:
+					System.out.println("Code not valid. 1-Upload video   2-Insert message in queue");
+					break;
+				}
+			}
+		
+		} catch (Exception e){
 			e.printStackTrace();
-		} catch (MCASException e) {
-			e.printStackTrace();
-		}				
+		}						
 	}	
 }
