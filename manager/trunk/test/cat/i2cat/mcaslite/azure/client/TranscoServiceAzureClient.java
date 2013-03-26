@@ -31,17 +31,16 @@ public class TranscoServiceAzureClient {
 		    "DefaultEndpointsProtocol=" + XMLReader.getStringParameter(path, "cloud.connection.protocol") + ";" + 
 	   	    "AccountName=" + XMLReader.getStringParameter(path, "cloud.connection.accountName") + ";" + 
 	  	    "AccountKey=" + XMLReader.getStringParameter(path, "cloud.connection.accountKey");
-	public static String uploadContent(String src, String nom) {
+	public static String uploadContent(String src) {
 		try{
 			CloudStorageAccount storageAccount = 
 			CloudStorageAccount.parse(storageConnectionString);
 
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
 			CloudBlobContainer container = blobClient.getContainerReference("videoentity");
-			//container.createIfNotExist();
 
-			CloudBlockBlob blob = container.getBlockBlobReference(nom);
-
+			CloudBlockBlob blob = container.getBlockBlobReference(UUID.randomUUID().toString());
+			
 			File source = new File(src);
 			blob.upload(new FileInputStream(source), source.length());
 			return (blob.getUri().toString());
@@ -122,7 +121,7 @@ public class TranscoServiceAzureClient {
 			
 			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
 			
-			CloudQueue queue = queueClient.getQueueReference("video2queue");
+			CloudQueue queue = queueClient.getQueueReference("videoqueue");
 			
 			queue.createIfNotExist();
 			
@@ -156,7 +155,6 @@ public class TranscoServiceAzureClient {
 
 		String blobUrl, msg, message;
 		String container = "videoentity";
-		String nom = "media";
 		try {
 			while(true){
 				System.out.println("Choose an option:");
@@ -166,7 +164,7 @@ public class TranscoServiceAzureClient {
 				case 1:
 					System.out.println("Insert a source to upload:");
 					String src = br.readLine();
-					blobUrl = uploadContent(src, nom);
+					blobUrl = uploadContent(src);
 					System.out.println(blobUrl);
 					String partitionKey = (new Date()).toString();
 					String rowKey = UUID.randomUUID().toString();

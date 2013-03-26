@@ -29,7 +29,6 @@
             <workdir>
                 <input>/Users/i2cat/input</input>
                 <output>/Users/i2cat/output</output>
-
             </workdir>
             <timeout>86400</timeout>
             <live>false</live>
