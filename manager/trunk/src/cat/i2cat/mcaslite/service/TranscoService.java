@@ -38,8 +38,7 @@ public class TranscoService {
 			managerTh = new Thread(transcoH);
 			managerTh.setName("MainManager");
 			managerTh.setDaemon(true);
-			managerTh.start();
-		} catch (MCASException e) {
+			managerTh.start();		} catch (MCASException e) {
 			e.printStackTrace();
 			return;
 		}
