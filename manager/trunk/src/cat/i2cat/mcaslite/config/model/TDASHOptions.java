@@ -21,9 +21,6 @@ import cat.i2cat.mcaslite.utils.MediaUtils;
 
 public class TDASHOptions extends TProfile {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Column(length = 100)
@@ -40,20 +37,26 @@ public class TDASHOptions extends TProfile {
 	public List<Transco> commandBuilder(String input, String output, boolean live, String title) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
 		String COMMAND = "script.sh ";
-		String INPUT = "\"-y -i " + input + "\" ";
-		String PROFILE = "\"-c:v " + getvCodec() + " -c:a " + getaCodec() + " -f mp4\" ";
+		String inp = "-y -i " + input;
+		String pro = "-c:v " + getvCodec() + " -c:a " + getaCodec() + " -f mp4 ";
+		String nam = MediaUtils.fileNameMakerByProfile(title, getName()) + "_level ";
+		String mp4 = "-dash " + this.segDuration + " -frag " + this.fragDuration + " -out " + output + "/" + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat() + " -profile " + "\"" + this.getDashProfile() + "\" -rap -segment-name " + MediaUtils.fileNameMakerByProfile(title, getName()) + "_seg ";
+		String out = "/" + output + "/";
+		String OUTPUT = "\"" + out + "\" ";
+		String INPUT = "\"" + inp + "\" ";
+		String PROFILE = "\"" + pro + "\" ";
 		String NUMLVL = "\"" + levels.size() + "\" ";
-		String MP4BOX = "\"-dash " + this.segDuration + " -frag " + this.fragDuration;
-		String NAME = "\"" + MediaUtils.fileNameMakerByProfile(title, getName()) + "_level\" ";
-		MP4BOX += " -out " + output + "/" + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat();
-		MP4BOX += " -profile " + "\"" + this.getDashProfile() + "\" -rap -segment-name " + MediaUtils.fileNameMakerByProfile(title, getName()) + "_seg\" ";
+		String MP4BOX = "\"" + mp4 + "\" ";
+		String NAME = "\"" + nam + "\" ";
+		
 		String LEVELS = "";
 		for (TLevel level : levels){
 			LEVELS += "-vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"" + " -b:v ";
 			LEVELS += level.getMaxRate() + "k -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + getAdditionalFlags();
 			LEVELS += output + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + ".mp4 ";
 		}
-		String cmd = COMMAND + INPUT + PROFILE + NUMLVL + MP4BOX + NAME + "\"" + LEVELS + "\"";
+		String cmd = COMMAND + INPUT + PROFILE + NUMLVL + OUTPUT + MP4BOX + NAME + "\"" + LEVELS + "\"";
+		System.out.println(cmd);
 		transcos.add(new Transco(cmd, output, input, this.getName()));
 		return transcos;		
 	}
