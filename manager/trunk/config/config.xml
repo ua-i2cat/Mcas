@@ -20,7 +20,7 @@
 		<pollInterval>10</pollInterval>
 		<processqueue>video2queue</processqueue>
 		<cancelqueue>cancelqueue</cancelqueue>
-		<inContainer>videoentity</inContainer>
+		<inContainer>outpu2</inContainer>
 		<cancelTryout>3</cancelTryout>
 	</cloud>
     <transcoconfigs>

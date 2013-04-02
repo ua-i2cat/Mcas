@@ -37,7 +37,7 @@ public class TranscoServiceAzureClient {
 			CloudStorageAccount.parse(storageConnectionString);
 
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference("videoentity");
+			CloudBlobContainer container = blobClient.getContainerReference("output2");
 			//container.createIfNotExist();
 
 			CloudBlockBlob blob = container.getBlockBlobReference("file");

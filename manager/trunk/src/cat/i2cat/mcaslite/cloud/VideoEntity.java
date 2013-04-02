@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.management.TranscoHandler;
 import cat.i2cat.mcaslite.utils.RequestUtils;
 
@@ -35,11 +36,15 @@ public class VideoEntity extends TableServiceEntity {
 	private Date startJob; 
 	private Date endJob; 
 	private String durationJob; 
+	private boolean urlEntities;
+
     
 	private String scheme;
     private String host;
     
-    public VideoEntity() {}
+    public VideoEntity() {
+    	urlEntities = false;
+    }
     
     public VideoEntity(String partitionKey, String rowKey) {
         this.partitionKey = partitionKey;
@@ -47,16 +52,11 @@ public class VideoEntity extends TableServiceEntity {
     }
     
     public boolean getUrlEntities() throws MCASException{
-    	List<URLEntity> urlEntities = urlEntitiesFromRequest(searchRequestFromEntity());	
-    	if (urlEntities.isEmpty()){
-    		return false;
-    	} else {
-    		return true;
-    	}
+    	return urlEntities;
     }
 
 	public void setUrlEntities(boolean hasUrlEntities) throws MCASException {
-		
+		urlEntities = hasUrlEntities;
 	}
     
 	public String getUniqueFileName() {
@@ -225,7 +225,7 @@ public class VideoEntity extends TableServiceEntity {
     
     private List<URLEntity> urlEntitiesFromRequest (TRequest request) throws MCASException{
     	List<URLEntity> urlEntities = new ArrayList<URLEntity>();
-	    	if (request != null && !request.getStatus().hasNext()) {
+	    	if (request != null && (request.getStatus().getInt()==Status.DONE || request.getStatus().getInt()==Status.P_ERROR)) {
 		    	try {
 			    	List<String> uris = request.getUris();
 			    	for (String uriStr : uris){
@@ -236,6 +236,7 @@ public class VideoEntity extends TableServiceEntity {
 			    		urlEntity.setVideoEntityRowKey(this.rowKey);
 			    		urlEntities.add(urlEntity);
 			    	}
+			    	setUrlEntities(true);
 		    	} catch (Exception e) {
 		    		throw new MCASException();
 		    	}
