@@ -52,7 +52,7 @@ public class TProfile implements Serializable{
 	private String additionalFlags;
 	@ManyToMany(cascade=CascadeType.ALL)
 	@JoinTable(name="profile_level", joinColumns={@JoinColumn(name="profile")}, inverseJoinColumns={@JoinColumn(name="level")})
-	private List<TLevel> levels;
+	protected List<TLevel> levels;
 	
 	public List<TLevel> getLevels() {
 		return levels;
