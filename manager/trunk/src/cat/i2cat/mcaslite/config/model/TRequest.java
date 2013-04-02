@@ -48,11 +48,16 @@ public class TRequest implements Serializable {
 	private String id = UUID.randomUUID().toString();
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="request", referencedColumnName="id")
-	private List<Transco> transcoded = new ArrayList<Transco>();
+	private List<Transco> transcoded;
 	@Transient
 	private Status status;
 	@Column
 	private int iStatus;
+
+    public TRequest(){
+        transcoded = new ArrayList<Transco>();
+    }
+
 	
 	public void setIStatus(int iStatus){
 		this.iStatus = iStatus;
