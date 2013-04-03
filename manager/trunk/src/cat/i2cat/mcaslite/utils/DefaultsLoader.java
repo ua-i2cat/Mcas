@@ -1,10 +1,7 @@
 package cat.i2cat.mcaslite.utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.jdom2.Element;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
@@ -25,47 +22,7 @@ public class DefaultsLoader {
 	}
 	
 	private String path;
-	private List<TranscoderConfig> configs;
-	private Map<String, TLevel> allLevels;
-	private Map<String, TProfile> allProfiles;
-	
-	
-	public List<TranscoderConfig> getConfigs() throws MCASException{
-		if (configs == null){
-			configs = new ArrayList<TranscoderConfig>();
-			XMLReader reader = new XMLReader(path);
-			List<Element> configElements = reader.getConfigs(reader.getDoc("config.xml"));
-			for (Element el : configElements){
-				configs.add(getConfig(el));
-			}
-		}
-		return configs;
-	}
-	
-	private Map<String,TProfile> getAllProfiles() throws MCASException{
-		if (allProfiles == null){
-			allProfiles = new HashMap<String,TProfile>();
-			XMLReader reader = new XMLReader(path);
-			List<Element> profileElements = reader.getRootChildrenElements(reader.getDoc("profiles.xml"));
-			for(Element el : profileElements){
-				allProfiles.put(el.getAttributeValue("name"), getProfile(el));			
-			}
-		}
-		return allProfiles;
-	}
-	
-	private Map<String,TLevel> getAllLevels() throws MCASException{
-		if (allLevels == null){	
-			allLevels = new HashMap<String,TLevel>();
-			XMLReader reader = new XMLReader(path);
-			List<Element> levelElements = reader.getRootChildrenElements(reader.getDoc("levels.xml"));
-			for(Element el : levelElements){
-				allLevels.put(el.getAttributeValue("name"), getLevel(el));			
-			}
-		}
-		return allLevels;
-	}
-	
+
 	private TranscoderConfig getConfig(Element config) throws MCASException{
 		TranscoderConfig tConfig = new TranscoderConfig();
 		tConfig.setName(config.getAttributeValue("name"));
@@ -73,18 +30,21 @@ public class DefaultsLoader {
 		tConfig.setOutputWorkingDir(XMLReader.getStringParameter(config, "workdir.output"));
 		tConfig.setTimeout(XMLReader.getIntParameter(config, "timeout"));
 		tConfig.setLive(Boolean.parseBoolean(XMLReader.getStringParameter(config, "live")));
-		tConfig.setProfiles(getConfigProfiles(getConfigProfilesName(config)));
+		tConfig.setProfiles(getConfigProfiles(config.getChild("profiles").getChildren("profile")));
 		return tConfig;
 	}
 	
-	private List<TProfile> getConfigProfiles(List<String> configProfiles) throws MCASException{
+	private List<TProfile> getConfigProfiles(List<Element> configProfiles) throws MCASException {
+		DAO<TProfile> profileDao = new DAO<TProfile>(TProfile.class);
 		List<TProfile> tProfiles = new ArrayList<TProfile>();
-		for(String name : configProfiles){
-			tProfiles.add(getAllProfiles().get(name));
+		for(Element el : configProfiles){
+			TProfile profile = profileDao.findByName(el.getAttributeValue("name"));
+			profile.setLevels(getProfileLevels(getProfileLevelsName(el)));
+			tProfiles.add(profile);
 		}
 		return tProfiles;
 	}
-	
+
 	private TProfile getProfile(Element profile) throws MCASException{
 		String classAtr = profile.getAttributeValue("class");
 		if (classAtr != null && classAtr.equals("HLS")){
@@ -120,15 +80,13 @@ public class DefaultsLoader {
 		tProfile.setvCodec(XMLReader.getStringParameter(profile, "vcodec"));
 		tProfile.setName(XMLReader.getElementName(profile));
 		tProfile.setAdditionalFlags(XMLReader.getStringParameter(profile, "additionalFlags"));
-		tProfile.setLevels(getProfileLevels(getProfileLevelsName(profile)));
 	}
 	
 	private List<TLevel> getProfileLevels(List<String> profileLevels) throws MCASException{
 		List<TLevel> tLevels = new ArrayList<TLevel>();
-		for(String name : profileLevels){
-			Map<String, TLevel> levels = getAllLevels();
-			TLevel fakeLevel = levels.get(name);
-			tLevels.add(fakeLevel);
+		DAO<TLevel> levelDao = new DAO<TLevel>(TLevel.class);
+		for (String levelName : profileLevels){
+			tLevels.add(levelDao.findByName(levelName));
 		}
 		return tLevels;
 	}
@@ -144,15 +102,6 @@ public class DefaultsLoader {
 		return tLevel;
 	}
 	
-	private List<String> getConfigProfilesName(Element config){
-		List<String> profileNames= new ArrayList<String>();
-		List<Element> configProfiles = config.getChild("profiles").getChildren("profile");
-		for (Element el : configProfiles){
-			profileNames.add(el.getAttributeValue("name"));
-		}
-		return profileNames;
-	}
-	
 	private List<String> getProfileLevelsName(Element profile){
 		List<String> levelNames= new ArrayList<String>();
 		List<Element> profileLevels = profile.getChild("levels").getChildren("level");
@@ -162,11 +111,37 @@ public class DefaultsLoader {
 		return levelNames;
 	}
 	
-	public void tConfigFeedDefaults() throws MCASException{
-		DAO<TranscoderConfig> transcoConfigDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
-		List<TranscoderConfig> transcoList = getConfigs();
-		for (TranscoderConfig transco : transcoList){
-			transcoConfigDao.save(transco);
+
+	public void loadDefaults() throws MCASException {
+		loadDefaultLevels();
+		loadDefaultProfiles();
+		loadDefaultPresets();
+	}
+	
+	private void loadDefaultLevels() throws MCASException {
+		DAO<TLevel> levelDao = new DAO<TLevel>(TLevel.class);
+		XMLReader reader = new XMLReader(path);
+		List<Element> levelElements = reader.getRootChildrenElements(reader.getDoc("levels.xml"));
+		for(Element el : levelElements){
+			levelDao.save(getLevel(el));			
+		}
+	}
+	
+	private void loadDefaultProfiles()  throws MCASException {
+		DAO<TProfile> profileDao = new DAO<TProfile>(TProfile.class);
+		XMLReader reader = new XMLReader(path);
+		List<Element> profileElements = reader.getRootChildrenElements(reader.getDoc("profiles.xml"));
+		for(Element el : profileElements){
+			profileDao.save(getProfile(el));			
+		}
+	}
+	
+	private void loadDefaultPresets() throws MCASException {
+		DAO<TranscoderConfig> configDao = new DAO<TranscoderConfig>(TranscoderConfig.class);
+		XMLReader reader = new XMLReader(path);
+		List<Element> configElements = reader.getConfigs(reader.getDoc("config.xml"));
+		for (Element el : configElements){
+			configDao.save(getConfig(el));
 		}
 	}
 

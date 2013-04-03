@@ -6,22 +6,12 @@
         <vcodec>libx264</vcodec>
         <acodec>libfdk_aac</acodec>
         <additionalFlags></additionalFlags>
-        <levels>
-            <level name="high"/>
-            <level name="std"/>
-            <level name="low"/>
-        </levels>
     </profile>
     <profile name="WebM">
         <format>webm</format>
         <vcodec>libvpx</vcodec>
         <acodec>libvorbis</acodec>
         <additionalFlags> </additionalFlags>
-        <levels>
-            <level name="high"/>
-            <level name="std"/>
-            <level name="low"/>
-        </levels>
     </profile>
     <profile name="HLS" class="HLS">
         <format>m3u8</format>
@@ -30,37 +20,6 @@
         <additionalFlags>-profile:v baseline -map 0 -flags -global_header</additionalFlags>
         <segDuration>3</segDuration>
         <windowLength>3</windowLength>
-        <levels>
-            <level name="high"/>
-            <level name="std"/>
-            <level name="low"/>
-        </levels>
-    </profile>
-    <profile name="HLS640" class="HLS">
-        <format>m3u8</format>
-        <vcodec>libx264</vcodec>
-        <acodec>libfdk_aac</acodec>
-        <additionalFlags>-profile:v baseline -map 0 -flags -global_header</additionalFlags>
-        <segDuration>3</segDuration>
-        <windowLength>3</windowLength>
-        <levels>
-            <level name="high640"/>
-            <level name="std640"/>
-            <level name="low640"/>
-        </levels>
-    </profile>
-    <profile name="HLS360" class="HLS">
-        <format>m3u8</format>
-        <vcodec>libx264</vcodec>
-        <acodec>libfdk_aac</acodec>
-        <additionalFlags>-profile:v baseline -map 0 -flags -global_header</additionalFlags>
-        <segDuration>3</segDuration>
-        <windowLength>3</windowLength>
-        <levels>
-            <level name="high360"/>
-            <level name="std360"/>
-            <level name="low360"/>
-        </levels>
     </profile>
     <profile name="Dash" class="DASH">
     	<format>mpd</format>
@@ -69,10 +28,5 @@
         <additionalFlags></additionalFlags>
         <segDuration>500</segDuration>
         <fragDuration>100</fragDuration>
-        <levels>
-            <level name="high"/>
-            <level name="std"/>
-            <level name="low"/>
-        </levels>
     </profile>
 </profiles>

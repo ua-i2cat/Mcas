@@ -1,6 +1,7 @@
 package cat.i2cat.mcaslite.management;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,7 +28,7 @@ public class TranscoHandler implements Runnable {
 	private boolean run = true;
 	
 	private TranscoHandler() {
-		String path = "config" + File.separator + "config.xml";
+		String path = Paths.get(System.getProperty("mcas.home"), "WEB-INF" + File.separator + "config.xml").toString();
 		maxRequests = XMLReader.getIntParameter(path, "maxreq");
 		queue = ProcessQueue.getInstance();
 		queue.setMaxProcess(XMLReader.getIntParameter(path, "maxproc"));
