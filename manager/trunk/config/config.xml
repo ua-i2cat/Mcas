@@ -32,8 +32,97 @@
             <timeout>86400</timeout>
             <live>false</live>
             <profiles>
-                <profile name="H264"/>
-                <profile name="WebM"/>
+                <profile name="H264">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+                <profile name="WebM">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+            </profiles>
+        </tconfig>
+        <tconfig name="all">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>false</live>
+            <profiles>
+                <profile name="H264">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+                <profile name="WebM">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+                <profile name="Dash">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+                <profile name="HLS">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+            </profiles>
+        </tconfig>
+        <tconfig name="live">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>true</live>
+            <profiles>
+                <profile name="HLS">
+                	<levels>
+                		<level name="high"/>
+                		<level name="std"/>
+                		<level name="low"/>
+                	</levels>
+                </profile>
+            </profiles>
+        </tconfig>
+        <tconfig name="live640">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>true</live>
+            <profiles>
+                <profile name="HLS">
+                	<levels>
+                		<level name="high640"/>
+                		<level name="std640"/>
+                		<level name="low640"/>
+                	</levels>
+                </profile>
+            </profiles>
+        </tconfig>
+        <tconfig name="live360">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>true</live>
+            <profiles>
+                <profile name="HLS">
+                	<levels>
+                		<level name="high360"/>
+                		<level name="std360"/>
+                		<level name="low360"/>
+                	</levels>
+                </profile>
             </profiles>
         </tconfig>
     </transcoconfigs>

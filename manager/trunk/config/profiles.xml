@@ -6,17 +6,27 @@
         <vcodec>libx264</vcodec>
         <acodec>libfdk_aac</acodec>
         <additionalFlags></additionalFlags>
-        <levels>
-            <level name="std"/>
-        </levels>
     </profile>
     <profile name="WebM">
         <format>webm</format>
         <vcodec>libvpx</vcodec>
         <acodec>libvorbis</acodec>
         <additionalFlags> </additionalFlags>
-        <levels>
-            <level name="std"/>
-        </levels>
+    </profile>
+    <profile name="HLS" class="HLS">
+        <format>m3u8</format>
+        <vcodec>libx264</vcodec>
+        <acodec>libfdk_aac</acodec>
+        <additionalFlags>-profile:v baseline -map 0 -flags -global_header</additionalFlags>
+        <segDuration>3</segDuration>
+        <windowLength>3</windowLength>
+    </profile>
+    <profile name="Dash" class="DASH">
+    	<format>mpd</format>
+        <vcodec>libx264</vcodec>
+        <acodec>libfdk_aac</acodec>
+        <additionalFlags></additionalFlags>
+        <segDuration>500</segDuration>
+        <fragDuration>100</fragDuration>
     </profile>
 </profiles>
