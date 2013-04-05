@@ -12,12 +12,12 @@
     </uploader>
    <cloud>
 		<connection>
-			<accountName>uai2cat</accountName>
+			<!--<accountName>uai2cat</accountName>
 			<accountKey>b3fx1IkaXwaljZD5vbIc4gf2Luw7JNeZDPNjGPCFIAHpDfPabA0VWMgSKkiHA5U0Zpq4pXLUauGm0vx99mSb0w==</accountKey>
-			<protocol>http</protocol>
-			<!-- <accountName>storagevideos</accountName>
-			<accountKey>qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==</accountKey>
 			<protocol>http</protocol>-->
+			<accountName>storagevideos</accountName>
+			<accountKey>qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==</accountKey>
+			<protocol>http</protocol>
 		</connection>
 		<pollFactor>2</pollFactor>
 		<pollInterval>10</pollInterval>

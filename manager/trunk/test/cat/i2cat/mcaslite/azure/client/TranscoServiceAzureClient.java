@@ -31,13 +31,13 @@ public class TranscoServiceAzureClient {
 		    "DefaultEndpointsProtocol=" + XMLReader.getStringParameter(path, "cloud.connection.protocol") + ";" + 
 	   	    "AccountName=" + XMLReader.getStringParameter(path, "cloud.connection.accountName") + ";" + 
 	  	    "AccountKey=" + XMLReader.getStringParameter(path, "cloud.connection.accountKey");
-	public static String uploadContent(String src) {
+	public static String uploadContent(String src, String containerStr) {
 		try{
 			CloudStorageAccount storageAccount = 
 			CloudStorageAccount.parse(storageConnectionString);
 
 			CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-			CloudBlobContainer container = blobClient.getContainerReference("videoentity");
+			CloudBlobContainer container = blobClient.getContainerReference(containerStr);
 
 			CloudBlockBlob blob = container.getBlockBlobReference(UUID.randomUUID().toString());
 			
@@ -154,7 +154,7 @@ public class TranscoServiceAzureClient {
 	public static void main (String...args){
 
 		String blobUrl, msg, message;
-		String container = "videoentity";
+		String container = "input";
 		try {
 			while(true){
 				System.out.println("Choose an option:");
@@ -164,7 +164,7 @@ public class TranscoServiceAzureClient {
 				case 1:
 					System.out.println("Insert a source to upload:");
 					String src = br.readLine();
-					blobUrl = uploadContent(src);
+					blobUrl = uploadContent(src, container);
 					System.out.println(blobUrl);
 					String partitionKey = (new Date()).toString();
 					String rowKey = UUID.randomUUID().toString();

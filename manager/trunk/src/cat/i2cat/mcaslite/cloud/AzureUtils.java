@@ -55,7 +55,7 @@ public class AzureUtils {
 		} catch (Exception e){
 			e.printStackTrace();
 			throw new MCASException();
-		} 
+		}
 	}
 	
 	public static CloudQueueMessage peekMessage(String cloudQueue) throws MCASException {
