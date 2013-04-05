@@ -19,7 +19,7 @@ public class TranscoService {
 		
 		DefaultsLoader loader = new DefaultsLoader(path);
 		try {
-			loader.tConfigFeedDefaults();
+			loader.loadDefaults();
 		} catch (MCASException e) {
 			e.printStackTrace();
 			return;

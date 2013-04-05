@@ -5,15 +5,13 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.TranscoHandler;
+import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.utils.RequestUtils;
 
-import com.microsoft.windowsazure.services.queue.client.CloudQueueMessage;
 import com.microsoft.windowsazure.services.table.client.TableServiceEntity;
 
 public class VideoEntity extends TableServiceEntity {
@@ -31,15 +29,15 @@ public class VideoEntity extends TableServiceEntity {
 	private String cancelId; 
 	private Date startConvertion; 
 	private Date endConvertion; 
-	private String durationConvertion; 
 	private Date startJob; 
 	private Date endJob; 
-	private String durationJob; 
-    
+	private boolean urlEntities;
 	private String scheme;
     private String host;
     
-    public VideoEntity() {}
+    public VideoEntity() {
+    	urlEntities = false;
+    }
     
     public VideoEntity(String partitionKey, String rowKey) {
         this.partitionKey = partitionKey;
@@ -47,16 +45,11 @@ public class VideoEntity extends TableServiceEntity {
     }
     
     public boolean getUrlEntities() throws MCASException{
-    	List<URLEntity> urlEntities = urlEntitiesFromRequest(searchRequestFromEntity());	
-    	if (urlEntities.isEmpty()){
-    		return false;
-    	} else {
-    		return true;
-    	}
+    	return urlEntities;
     }
 
 	public void setUrlEntities(boolean hasUrlEntities) throws MCASException {
-		
+		urlEntities = hasUrlEntities;
 	}
     
 	public String getUniqueFileName() {
@@ -83,14 +76,6 @@ public class VideoEntity extends TableServiceEntity {
 		this.endConvertion = endConvertion;
 	}
 
-	public String getDurationConvertion() {
-		return durationConvertion;
-	}
-
-	public void setDurationConvertion(String durationConvertion) {
-		this.durationConvertion = durationConvertion;
-	}
-
 	public Date getStartJob() {
 		return startJob;
 	}
@@ -105,14 +90,6 @@ public class VideoEntity extends TableServiceEntity {
 
 	public void setEndJob(Date endJob) {
 		this.endJob = endJob;
-	}
-
-	public String getDurationJob() {
-		return durationJob;
-	}
-
-	public void setDurationJob(String durationJob) {
-		this.durationJob = durationJob;
 	}
 
 	public String getFileName() {
@@ -225,7 +202,7 @@ public class VideoEntity extends TableServiceEntity {
     
     private List<URLEntity> urlEntitiesFromRequest (TRequest request) throws MCASException{
     	List<URLEntity> urlEntities = new ArrayList<URLEntity>();
-	    	if (request != null && !request.getStatus().hasNext()) {
+	    	if (request != null && (request.getStatus().getInt()==Status.DONE || request.getStatus().getInt()==Status.P_ERROR)) {
 		    	try {
 			    	List<String> uris = request.getUris();
 			    	for (String uriStr : uris){
@@ -236,33 +213,13 @@ public class VideoEntity extends TableServiceEntity {
 			    		urlEntity.setVideoEntityRowKey(this.rowKey);
 			    		urlEntities.add(urlEntity);
 			    	}
+			    	setUrlEntities(true);
 		    	} catch (Exception e) {
 		    		throw new MCASException();
 		    	}
 	    	} 
     	return urlEntities;
     }
-    
-    private TRequest searchRequestFromEntity() throws MCASException {
-		try{
-			Map<String, CloudQueueMessage> messages = CloudManager.getInstance().getMessages();
-	    	for (CloudQueueMessage message : messages.values()){
-	    		String[] keys = message.getMessageContentAsString().split("\\*");
-	    		if (keys[0].equals(this.partitionKey) && keys[1].equals(this.rowKey)){
-	    			for (String requestId : messages.keySet()){
-	    				if(messages.get(requestId).equals(message)){
-	    					return TranscoHandler.getInstance().getRequest(requestId);
-	    				}
-	    			}
-	    		}
-	    	}
-	    	return null;	
-		} catch (Exception e){
-			e.printStackTrace();
-			throw new MCASException();
-		}
-	}
-    
     
 	private String getVideoBySuffix(TRequest request, String suffix) throws MCASException{
     	if (! request.getStatus().hasNext()) {

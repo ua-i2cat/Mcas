@@ -102,7 +102,7 @@ public class RequestUtils {
 		try {
 			if (! request.getStatus().hasNext()) {
 				if (AzureUtils.updateVideoEntity(request)) {
-					if (request.getStatus().equals(Status.ERROR)){
+					if (request.getStatus().getInt()==Status.ERROR){
 						return;
 					} else {
 						AzureUtils.deleteQueueMessage(

@@ -53,9 +53,6 @@ public class TLevel implements Serializable{
 	}
 
 	public void setQuality(int quality) throws MCASException {
-		if (quality > 50 || quality < 15){
-			throw new MCASException();
-		}
 		this.quality = quality;
 	}
 
