@@ -40,7 +40,7 @@ public class TDASHOptions extends TProfile {
 		String inp = "-y -i " + input;
 		String pro = "-c:v " + getvCodec() + " -c:a " + getaCodec() + " -f mp4 ";
 		String nam = MediaUtils.fileNameMakerByProfile(title, getName()) + "_level ";
-		String mp4 = "-dash " + this.segDuration + " -frag " + this.fragDuration + " -out " + output + "/" + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat() + " -profile " + "\"" + this.getDashProfile() + "\" -rap -segment-name " + MediaUtils.fileNameMakerByProfile(title, getName()) + "_seg ";
+		String mp4 = "-dash " + this.segDuration + " -frag " + this.fragDuration + " -rap -frag-rap -dash-profile main -segment-name %s_ " + " -out " + output + "/" + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat();
 		String out = "/" + output + "/";
 		String OUTPUT = "\"" + out + "\" ";
 		String INPUT = "\"" + inp + "\" ";

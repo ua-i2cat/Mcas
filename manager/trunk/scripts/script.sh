@@ -39,7 +39,7 @@ function bucle(){
 	while [ $CONTADOR -lt $NUMLVL ]
 	do
 		echo "$mp4box"
-		mp4box=$mp4box" """$output"/"$NAME""$CONTADOR".mp4"
+		mp4box=$mp4box" """$output"/"$NAME""$CONTADOR".mp4:role="$CONTADOR""
 		let CONTADOR++
 	done
 }
