@@ -50,10 +50,11 @@ public class TDASHOptions extends TProfile {
 		String NAME = "\"" + nam + "\" ";
 		
 		String LEVELS = "";
-		for (TLevel level : levels){
+		for (int i = 0; i<levels.size(); i++){
+			TLevel level = levels.get(i);
 			LEVELS += "-vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"" + " -b:v ";
 			LEVELS += level.getMaxRate() + "k -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + getAdditionalFlags();
-			LEVELS += output + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + ".mp4 ";
+			LEVELS += output + "/" + i + ".mp4 ";
 		}
 		String cmd = COMMAND + INPUT + PROFILE + NUMLVL + OUTPUT + MP4BOX + NAME + "\"" + LEVELS + "\"";
 		System.out.println(cmd);

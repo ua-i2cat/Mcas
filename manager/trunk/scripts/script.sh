@@ -35,12 +35,14 @@ echo "Level"
 echo $level
 
 function bucle(){
-	CONTADOR=1
+	CONTADOR=0
+	ID=0
 	while [ $CONTADOR -lt $NUMLVL ]
 	do
 		echo "$mp4box"
-		mp4box=$mp4box" """$output"/"$NAME""$CONTADOR".mp4:role="$CONTADOR""
+		mp4box=$mp4box" """$output"/"$CONTADOR".mp4:id="$ID":role="$CONTADOR""
 		let CONTADOR++
+		let ID++
 	done
 }
 
