@@ -55,6 +55,9 @@ public class XMLReader {
 		String[] children = configAttribute.split("\\.");	
 		for (String child : children){
 			el = el.getChild(child);
+			if (el == null){
+				return null;
+			}
 		}
 		if (el != null) {
 			return el.getText();
@@ -62,6 +65,7 @@ public class XMLReader {
 			return null;
 		}
 	}
+	
 	
 	public static int getIntParameter(Element el, String configAttribute){
 		String str = getParameter(el, configAttribute);

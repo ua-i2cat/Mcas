@@ -1,5 +1,7 @@
 package cat.i2cat.mcaslite.config.dao;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -19,6 +21,16 @@ public class DAO<T> {
     
     protected EntityManager getEntityManager(){
     	return em;
+    }
+    
+    public List<T> listAll() throws MCASException{
+    	try {
+			TypedQuery<T> query = getEntityManager().createQuery("select t from " + type.getName() + " t", type);
+			return query.getResultList();
+		} catch (Exception e){
+			e.printStackTrace();
+			throw new MCASException();
+		}
     }
     
 	public T findByName(String name) throws MCASException{

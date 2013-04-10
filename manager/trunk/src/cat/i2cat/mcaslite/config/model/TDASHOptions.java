@@ -1,8 +1,8 @@
 package cat.i2cat.mcaslite.config.model;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +15,10 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.DashManifestManager;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.MediaUtils;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Entity
-@DiscriminatorValue("tDashOptions")
+@DiscriminatorValue("Dash")
 
 public class TDASHOptions extends TProfile {
 
@@ -40,8 +41,8 @@ public class TDASHOptions extends TProfile {
 		String inp = "-y -i " + input;
 		String pro = "-c:v " + getvCodec() + " -c:a " + getaCodec() + " -f mp4 ";
 		String nam = MediaUtils.fileNameMakerByProfile(title, getName()) + "_level ";
-		String mp4 = "-dash " + this.segDuration + " -frag " + this.fragDuration + " -rap -frag-rap -dash-profile main -segment-name %s_ " + " -out " + output + "/" + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat();
-		String out = "/" + output + "/";
+		String mp4 = "-dash " + this.segDuration + " -frag " + this.fragDuration + " -rap -frag-rap -dash-profile main -segment-name %s_ " + " -out " + output + File.separator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat();
+		String out = File.separator + output + File.separator;
 		String OUTPUT = "\"" + out + "\" ";
 		String INPUT = "\"" + inp + "\" ";
 		String PROFILE = "\"" + pro + "\" ";
@@ -54,7 +55,7 @@ public class TDASHOptions extends TProfile {
 			TLevel level = levels.get(i);
 			LEVELS += "-vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"" + " -b:v ";
 			LEVELS += level.getMaxRate() + "k -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + getAdditionalFlags();
-			LEVELS += output + "/" + i + ".mp4 ";
+			LEVELS += output + File.separator + i + ".mp4 ";
 		}
 		String cmd = COMMAND + INPUT + PROFILE + NUMLVL + OUTPUT + MP4BOX + NAME + "\"" + LEVELS + "\"";
 		System.out.println(cmd);
@@ -74,7 +75,7 @@ public class TDASHOptions extends TProfile {
 		try {
 			URI dst = new URI(destination.getScheme(), 
 				destination.getHost(), 
-				Paths.get(destination.getPath(), MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat()).toString(), 
+				destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat().toString(), 
 				null);
 			uris.add(dst.toString());
 		} catch (URISyntaxException e){

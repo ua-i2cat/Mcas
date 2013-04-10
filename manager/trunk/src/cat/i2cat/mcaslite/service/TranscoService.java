@@ -3,17 +3,25 @@ package cat.i2cat.mcaslite.service;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.TranscoHandler;
@@ -33,12 +41,13 @@ public class TranscoService {
 
 	public TranscoService() {
 		try {
-			(new DefaultsLoader(Paths.get(System.getProperty("mcas.home"), "WEB-INF").toString())).tConfigFeedDefaults();
+			(new DefaultsLoader(Paths.get(System.getProperty("mcas.home"), "WEB-INF").toString())).loadDefaults();
 			transcoH = TranscoHandler.getInstance();
 			managerTh = new Thread(transcoH);
 			managerTh.setName("MainManager");
 			managerTh.setDaemon(true);
-			managerTh.start();		} catch (MCASException e) {
+			managerTh.start();		
+		} catch (MCASException e) {
 			e.printStackTrace();
 			return;
 		}
@@ -60,39 +69,21 @@ public class TranscoService {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("System overloaded, wait and retry.").build();
 		}
 	}
-//TODO Merge the two commented methods in only one that returns in a json id, status and uris
-//	@GET
-//	@Produces(MediaType.TEXT_PLAIN)
-//	public String getStatus(@QueryParam("id") String id){
-//		try {
-//			Status status = transcoH.getStatus(id);
-//			if (status == null){
-//				throw new WebApplicationException(Response.Status.NOT_FOUND);
-//			} else {
-//				return status.toString();
-//			}
-//		} catch (MCASException e){
-//			e.printStackTrace();
-//			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-//		}
-//	}
-//	
-//	@GET
-//	@Path("uris")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public String getDestinationUris(@QueryParam("id") String id){
-//		try {
-//			TRequest request = transcoH.getRequest(id);
-//			if (request == null){
-//				throw new WebApplicationException(Response.Status.NOT_FOUND);
-//			} else {
-//				return RequestUtils.destinationJSONbuilder(request);
-//			}
-//		} catch (MCASException e) {
-//			e.printStackTrace();
-//			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-//		}	
-//	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("{profile}/{level}")
+	public Response addCustomTransco(TRequest request, @PathParam("profile") String profile, @PathParam("level") String level) throws MCASException {
+		request.setConfig("custom");
+		try {
+			request.setTConfig(RequestUtils.getCustomTranscoderConfig(profile, level));
+		} catch (MCASException e){
+			return Response.status(Response.Status.BAD_REQUEST).entity("Check defined configuration.").build();
+		}
+		return addTransco(request);
+	}
+
+	//TODO: status method
 	
 	@POST
 	@Path("cancel")
@@ -111,6 +102,20 @@ public class TranscoService {
 		} catch (MCASException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getOptions() {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			Map<String, List<String>> map = new HashMap<String, List<String>>();
+			map.put("profiles", transcoH.getProfiles());
+			map.put("levels", transcoH.getLevels());		
+			return mapper.writeValueAsString(map);
+		} catch (Exception e) {
+			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

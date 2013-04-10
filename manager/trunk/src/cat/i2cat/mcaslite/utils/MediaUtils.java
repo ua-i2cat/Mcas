@@ -2,6 +2,7 @@ package cat.i2cat.mcaslite.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -38,12 +39,16 @@ public class MediaUtils {
 	}
 	
 	public static String createOutputWorkingDir(String id, String outputWorkingDir) throws MCASException {
-		String path = FilenameUtils.concat(outputWorkingDir, id);
-		File file = new File(path);
+		File file = null;
+		if (Paths.get(outputWorkingDir).isAbsolute()){
+			file = Paths.get(outputWorkingDir, id).toFile();
+		} else {
+			file = Paths.get(System.getProperty("mcas.home"),outputWorkingDir, id).toFile();
+		}
 		if (file.isDirectory() && file.canWrite()){
-			return path;
+			return file.toString();
 		} else if(!file.exists() && file.mkdirs()){
-			return path;
+			return file.toString();
 		} 
 		throw new MCASException();
 	}
@@ -57,29 +62,24 @@ public class MediaUtils {
 	}
 	
 	public static String getWorkDir(String workDir) throws MCASException{
-		File file = new File(workDir);
+		File file = null;
+		if (Paths.get(workDir).isAbsolute()){
+			file = Paths.get(workDir).toFile();
+		} else {
+			file = Paths.get(System.getProperty("mcas.home"),workDir).toFile();
+		}
 		if (file.isDirectory() && file.canWrite()){
-			return workDir;
+			return file.toString();
 		} else if(!file.exists() && file.mkdirs()){
-			return workDir;
+			return file.toString();
 		}
 		throw new MCASException();
 	}
 	
-	private static String createWorkDir(String workDir) throws MCASException{
-		File file = new File(getWorkDir(workDir));
-		if (! file.exists()){
-			file.mkdirs();
-		} else if (! file.isDirectory()) {
-			throw new MCASException();
-		}
-		return file.getPath();
-	}
-
 	public static File setInFile(String id, TranscoderConfig tConfig) throws MCASException {
 		try {
-			String inputDir = createWorkDir(tConfig.getInputWorkingDir());
-			createWorkDir(tConfig.getOutputWorkingDir());
+			String inputDir = getWorkDir(tConfig.getInputWorkingDir());
+			getWorkDir(tConfig.getOutputWorkingDir());
 			return new File(FilenameUtils.concat(inputDir, id));
 		} catch (Exception e){
 			e.printStackTrace();
@@ -87,8 +87,17 @@ public class MediaUtils {
 		}
 	}
 	
+	public static boolean deleteFile(URI uri){
+		File fd = new File(uri);
+		return deleteFile(fd);
+	}
+	
 	public static boolean deleteFile(String file){
 		File fd = new File(file);
+		return deleteFile(fd);
+	}
+	
+	private static boolean deleteFile(File fd){
 		if(fd.isDirectory() && fd.exists()){
 			try {
 				FileUtils.deleteDirectory(fd);

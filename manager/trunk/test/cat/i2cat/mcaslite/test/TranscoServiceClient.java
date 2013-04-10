@@ -1,7 +1,6 @@
 package cat.i2cat.mcaslite.test;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 
@@ -36,13 +35,13 @@ public class TranscoServiceClient {
 						System.out.println(getState(service, br));
 						break;
 					case 3: 
-						System.out.println(getUris(service, br));
-						break;
-					case 4: 
 						cancel(service, br);
 						break;
-					case 5: 
+					case 4: 
 						System.out.println(addLiveTransco(service, br));
+						break;
+					case 5: 
+						System.out.println(addCustomTransco(service, br));
 						break;
 					default:
 						break;
@@ -65,6 +64,34 @@ public class TranscoServiceClient {
 			String input = "{\"config\":\"default\",\"title\":\"joe\",\"dst\":\"" + dst + "\","
 				+ "\"src\":\"" + src + "\"}";
 			ClientResponse response= service.path("/transco").type("application/json").post(ClientResponse.class, input);
+			if (response.hasEntity()){
+				return response.getEntity(String.class);
+			} else {
+				return "";
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+			return "";
+		}
+	}
+	
+	private static String addCustomTransco(WebResource service, BufferedReader br) {
+		try {
+			System.out.println("Write a Source to transcode:");
+			br = new BufferedReader(new InputStreamReader(System.in));
+			String src = br.readLine();
+			System.out.println("Write a Destination place resulting contentse:");
+			br = new BufferedReader(new InputStreamReader(System.in));
+			String dst = br.readLine();
+			System.out.println("Write a profile:");
+			br = new BufferedReader(new InputStreamReader(System.in));
+			String profile = br.readLine();
+			System.out.println("Write a level:");
+			br = new BufferedReader(new InputStreamReader(System.in));
+			String level = br.readLine();
+			String input = "{\"config\":\"default\",\"title\":\"joe\",\"dst\":\"" + dst + "\","
+				+ "\"src\":\"" + src + "\"}";
+			ClientResponse response= service.path("/transco/" + profile + "/" + level).type("application/json").post(ClientResponse.class, input);
 			if (response.hasEntity()){
 				return response.getEntity(String.class);
 			} else {
@@ -105,18 +132,6 @@ public class TranscoServiceClient {
 			String id = br.readLine();
 			return service.path("/transco").queryParam("id", id).get(String.class);
 		} catch (Exception e){
-			e.printStackTrace();
-			return "";
-		}
-	}
-	
-	private static String getUris(WebResource service, BufferedReader br) throws IOException{
-		try {
-			System.out.println("Write id request to ask for:");
-			br = new BufferedReader(new InputStreamReader(System.in));
-			String id = br.readLine();
-			return service.path("/transco/uris").queryParam("id", id).get(String.class);
-		} catch (Exception e) {
 			e.printStackTrace();
 			return "";
 		}

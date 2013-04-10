@@ -1,5 +1,6 @@
 package cat.i2cat.mcaslite.management;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,7 +12,7 @@ import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.Downloader;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.NewUploader;
+import cat.i2cat.mcaslite.utils.Uploader;
 
 public class MediaHandler implements Cancellable {
 
@@ -19,7 +20,7 @@ public class MediaHandler implements Cancellable {
 	private TRequest request;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class); 
 	private Downloader downloader;
-	private NewUploader uploader;
+	private Uploader uploader;
 	private boolean cancelled = false;
 	private boolean done = false;
 	private Watcher watcher;
@@ -29,11 +30,15 @@ public class MediaHandler implements Cancellable {
 		this.request = request;
 	}
 
-	public void inputHandle() throws MCASException {
-		copyToWorkingDir();
+	public void inputHandle(boolean live, String profile) throws MCASException {
+		if (live){
+			initWatcher(profile);
+		} else {
+			copyToWorkingDir();
+		}
 	}
 	
-	public void initWatcher(String profile) throws MCASException {
+	private void initWatcher(String profile) throws MCASException {
 		try {
 			String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
 			URI dst = new URI(request.getDst());
@@ -55,9 +60,9 @@ public class MediaHandler implements Cancellable {
 		}
 	}
 	
-	private void copyToWorkingDir() throws MCASException {
+	private void fileToWorkingDir(File file) throws MCASException {
 		try {
-			downloader = new Downloader(new URI(request.getSrc()), MediaUtils.setInFile(request.getId(), request.getTConfig()));
+			downloader = new Downloader(new URI(request.getSrc()), file);
 			downloader.toWorkingDir();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -76,10 +81,17 @@ public class MediaHandler implements Cancellable {
 		}
 	}
 	
-	public void outputHandle() throws MCASException {
+	private void copyToWorkingDir() throws MCASException{
+		File file = MediaUtils.setInFile(request.getId(), request.getTConfig());
+		if (! file.exists()){
+			fileToWorkingDir(file);
+		}
+	}
+	
+	public void filesUpload() throws MCASException {
 		try {
 			for (Transco transco : request.getTranscoded()){
-				uploader = new NewUploader(new URI(request.getDst()));
+				uploader = new Uploader(new URI(request.getDst()));
 				uploader.upload(Paths.get(transco.getOutputDir()));	
 			}	
 			
@@ -106,6 +118,14 @@ public class MediaHandler implements Cancellable {
 			}
 		} finally {
 			MediaUtils.clean(request);
+		}
+	}
+	
+	public void outputHandle(boolean live) throws MCASException {
+		if (live){
+			cancelWatcher();
+		} else {
+			filesUpload();
 		}
 	}
 	
