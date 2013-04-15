@@ -46,10 +46,10 @@ function bucle(){
 	done
 }
 
-echo "/Users/i2cat/ffmpeg/ffmpeg $INPUT $PROFILE $LVL"
-/Users/i2cat/ffmpeg/ffmpeg $input $profile $level
+echo "ffmpeg $INPUT $PROFILE $LVL"
+ffmpeg $input $profile $level
 
-echo "/usr/local/bin/MP4Box $mp4box"
+echo "MP4Box $mp4box"
 
 if [[ $? -eq 0 ]]; then
 	bucle
