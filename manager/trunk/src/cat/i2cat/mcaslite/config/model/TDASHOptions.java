@@ -53,9 +53,10 @@ public class TDASHOptions extends TProfile {
 		String LEVELS = "";
 		for (int i = 0; i<levels.size(); i++){
 			TLevel level = levels.get(i);
-			LEVELS += "-vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"" + " -b:v ";
-			LEVELS += level.getMaxRate() + "k -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + getAdditionalFlags();
-			LEVELS += output + File.separator + i + ".mp4 ";
+			LEVELS += " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" + " -b:v " + level.getMaxRate();
+			LEVELS += "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();
+			LEVELS += " -ac " + level.getaChannels() + "k -b:a " + level.getaBitrate() + "k " + getAdditionalFlags();
+			LEVELS += " -y " + output + File.separator + i + ".mp4 ";
 		}
 		String cmd = COMMAND + INPUT + PROFILE + NUMLVL + OUTPUT + MP4BOX + NAME + "\"" + LEVELS + "\"";
 		System.out.println(cmd);
