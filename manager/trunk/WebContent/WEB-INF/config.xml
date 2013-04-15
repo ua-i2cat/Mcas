@@ -10,7 +10,7 @@
     <uploader>
         <ublocksize>102400</ublocksize>
     </uploader>
-    <callback>http://localhost:8080/mcasWeb</callback>
+    <callback>http://localhost:8080/MCASfrontend</callback>
     <transcoconfigs>
         <tconfig name="default">
             <workdir>
@@ -68,9 +68,9 @@
                 <output>output</output>
             </workdir>
             <timeout>86400</timeout>
-            <live>true</live>
+            <live>false</live>
             <profiles>
-                <profile name="HLS">
+                <profile name="Dash">
                 	<levels>
                 		<level name="high"/>
                 		<level name="std"/>

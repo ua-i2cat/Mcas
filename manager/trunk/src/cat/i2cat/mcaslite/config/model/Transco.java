@@ -13,7 +13,7 @@ public class Transco {
 	
 	@Column(nullable = false, length = 255)
 	private String inputFile;
-	@Column(nullable = false, length = 2000)
+	@Column(nullable = false, length = 5000)
 	private String command;
 	@Column(nullable = false, length = 255)
 	private String outputDir;

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- levels.xml -->
+<levels>
+    <level name="level1">
+        <width>-1</width>
+        <quality>30</quality>
+        <abitrate>128</abitrate>
+        <achannels>2</achannels>
+    </level>
+</levels>
