@@ -13,16 +13,16 @@
         <quality>25</quality>
         <abitrate>96</abitrate>
         <achannels>2</achannels>
-        <maxRate>4000</maxRate>
+        <maxRate>2000</maxRate>
     </level>
     <level name="low">
         <width>-1</width>
-        <quality>32</quality>
+        <quality>42</quality>
         <abitrate>64</abitrate>
         <achannels>2</achannels>
-        <maxRate>2000</maxRate>
+        <maxRate>500</maxRate>
     </level>
-    <level name="high1920">
+    <!-- <level name="high1920">
         <width>1920</width>
         <quality>20</quality>
         <abitrate>128</abitrate>
@@ -126,5 +126,5 @@
         <abitrate>64</abitrate>
         <achannels>2</achannels>
         <maxRate>125</maxRate>
-    </level>
+    </level>-->
 </levels>

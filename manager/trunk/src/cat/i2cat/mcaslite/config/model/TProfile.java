@@ -25,7 +25,6 @@ import javax.persistence.ManyToMany;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -127,13 +126,13 @@ public class TProfile implements Serializable{
 		return transcos;
 	}
 	
-	public List<String> getUris(URI destination, String title) throws MCASException {
+	public List<String> getUris(URI destination, String title, boolean live) throws MCASException {
 		List<String> uris = new ArrayList<String>();
 		try {
 			for (TLevel level : this.getLevels()){
 				URI dst = new URI(destination.getScheme(), 
 						destination.getHost(),
-						destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat().toString(), 
+						destination.getPath() + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat().toString(), 
 						null);
 				uris.add(dst.toString());
 			}

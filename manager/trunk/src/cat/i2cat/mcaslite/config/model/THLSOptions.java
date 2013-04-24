@@ -16,7 +16,6 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.management.HLSManifestManager;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Entity
 @DiscriminatorValue("HLS")
@@ -36,7 +35,9 @@ public class THLSOptions extends TProfile {
 		if (live){
 			try {
 				fileSrc = (new URI(input)).getScheme().equals("file");
-				input = (new File(new URI(input))).toString();
+				if (fileSrc) {
+					input = (new File(new URI(input))).toString();
+				}
 			} catch (URISyntaxException e) {
 				throw new MCASException();
 			}
@@ -76,12 +77,12 @@ public class THLSOptions extends TProfile {
 	}
 	
 	@Override
-	public List<String> getUris(URI destination, String title) throws MCASException{
+	public List<String> getUris(URI destination, String title, boolean live) throws MCASException{
 		List<String> uris = new ArrayList<String>();
 		try {
 			URI dst = new URI(destination.getScheme(), 
 				destination.getHost(), 
-				destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat().toString(), 
+				destination.getPath() + "/" + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat().toString(), 
 				null);
 			uris.add(dst.toString());
 		} catch (URISyntaxException e){

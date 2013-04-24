@@ -267,11 +267,12 @@ public class TRequest implements Serializable {
 		List<String> uris = new ArrayList<String>();
 		try {
 			for (TProfile profile : this.getTConfig().getProfiles()){
-				uris.addAll(profile.getUris(new URI(dst), getTitle()));
+				uris.addAll(profile.getUris(new URI(dst), getTitle(), this.isLive()));
 			}
 		} catch (URISyntaxException e){
 			throw new MCASException();
 		}
+		
 		return uris;
 	}
 }

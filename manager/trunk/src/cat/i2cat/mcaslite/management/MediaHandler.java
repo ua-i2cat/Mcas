@@ -50,7 +50,6 @@ public class MediaHandler implements Cancellable {
 			e.printStackTrace();
 			throw new MCASException();
 		}
-		
 		(new Thread(watcher)).start();
 	}
 	
