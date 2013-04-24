@@ -45,10 +45,10 @@
             <timeout>86400</timeout>
             <live>true</live>
             <profiles>
-                <profile name="RTMP">
+                <profile name="HLS">
                 	<levels>
-                		<level name="high"/>
-                		<level name="std"/>
+                		<!-- <level name="high"/>
+                		<level name="std"/>-->
                 		<level name="low"/>
                 	</levels>
                 </profile>

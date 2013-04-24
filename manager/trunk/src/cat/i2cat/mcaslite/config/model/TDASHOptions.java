@@ -37,7 +37,7 @@ public class TDASHOptions extends TProfile {
 	public List<Transco> commandBuilder(String input, String output, boolean live, String title) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
 		String COMMAND = "script.sh ";
-		String inp = "-y -i " + input;
+		String inp = "-y -i " + input + " -threads 0 ";
 		String pro = "-c:v " + getvCodec() + " -c:a " + getaCodec() + " -f mp4 ";
 		String nam = MediaUtils.fileNameMakerByProfile(title, getName()) + "_level ";
 		String mp4 = "-dash " + this.segDuration + " -frag " + this.fragDuration + " -rap -frag-rap -dash-profile main -segment-name %s_ " + " -out " + output + File.separator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat();

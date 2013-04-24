@@ -42,7 +42,7 @@ public class THLSOptions extends TProfile {
 				throw new MCASException();
 			}
 		}
-		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input;
+		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input + " -threads 0 ";
 		for (TLevel level : getLevels()){
 			cmd += " -r 15 -g 30 -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
 			cmd += " -b:v " + level.getMaxRate() + "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k";

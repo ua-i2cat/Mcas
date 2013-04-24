@@ -127,4 +127,8 @@ public class Uploader implements Cancellable {
 		}
 		return true;
 	}
+
+	public void deleteContent(String fileName) throws MCASException {
+		Connection.deleteFromServer(destination, fileName);
+	}
 }

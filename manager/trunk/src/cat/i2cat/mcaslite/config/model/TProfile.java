@@ -114,7 +114,7 @@ public class TProfile implements Serializable{
 	
 	public List<Transco> commandBuilder(String input, String output, boolean live, String title) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
-		String cmd = "ffmpeg -i " + input;
+		String cmd = "ffmpeg -i " + input + " -threads 0 ";
 		for (TLevel level : levels){
 			cmd += " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" + " -b:v " + level.getMaxRate();
 			cmd += "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();

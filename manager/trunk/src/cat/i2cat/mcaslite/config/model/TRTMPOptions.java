@@ -54,7 +54,7 @@ public class TRTMPOptions extends TProfile {
 				throw new MCASException();
 			}
 		}
-		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input;
+		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input + " -threads 0 ";
 		for (TLevel level : levels){
 			cmd += (live ? " -r 15 " : "") + " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" + " -b:v " + level.getMaxRate();
 			cmd += "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();

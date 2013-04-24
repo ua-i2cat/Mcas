@@ -144,7 +144,7 @@ public class HLSManifestManager implements FileEventProcessor {
 				segment.toFile().delete();
 				if (seg >= windowLength){
 					uploader.upload(createManifest(seg, filename), filename + ".m3u8");
-		//TODO		uploader.deleteContent(filename + "_" + (seg - windowLength) + ".ts");
+					uploader.deleteContent(filename + "_" + (seg - windowLength) + ".ts");
 				} else {
 					uploader.upload(createManifest(seg, filename), filename + ".m3u8");
 				}
