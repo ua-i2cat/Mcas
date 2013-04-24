@@ -47,8 +47,8 @@
             <profiles>
                 <profile name="HLS">
                 	<levels>
-                		<!-- <level name="high"/>
-                		<level name="std"/>-->
+                		<level name="high"/>
+                		<level name="std"/>
                 		<level name="low"/>
                 	</levels>
                 </profile>
