@@ -3,6 +3,7 @@ package cat.i2cat.mcaslite.config.model;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,6 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -53,11 +56,26 @@ public class TRequest implements Serializable {
 	private Status status;
 	@Column
 	private int iStatus;
-
+	
+	@Column(nullable = false, length = 500)
+	private String callback;
+	@Column
+	private Date lastModified;
+	@Column 
+	private Date dateCreated;
+	
+	@PreUpdate
+	@PrePersist
+	public void updateTimeStamps(){
+		lastModified = new Date(iStatus);
+		if (dateCreated==null){
+			dateCreated = new Date(iStatus);
+		}
+	}
+		
     public TRequest(){
         transcoded = new ArrayList<Transco>();
     }
-
 	
 	public void setIStatus(int iStatus){
 		this.iStatus = iStatus;
@@ -198,6 +216,15 @@ public class TRequest implements Serializable {
 		TRequest req = new TRequest();
 		req.id = id;
 		return req;
+	}
+	
+	public String getCallback()
+	{
+		return callback;
+	}
+	
+	public void setCallback(String callback){
+		this.callback = callback;
 	}
 
 	@Override 

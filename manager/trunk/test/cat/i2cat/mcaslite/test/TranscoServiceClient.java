@@ -62,7 +62,7 @@ public class TranscoServiceClient {
 			br = new BufferedReader(new InputStreamReader(System.in));
 			String dst = br.readLine();
 			String input = "{\"config\":\"default\",\"title\":\"joe\",\"dst\":\"" + dst + "\","
-				+ "\"src\":\"" + src + "\"}";
+				+ "\"src\":\"" + src + "\", \"callback\":\"http://www.google.com\"}";
 			ClientResponse response= service.path("/transco").type("application/json").post(ClientResponse.class, input);
 			if (response.hasEntity()){
 				return response.getEntity(String.class);
