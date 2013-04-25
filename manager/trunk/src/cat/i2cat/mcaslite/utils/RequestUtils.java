@@ -104,7 +104,7 @@ public class RequestUtils {
 	
 	public static void callback(TRequest request) throws MCASException{
 		Client client = Client.create();
-		WebResource service = client.resource(CALLBACK);
+		WebResource service = client.resource(request.getCallback());
 		service.path("/transco/update").type("application/json").post(ClientResponse.class, request.toJSON());
 	}
 }
