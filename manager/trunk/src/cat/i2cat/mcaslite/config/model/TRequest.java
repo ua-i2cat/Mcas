@@ -128,6 +128,11 @@ public class TRequest implements Serializable {
 	}
 	
 	@Transient
+	public boolean isCancelled() {
+		return (status.getInt() == Status.CANCELLED);
+	}
+	
+	@Transient
 	public void setError() {
 		status.setError();
 		iStatus = status.getInt();

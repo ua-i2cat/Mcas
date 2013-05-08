@@ -30,8 +30,8 @@ public class MediaHandler implements Cancellable {
 		this.request = request;
 	}
 
-	public void inputHandle(boolean live, String profile) throws MCASException {
-		if (live){
+	public void inputHandle(String profile) throws MCASException {
+		if (request.isLive()){
 			initWatcher(profile);
 		} else {
 			copyToWorkingDir();
@@ -93,7 +93,6 @@ public class MediaHandler implements Cancellable {
 				uploader = new Uploader(new URI(request.getDst()));
 				uploader.upload(Paths.get(transco.getOutputDir()));	
 			}	
-			
 		} catch (URISyntaxException e) {
 			throw new MCASException();
 		}
@@ -120,10 +119,10 @@ public class MediaHandler implements Cancellable {
 		}
 	}
 	
-	public void outputHandle(boolean live) throws MCASException {
-		if (live){
+	public void outputHandle(boolean stopped) throws MCASException {
+		if (request.isLive()){
 			cancelWatcher();
-		} else {
+		} else if (! stopped) {
 			filesUpload();
 		}
 	}
