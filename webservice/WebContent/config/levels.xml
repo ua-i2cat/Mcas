@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- levels.xml -->
+<levels>
+    <level name="high">
+        <width>-1</width>
+        <quality>20</quality>
+        <abitrate>128</abitrate>
+        <achannels>2</achannels>
+        <maxRate>8000</maxRate>
+    </level>
+    <level name="std">
+        <width>-1</width>
+        <quality>25</quality>
+        <abitrate>96</abitrate>
+        <achannels>2</achannels>
+        <maxRate>4000</maxRate>
+    </level>
+    <level name="low">
+        <width>-1</width>
+        <quality>32</quality>
+        <abitrate>64</abitrate>
+        <achannels>2</achannels>
+        <maxRate>2000</maxRate>
+    </level>
+    <level name="high1920">
+        <width>1920</width>
+        <quality>20</quality>
+        <abitrate>128</abitrate>
+        <achannels>2</achannels>
+        <maxRate>8000</maxRate>
+    </level>
+    <level name="std1920">
+        <width>1920</width>
+        <quality>25</quality>
+        <abitrate>128</abitrate>
+        <achannels>2</achannels>
+        <maxRate>6500</maxRate>
+    </level>
+    <level name="low1920">
+        <width>1920</width>
+        <quality>32</quality>
+        <abitrate>128</abitrate>
+        <achannels>2</achannels>
+        <maxRate>4000</maxRate>
+    </level>
+    <level name="high1280">
+        <width>1280</width>
+        <quality>20</quality>
+        <abitrate>128</abitrate>
+        <achannels>2</achannels>
+        <maxRate>3500</maxRate>
+    </level>
+    <level name="std1280">
+        <width>1280</width>
+        <quality>25</quality>
+        <abitrate>96</abitrate>
+        <achannels>2</achannels>
+        <maxRate>2000</maxRate>
+    </level>
+    <level name="low1280">
+        <width>1280</width>
+        <quality>32</quality>
+        <abitrate>96</abitrate>
+        <achannels>2</achannels>
+        <maxRate>1000</maxRate>
+    </level>
+    <level name="high720">
+        <width>720</width>
+        <quality>20</quality>
+        <abitrate>96</abitrate>
+        <achannels>2</achannels>
+        <maxRate>750</maxRate>
+    </level>
+    <level name="std720">
+        <width>720</width>
+        <quality>25</quality>
+        <abitrate>96</abitrate>
+        <achannels>2</achannels>
+        <maxRate>500</maxRate>
+    </level>
+    <level name="low720">
+        <width>720</width>
+        <quality>32</quality>
+        <abitrate>64</abitrate>
+        <achannels>2</achannels>
+        <maxRate>250</maxRate>
+    </level>
+    <level name="high640">
+        <width>640</width>
+        <quality>20</quality>
+        <abitrate>96</abitrate>
+        <achannels>2</achannels>
+        <maxRate>750</maxRate>
+    </level>
+    <level name="std640">
+        <width>640</width>
+        <quality>25</quality>
+        <abitrate>96</abitrate>
+        <achannels>2</achannels>
+        <maxRate>500</maxRate>
+    </level>
+    <level name="low640">
+        <width>640</width>
+        <quality>32</quality>
+        <abitrate>64</abitrate>
+        <achannels>2</achannels>
+        <maxRate>250</maxRate>
+    </level>
+    <level name="high360">
+        <width>360</width>
+        <quality>20</quality>
+        <abitrate>96</abitrate>
+        <achannels>2</achannels>
+        <maxRate>500</maxRate>
+    </level>
+    <level name="std360">
+        <width>360</width>
+        <quality>25</quality>
+        <abitrate>64</abitrate>
+        <achannels>2</achannels>
+        <maxRate>250</maxRate>
+    </level>
+    <level name="low360">
+        <width>360</width>
+        <quality>32</quality>
+        <abitrate>64</abitrate>
+        <achannels>2</achannels>
+        <maxRate>125</maxRate>
+    </level>
+</levels>

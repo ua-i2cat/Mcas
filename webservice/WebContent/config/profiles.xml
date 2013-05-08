@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- profiles.xml -->
+<profiles>
+    <profile name="H264">
+        <format>mp4</format>
+        <vcodec>libx264</vcodec>
+        <acodec>libfdk_aac</acodec>
+        <additionalFlags></additionalFlags>
+    </profile>
+    <profile name="WebM">
+        <format>webm</format>
+        <vcodec>libvpx</vcodec>
+        <acodec>libvorbis</acodec>
+        <additionalFlags> </additionalFlags>
+    </profile>
+    <profile name="HLS" class="HLS">
+        <format>m3u8</format>
+        <vcodec>libx264</vcodec>
+        <acodec>libfdk_aac</acodec>
+        <additionalFlags>-profile:v baseline -map 0 -flags -global_header</additionalFlags>
+        <segDuration>3</segDuration>
+        <windowLength>3</windowLength>
+    </profile>
+    <profile name="Dash" class="DASH">
+    	<format>mpd</format>
+        <vcodec>libx264</vcodec>
+        <acodec>libfdk_aac</acodec>
+        <additionalFlags></additionalFlags>
+        <segDuration>500</segDuration>
+        <fragDuration>100</fragDuration>
+    </profile>
+</profiles>

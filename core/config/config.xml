@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- config.xml -->
+<system>
+    <maxreq>1000</maxreq>
+    <maxproc>2</maxproc>
+    <downloader>
+        <dblocksize>102400</dblocksize>
+        <httptimeout>30000</httptimeout>
+    </downloader>
+    <uploader>
+        <ublocksize>102400</ublocksize>
+    </uploader>
+    <cloud>
+		<connection>
+			<accountName>uai2cat</accountName>
+			<accountKey>b3fx1IkaXwaljZD5vbIc4gf2Luw7JNeZDPNjGPCFIAHpDfPabA0VWMgSKkiHA5U0Zpq4pXLUauGm0vx99mSb0w==</accountKey>
+			<protocol>http</protocol>
+			<!-- <accountName>storagevideos</accountName>
+			<accountKey>qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==</accountKey>
+			<protocol>http</protocol>  -->
+		</connection>
+		<pollFactor>2</pollFactor>
+		<pollInterval>10</pollInterval>
+		<processqueue>videoqueue</processqueue>
+		<cancelqueue>cancelqueue</cancelqueue>
+		<inContainer>output2</inContainer>
+		<cancelTryout>3</cancelTryout>
+		<retryTryout>3</retryTryout>
+	</cloud>
+	<callback></callback>
+	<connection></connection>
+    <transcoconfigs>
+        <tconfig name="default">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>false</live>
+            <profiles>
+                <profile name="H264">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+                <profile name="WebM">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+            </profiles>
+        </tconfig>
+        <tconfig name="all">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>false</live>
+            <profiles>
+                <profile name="H264">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+                <profile name="WebM">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+                <profile name="Dash">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+                <profile name="HLS">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
+            </profiles>
+        </tconfig>
+        <tconfig name="live">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>false</live>
+            <profiles>
+                <profile name="Dash">
+                	<levels>
+                		<level name="high"/>
+                		<level name="std"/>
+                		<level name="low"/>
+                	</levels>
+                </profile>
+            </profiles>
+        </tconfig>
+        <tconfig name="live640">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>true</live>
+            <profiles>
+                <profile name="HLS">
+                	<levels>
+                		<level name="high640"/>
+                		<level name="std640"/>
+                		<level name="low640"/>
+                	</levels>
+                </profile>
+            </profiles>
+        </tconfig>
+        <tconfig name="live360">
+            <workdir>
+                <input>input</input>
+                <output>output</output>
+            </workdir>
+            <timeout>86400</timeout>
+            <live>true</live>
+            <profiles>
+                <profile name="HLS">
+                	<levels>
+                		<level name="high360"/>
+                		<level name="std360"/>
+                		<level name="low360"/>
+                	</levels>
+                </profile>
+            </profiles>
+        </tconfig>
+    </transcoconfigs>
+</system>
