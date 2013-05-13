@@ -54,12 +54,13 @@ public class Transcoder implements Runnable, Cancellable {
 	}
 	
 	private void transcodify() throws MCASException{
+		boolean stopped = false;
 		try {
 			Iterator<Transco> it = transcos.iterator();
 			while(! isCancelled() && it.hasNext()){
 				Transco transco = it.next();
 				try {
-					mediaH.inputHandle(request.isLive(), transco.getProfileName());
+					mediaH.inputHandle(transco.getProfileName());
 					execute(transco, request.isLive());
 				} catch (MCASException e) {
 					request.deleteTranscoded(transco);
@@ -71,16 +72,18 @@ public class Transcoder implements Runnable, Cancellable {
 			setDone(true);
 			if (isCancelled()) {
 				MediaUtils.clean(request);
+				stopped = true;
 				return;
 			}
 			if (request.isTranscodedEmpty() && ! isCancelled()){
 				manageError();
+				stopped = true;
 			} else {
 				request.increaseStatus();
 				queue.update(request);
 			}
 		} finally {
-			mediaH.outputHandle(request.isLive());
+			mediaH.outputHandle(stopped);
 		}
 	}
 	
@@ -146,22 +149,21 @@ public class Transcoder implements Runnable, Cancellable {
 				case Status.PROCESS_MO:
 					return mediaH.cancel(mayInterruptIfRunning);
 				case Status.PROCESS_T:
-					MediaUtils.clean(request);
-					if (! isDone()){
-						return stop(mayInterruptIfRunning);
-					} else {
-						return true;
-					}
+					return cancelWorker(mayInterruptIfRunning);
 				case Status.PROCESS_L:
-					MediaUtils.clean(request);
-					if (! isDone()){
-						return stop(mayInterruptIfRunning);
-					} else {
-						return true;
-					}
+					return cancelWorker(mayInterruptIfRunning);
 				default:
 					return false;
 			}
+		}
+	}
+	
+	private boolean cancelWorker(boolean mayInterruptIfRunning){
+		MediaUtils.clean(request);
+		if (! isDone()){
+			return stop(mayInterruptIfRunning);
+		} else {
+			return true;
 		}
 	}
 

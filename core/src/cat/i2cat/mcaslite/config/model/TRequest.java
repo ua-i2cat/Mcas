@@ -19,6 +19,10 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileStatus;
 import cat.i2cat.mcaslite.management.LiveStatus;
@@ -53,7 +57,7 @@ public class TRequest implements Serializable {
 	@Column
 	private int iStatus;
 	
-	@Column(nullable = false, length = 500)
+	@Column(nullable = false, length = 1000)
 	private String origin;
 	@Column
 	private Date lastModified;
@@ -121,6 +125,11 @@ public class TRequest implements Serializable {
 	public void setCancelled() {
 		status.setCancelled();
 		iStatus = status.getInt();
+	}
+	
+	@Transient
+	public boolean isCancelled() {
+		return (status.getInt() == Status.CANCELLED);
 	}
 	
 	@Transient

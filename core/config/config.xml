@@ -27,7 +27,7 @@
 		<cancelTryout>3</cancelTryout>
 		<retryTryout>3</retryTryout>
 	</cloud>
-	<callback></callback>
+	<callback>cat.i2cat.mcas.web.utils.WebCallback</callback>
 	<connection></connection>
     <transcoconfigs>
         <tconfig name="default">
