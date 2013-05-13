@@ -29,4 +29,12 @@
         <segDuration>500</segDuration>
         <fragDuration>100</fragDuration>
     </profile>
+    <profile name="RTMP" class="RTMP">
+        <format>flv</format>
+        <vcodec>libx264</vcodec>
+        <acodec>libmp3lame</acodec>
+        <additionalFlags>-ar 44100</additionalFlags>
+        <domain>84.88.32.55</domain>
+        <application>oflaDemo</application>
+    </profile> 
 </profiles>
