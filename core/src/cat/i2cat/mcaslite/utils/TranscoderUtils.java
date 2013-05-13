@@ -35,13 +35,13 @@ public class TranscoderUtils {
 				if (! file.exists() && file.getParentFile().isDirectory() && file.getParentFile().canWrite()){
 					return new URI("file", dst.getHost() , file.getPath(), null);
 				} else if (file.exists() && file.isDirectory() && file.canWrite()) {
-					file = new File(new URI(dst.getPath() + RequestUtils.URIseparator + id));
+					file = new File(new URI(dst.getPath() + "/" + id));
 					return new URI("file", dst.getHost() , file.getPath(), null);
 				} else {
 					throw new MCASException();
 				}
 			} else {
-				return new URI(dst.getScheme(), dst.getHost() , dst.getPath() + RequestUtils.URIseparator + id, null);
+				return new URI(dst.getScheme(), dst.getHost() , dst.getPath() + "/" + id, null);
 			}
 		} catch (URISyntaxException e){
 			e.printStackTrace();

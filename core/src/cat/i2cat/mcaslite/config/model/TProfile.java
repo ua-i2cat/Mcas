@@ -25,7 +25,6 @@ import javax.persistence.ManyToMany;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -115,7 +114,7 @@ public class TProfile implements Serializable{
 	
 	public List<Transco> commandBuilder(String input, String output, boolean live, String title) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
-		String cmd = "ffmpeg -i " + input;
+		String cmd = "ffmpeg -i " + input + " -threads 0 ";
 		for (TLevel level : levels){
 			cmd += " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" + " -b:v " + level.getMaxRate();
 			cmd += "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();
@@ -127,13 +126,13 @@ public class TProfile implements Serializable{
 		return transcos;
 	}
 	
-	public List<String> getUris(URI destination, String title) throws MCASException {
+	public List<String> getUris(URI destination, String title, boolean live) throws MCASException {
 		List<String> uris = new ArrayList<String>();
 		try {
 			for (TLevel level : this.getLevels()){
 				URI dst = new URI(destination.getScheme(), 
 						destination.getHost(),
-						destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat().toString(), 
+						destination.getPath() + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat().toString(), 
 						null);
 				uris.add(dst.toString());
 			}

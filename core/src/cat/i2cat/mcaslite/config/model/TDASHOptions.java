@@ -15,7 +15,6 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.DashManifestManager;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.RequestUtils;
 
 @Entity
 @DiscriminatorValue("Dash")
@@ -38,7 +37,7 @@ public class TDASHOptions extends TProfile {
 	public List<Transco> commandBuilder(String input, String output, boolean live, String title) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
 		String COMMAND = "script.sh ";
-		String inp = "-y -i " + input;
+		String inp = "-y -i " + input + " -threads 0 ";
 		String pro = "-c:v " + getvCodec() + " -c:a " + getaCodec() + " -f mp4 ";
 		String nam = MediaUtils.fileNameMakerByProfile(title, getName()) + "_level ";
 		String mp4 = "-dash " + this.segDuration + " -frag " + this.fragDuration + " -rap -frag-rap -dash-profile main -segment-name %s_ " + " -out " + output + File.separator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat();
@@ -71,12 +70,12 @@ public class TDASHOptions extends TProfile {
 	}
 	
 	@Override
-	public List<String> getUris(URI destination, String title) throws MCASException{
+	public List<String> getUris(URI destination, String title, boolean live) throws MCASException{
 		List<String> uris = new ArrayList<String>();
 		try {
 			URI dst = new URI(destination.getScheme(), 
 				destination.getHost(), 
-				destination.getPath() + RequestUtils.URIseparator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat().toString(), 
+				destination.getPath() + "/" + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat().toString(), 
 				null);
 			uris.add(dst.toString());
 		} catch (URISyntaxException e){

@@ -24,7 +24,7 @@ public class RequestUtils {
 	
 	public static final String PATH = Paths.get(System.getProperty("mcas.home") == null ? "" : System.getProperty("mcas.home"), "config" + File.separator + "config.xml").toString();
 	public static final String CALLBACK = XMLReader.getStringParameter(PATH, "callback");
-	public static final String URIseparator = "/";
+	//public static final String URIseparator = "/";
 
 	public static boolean isValidSrcUri(URI uri) {
 		try {
