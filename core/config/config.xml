@@ -10,15 +10,15 @@
     <uploader>
         <ublocksize>102400</ublocksize>
     </uploader>
-    <cloud>
+    <!-- <cloud>
 		<connection>
 			<accountName>uai2cat</accountName>
 			<accountKey>b3fx1IkaXwaljZD5vbIc4gf2Luw7JNeZDPNjGPCFIAHpDfPabA0VWMgSKkiHA5U0Zpq4pXLUauGm0vx99mSb0w==</accountKey>
-			<protocol>http</protocol>
+			<protocol>http</protocol>-->
 			<!-- <accountName>storagevideos</accountName>
 			<accountKey>qesnMc8PWB9tvMi2IaH3E4OuEVTmyX893T8f6OqwaatGeb23F/vZR8+pq6d5paQWYcZSUArJVGhqvaFESYUW0A==</accountKey>
 			<protocol>http</protocol>  -->
-		</connection>
+	<!--</connection>
 		<pollFactor>2</pollFactor>
 		<pollInterval>10</pollInterval>
 		<processqueue>videoqueue</processqueue>
@@ -26,7 +26,7 @@
 		<inContainer>output2</inContainer>
 		<cancelTryout>3</cancelTryout>
 		<retryTryout>3</retryTryout>
-	</cloud>
+	</cloud>-->
 	<callback>cat.i2cat.mcas.web.utils.WebCallback</callback>
 	<connection></connection>
     <transcoconfigs>
@@ -86,47 +86,13 @@
                 <output>output</output>
             </workdir>
             <timeout>86400</timeout>
-            <live>false</live>
+            <live>true</live>
             <profiles>
-                <profile name="Dash">
+                <profile name="RTMP">
                 	<levels>
                 		<level name="high"/>
                 		<level name="std"/>
                 		<level name="low"/>
-                	</levels>
-                </profile>
-            </profiles>
-        </tconfig>
-        <tconfig name="live640">
-            <workdir>
-                <input>input</input>
-                <output>output</output>
-            </workdir>
-            <timeout>86400</timeout>
-            <live>true</live>
-            <profiles>
-                <profile name="HLS">
-                	<levels>
-                		<level name="high640"/>
-                		<level name="std640"/>
-                		<level name="low640"/>
-                	</levels>
-                </profile>
-            </profiles>
-        </tconfig>
-        <tconfig name="live360">
-            <workdir>
-                <input>input</input>
-                <output>output</output>
-            </workdir>
-            <timeout>86400</timeout>
-            <live>true</live>
-            <profiles>
-                <profile name="HLS">
-                	<levels>
-                		<level name="high360"/>
-                		<level name="std360"/>
-                		<level name="low360"/>
                 	</levels>
                 </profile>
             </profiles>

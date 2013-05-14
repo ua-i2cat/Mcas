@@ -9,6 +9,7 @@ import cat.i2cat.mcaslite.config.model.TDASHOptions;
 import cat.i2cat.mcaslite.config.model.THLSOptions;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
+import cat.i2cat.mcaslite.config.model.TRTMPOptions;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
@@ -51,11 +52,21 @@ public class DefaultsLoader {
 			return getHLSProfile(profile);
 		} else if (classAtr != null && classAtr.equals("DASH")){
 			return getDASHProfile(profile);
+		} else if (classAtr != null && classAtr.equals("RTMP")){
+			return getRTMPProfile(profile);
 		} else {
 			TProfile tProfile = new TProfile();
 			setStdProfile(tProfile, profile);
 			return tProfile;
 		}
+	}
+	
+	private TRTMPOptions getRTMPProfile(Element profile) throws MCASException{
+		TRTMPOptions rProfile = new TRTMPOptions();
+		rProfile.setDomain(XMLReader.getStringParameter(profile, "domain"));
+		rProfile.setApplication(XMLReader.getStringParameter(profile, "application"));
+		setStdProfile(rProfile, profile);
+		return rProfile;
 	}
 	
 	private THLSOptions getHLSProfile(Element profile) throws MCASException{

@@ -53,7 +53,7 @@ protected static int httpTimeout = XMLReader.getIntParameter(path, "downloader.h
 	public OutputStream getOutputStream (URI destination, String fileName) throws MCASException {
 		try {
 			if(destination.getScheme().equals("file")){
-				File file = new File(new URI(destination.getScheme(), destination.getHost(), destination.getPath() + RequestUtils.URIseparator + fileName, null));
+				File file = new File(new URI(destination.getScheme(), destination.getHost(), destination.getPath() + "/" + fileName, null));
 				return new FileOutputStream(file);
 			} else if(destination.getScheme().equals("blob")) {
 				return fileToBlob(destination,fileName);
