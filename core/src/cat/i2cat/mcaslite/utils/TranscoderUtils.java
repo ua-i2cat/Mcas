@@ -53,7 +53,7 @@ public class TranscoderUtils {
 		return FilenameUtils.concat(MediaUtils.getWorkDir(inWorkDir), id);
 	}
 	
-	public static String getOutput(String id, String outWorkDir, String profile) throws MCASException{
+	private static String getOutput(String id, String outWorkDir, String profile) throws MCASException{
 		return MediaUtils.getWorkDir(FilenameUtils.concat(
 					MediaUtils.getWorkDir(FilenameUtils.concat(MediaUtils.getWorkDir(outWorkDir), id)), profile));
 	}
