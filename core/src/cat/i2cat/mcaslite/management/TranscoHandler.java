@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
@@ -24,6 +27,7 @@ public class TranscoHandler implements Runnable {
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
 	private List<SimpleEntry<String, Cancellable>> workers = new ArrayList<SimpleEntry<String, Cancellable>>();
+	private final ExecutorService executor;
 	
 	private boolean run = true;
 	
@@ -32,6 +36,7 @@ public class TranscoHandler implements Runnable {
 		maxRequests = XMLReader.getIntParameter(path, "maxreq");
 		queue = ProcessQueue.getInstance();
 		queue.setMaxProcess(XMLReader.getIntParameter(path, "maxproc"));
+		this.executor = Executors.newFixedThreadPool(XMLReader.getIntParameter(path, "maxproc"));
 	}
 	
 	public static TranscoHandler getInstance(){
@@ -115,7 +120,7 @@ public class TranscoHandler implements Runnable {
 	
 	private void transcode(TRequest request) throws MCASException{
 		increaseRequestState(request);
-		Transcoder transTh = new Transcoder(queue, request);
+		TranscoParallelisation transTh = new TranscoParallelisation(request, queue, executor);
 		(new Thread(transTh)).start();
 		addWorkerInStack(transTh, request.getId());
 	}

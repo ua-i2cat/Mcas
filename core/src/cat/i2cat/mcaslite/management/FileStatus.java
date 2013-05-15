@@ -15,8 +15,6 @@ public class FileStatus extends Status{
 			case PROCESS_M:
 				return PROCESS_T;
 			case PROCESS_T:
-				return PROCESS_MO;
-			case PROCESS_MO:
 				return DONE;
 			default:
 				throw new MCASException();

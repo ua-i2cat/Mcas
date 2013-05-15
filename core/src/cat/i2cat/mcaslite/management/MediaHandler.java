@@ -87,43 +87,24 @@ public class MediaHandler implements Cancellable {
 		}
 	}
 	
-	public void filesUpload() throws MCASException {
+	public void filesUpload(Transco transco) throws MCASException {
+		setDone(false);
 		try {
-			for (Transco transco : request.getTranscoded()){
-				uploader = new Uploader(new URI(request.getDst()));
-				uploader.upload(Paths.get(transco.getOutputDir()));	
-			}	
+			uploader = new Uploader(new URI(request.getDst()));
+			uploader.upload(Paths.get(transco.getOutputDir()));		
 		} catch (URISyntaxException e) {
 			throw new MCASException();
-		}
-		try {
-			setDone(true);
-			if (! isCancelled()) {
-				if (request.getNumOutputs() > request.getTranscoded().size()){
-					if (request.isTranscodedEmpty()){
-						MediaUtils.deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
-			//TODO			Uploader.deleteDestination(request.getDst());
-						request.setError();
-					} else {
-						request.setPartialError();
-					}
-				} else {
-					request.increaseStatus();
-				}
-				if (queue.remove(request)) {
-					requestDao.save(request);
-				}
-			}
 		} finally {
-			MediaUtils.clean(request);
+			setDone(true);
+			MediaUtils.cleanTransco(transco);
 		}
 	}
 	
-	public void outputHandle(boolean stopped) throws MCASException {
+	public void outputHandle(boolean stopped, Transco transco) throws MCASException {
 		if (request.isLive()){
 			cancelWatcher();
 		} else if (! stopped) {
-			filesUpload();
+			filesUpload(transco);
 		}
 	}
 	
@@ -144,16 +125,7 @@ public class MediaHandler implements Cancellable {
 	@Override
 	public boolean cancel(boolean mayInterruptIfRunning) {
 		if (! isDone()){
-			switch (request.getStatus().getInt()) {
-				case Status.PROCESS_M:
-					setCancelled(cancelDownload(mayInterruptIfRunning));
-					break;
-				case Status.PROCESS_MO:
-					setCancelled(cancelUpload(mayInterruptIfRunning));
-					break;
-				default:
-					setCancelled(false);
-			}
+			setCancelled(cancelDownload(mayInterruptIfRunning) | cancelUpload(mayInterruptIfRunning));
 			return isCancelled();
 		} else {
 			MediaUtils.clean(request);

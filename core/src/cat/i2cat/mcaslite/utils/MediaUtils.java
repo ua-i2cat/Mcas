@@ -111,8 +111,7 @@ public class MediaUtils {
 		return false;
 	}
 
-	private static void cleanTransco(Transco transco){
-		deleteFile(transco.getInputFile());
+	public static void cleanTransco(Transco transco){
 		deleteFile(Paths.get(transco.getOutputDir()).getParent().toString());
 	}
 	
@@ -125,9 +124,8 @@ public class MediaUtils {
 	public static synchronized void clean(TRequest request) {
 		if (request.getTranscoded().size() > 0){
 			cleanTranscos(request.getTranscoded());
-		} else {
-			deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
-		}
+		} 
+		deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
 	}
 
 }
