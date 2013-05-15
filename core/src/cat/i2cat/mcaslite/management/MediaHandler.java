@@ -31,16 +31,16 @@ public class MediaHandler implements Cancellable {
 	}
 
 	public void inputHandle(String profile) throws MCASException {
+		String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
 		if (request.isLive()){
-			initWatcher(profile);
+			initWatcher(profile, path);
 		} else {
 			copyToWorkingDir();
 		}
 	}
 	
-	private void initWatcher(String profile) throws MCASException {
+	private void initWatcher(String profile, String path) throws MCASException {
 		try {
-			String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
 			URI dst = new URI(request.getDst());
 			watcher = new Watcher(path, request.getTConfig(), dst, profile, request.getTitle());
 		} catch (URISyntaxException e) {

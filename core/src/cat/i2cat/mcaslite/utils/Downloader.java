@@ -31,17 +31,10 @@ public class Downloader implements Cancellable {
 	
 	public void toWorkingDir() throws MCASException{
 		try{
-	//		inputStreamToFile(Connection.getInputStream(input));
 			inputStreamToFile(conn.getInputStream(input));
 		}catch(IOException e){ 
-			
-			 
-			
-			 
-			
 			e.printStackTrace();
 			throw new MCASException();
-			
 		}
 	}
 	

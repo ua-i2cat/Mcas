@@ -23,27 +23,35 @@ public class Transcoder implements Runnable, Cancellable {
 	private boolean done = false;
 	private boolean cancelled = false;
 	private final Semaphore semaphore;
+	private final Semaphore mutex;
 	
 	
-	public Transcoder(TRequest request, Transco transco, Semaphore semaphore) throws MCASException{
+	public Transcoder(ProcessQueue queue, TRequest request, Transco transco, Semaphore semaphore, Semaphore mutex) throws MCASException{
 		this.request = request;
 		this.transco = transco;
 		this.executor = new DefaultExecutor(); 
 		this.mediaH = new MediaHandler(queue, request);
 		this.semaphore = semaphore;
+		this.mutex = mutex;
+		this.queue = queue;
 	}
 
 	@Override
 	public void run() {
 		boolean stopped = false;
 		try {
+			mutex.acquire();
 			mediaH.inputHandle(transco.getProfileName());
+			mutex.release();
 			execute(transco, request.isLive());
 		} catch (MCASException e){
 			request.deleteTranscoded(transco);
 			queue.update(request);
 			e.printStackTrace();
 			MediaUtils.deleteFile(transco.getOutputDir());
+		} catch (InterruptedException e) {
+			mutex.release();
+			e.printStackTrace();
 		} finally {
 			semaphore.release();
 			setDone(true);

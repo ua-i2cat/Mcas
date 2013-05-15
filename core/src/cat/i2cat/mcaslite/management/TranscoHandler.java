@@ -1,20 +1,23 @@
 package cat.i2cat.mcaslite.management;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TRequest;
+import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.TranscoderUtils;
 import cat.i2cat.mcaslite.utils.XMLReader;
 
 
@@ -27,7 +30,7 @@ public class TranscoHandler implements Runnable {
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
 	private List<SimpleEntry<String, Cancellable>> workers = new ArrayList<SimpleEntry<String, Cancellable>>();
-	private final ExecutorService executor;
+	private final Semaphore semaphore;
 	
 	private boolean run = true;
 	
@@ -36,7 +39,7 @@ public class TranscoHandler implements Runnable {
 		maxRequests = XMLReader.getIntParameter(path, "maxreq");
 		queue = ProcessQueue.getInstance();
 		queue.setMaxProcess(XMLReader.getIntParameter(path, "maxproc"));
-		this.executor = Executors.newFixedThreadPool(XMLReader.getIntParameter(path, "maxproc"));
+		this.semaphore = new Semaphore(XMLReader.getIntParameter(path, "maxproc"), true);
 	}
 	
 	public static TranscoHandler getInstance(){
@@ -118,27 +121,80 @@ public class TranscoHandler implements Runnable {
 		return getRequest(id).getStatus();
 	}
 	
+//	private void transcode(TRequest request) throws MCASException{
+//		increaseRequestState(request);
+//		TranscoParallelisation transTh = new TranscoParallelisation(request, queue, executor);
+//		(new Thread(transTh)).start();
+//		addWorkerInStack(transTh, request.getId());
+//	}
+	
 	private void transcode(TRequest request) throws MCASException{
 		increaseRequestState(request);
-		TranscoParallelisation transTh = new TranscoParallelisation(request, queue, executor);
-		(new Thread(transTh)).start();
-		addWorkerInStack(transTh, request.getId());
+		List<Transco> transcos;
+		try {
+			transcos = TranscoderUtils.transcoBuilder(request.getTConfig(), request.getId(), 
+					new URI(request.getSrc()), request.getTitle());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+		synchronized(this){
+			for (Transco transco : transcos){
+				try {
+					semaphore.acquire();
+					Transcoder transcoder = new Transcoder(queue, request, transco, semaphore, new Semaphore(1,true));
+					(new Thread(transcoder)).start();
+					addWorkerInStack(transcoder, request.getId());
+				} catch (MCASException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					return;
+				}
+			}
+		}
+//		try {
+//			semaphore.acquire(transcos.size());
+//			
+//			request.increaseStatus();
+//			if (! isCancelled()) {
+//				if (request.getNumOutputs() > request.getTranscoded().size()){
+//					if (request.isTranscodedEmpty()){
+//						MediaUtils.clean(request);
+//						request.setError();
+//					} else {
+//						request.setPartialError();
+//					}
+//				}
+//			}
+//		} catch (Exception e){
+//			e.printStackTrace();
+//			MediaUtils.clean(request);
+//			request.setError();
+//		} finally {
+//			if (queue.remove(request)){
+//				requestDao.save(request);
+//			}
+//		}
 	}
 	
 	private boolean cancelWorker(String id, boolean mayInterruptIfRunning) throws InterruptedException, ExecutionException{
 		Iterator<SimpleEntry<String, Cancellable>> it = workers.iterator();
+		boolean cancel = true;
+		boolean found = false;
 		while(it.hasNext()){
 			SimpleEntry<String, Cancellable> worker = it.next();
 			if (worker.getKey().equals(id)) {
+				found = true;
 				if (worker.getValue().cancel(mayInterruptIfRunning)) {
 					it.remove();
-					return true;
+					cancel = cancel & true;
 				} else {
-					return false;
+					cancel = cancel & false;
 				}
 			} 
 		}
-		return false;
+		return cancel & found;
 	}
 	
 	private void addWorkerInStack(Cancellable thread, String id){
