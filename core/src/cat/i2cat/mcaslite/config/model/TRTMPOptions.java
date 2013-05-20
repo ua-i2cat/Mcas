@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -23,7 +24,17 @@ public class TRTMPOptions extends TProfile {
 	private String domain;
 	@Column
 	private String application;
-	
+//	@Column
+//	private boolean smil;
+//	
+//	public boolean isSmil() {
+//		return smil;
+//	}
+//
+//	public void setSmil(boolean smil) {
+//		this.smil = smil;
+//	}
+
 	public String getDomain() {
 		return domain;
 	}
@@ -56,7 +67,7 @@ public class TRTMPOptions extends TProfile {
 		}
 		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input + " -threads 0 ";
 		for (TLevel level : levels){
-			cmd += (live ? " -r 15 " : "") + " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" + " -b:v " + level.getMaxRate();
+			cmd += " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" + " -b:v " + level.getMaxRate();
 			cmd += "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + "k -b:a " + level.getaBitrate() + "k ";
 			cmd += getAdditionalFlags() + " -c:v " + getvCodec() + " -c:a " + getaCodec() + " -f " + getFormat();
@@ -71,15 +82,15 @@ public class TRTMPOptions extends TProfile {
 	}
 	
 	@Override
-	public List<String> getUris(URI destination, String title, boolean live) throws MCASException{
+	public List<SimpleEntry<String, Integer>> getUris(URI destination, String title, boolean live) throws MCASException{
 		if (live){
-			List<String> uris = new ArrayList<String>();
+			List<SimpleEntry<String, Integer>> uris = new ArrayList<SimpleEntry<String, Integer>>();
 			try {
 				for (TLevel level : this.getLevels()){
 					URI dst = new URI("rtmp", 
 							getDomain(), "/" + getApplication() + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()), 
 							null);
-					uris.add(dst.toString());
+					uris.add(new SimpleEntry<String, Integer>(dst.toString(), level.getMaxRate()));
 				}
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
@@ -90,5 +101,35 @@ public class TRTMPOptions extends TProfile {
 			return super.getUris(destination, title, live);
 		}
 	}
+	
+//	@Override
+//	public void processManifest(Transco transco, String title) throws MCASException{
+//		Element smil = new Element("smil");
+//		Document doc = new Document(smil);
+//		
+//		Element meta = new Element("meta");
+//		try {
+//			meta.setAttribute("base", (new URI("rtmp", getDomain(), "/" + getApplication() + "/" ,null).toString()));
+//		} catch (URISyntaxException e) {
+//			e.printStackTrace();
+//			throw new MCASException();
+//		}
+//		doc.getRootElement().addContent((new Element("head")).addContent(meta));
+//		
+//		Element bwSwitch = new Element("switch");
+//		for(TLevel level : getLevels()) {
+//			Element video = new Element("video");
+//			video.setAttribute("src", MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()));
+//			video.setAttribute("system-bitrate", ((Integer) (level.getaBitrate()*1000)).toString());
+//			bwSwitch.addContent(video);
+//		}
+//		doc.getRootElement().addContent((new Element("body")).addContent(bwSwitch));
+//		XMLOutputter xmlOutput = new XMLOutputter();
+//		xmlOutput.setFormat(Format.getPrettyFormat());
+//		Uploader upload = new Uploader(Paths.get(transco.getOutputDir()).toUri());
+//		xmlOutput.
+//		xmlOutput.output(doc, MediaUtils.fileNameMakerByProfile(title, getName()) + ".smil");
+		
+//	}
 
 }

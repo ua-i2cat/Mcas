@@ -76,4 +76,26 @@ protected static int httpTimeout = XMLReader.getIntParameter(path, "downloader.h
 		throw new MCASException();
 	}
 	
+	protected boolean deleteBlob(URI destination, String blobName) throws MCASException {
+		throw new MCASException();
+	}
+	
+	public boolean deleteContent(URI destination, String fileName) throws MCASException {
+		try {
+			if(destination.getScheme().equals("file")){
+				File file = new File(new URI(destination.getScheme(), destination.getHost(), destination.getPath() + "/" + fileName, null));
+				if (file.exists()){
+					return file.delete();
+				}
+				return false;
+			} else if(destination.getScheme().equals("blob")) {
+				return deleteBlob(destination,fileName);
+			}
+			throw new MCASException();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+	}
+	
 }

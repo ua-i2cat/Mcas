@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,7 +48,7 @@ public class TRequest implements Serializable {
 	private String id = UUID.randomUUID().toString();
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="request", referencedColumnName="id")
-	private List<Transco> transcoded;
+	private List<Transco> transcos;
 	@Transient
 	private Status status;
 	@Column
@@ -57,6 +58,7 @@ public class TRequest implements Serializable {
 	private String origin;
 	@Column
 	private Date lastModified;
+	
 	@Column 
 	private Date dateCreated;
 	
@@ -70,87 +72,80 @@ public class TRequest implements Serializable {
 	}
 		
     public TRequest(){
-        transcoded = new ArrayList<Transco>();
+        transcos = new ArrayList<Transco>();
     }
 	
-	public void setIStatus(int iStatus){
+	synchronized public void setIStatus(int iStatus){
 		this.iStatus = iStatus;
 	}
 	
-	public int getIStatus(){
+	synchronized public int getIStatus(){
 		return iStatus;
 	}
 			
-	public void addTrancoded(Transco transco){
-		transcoded.add(transco);
-	}
-	
-	public void deleteTranscoded(Transco transco){
-		transcoded.remove(transco);
+	@Transient
+	synchronized public boolean isTranscodedEmpty(){
+		return transcos.isEmpty();
 	}
 	
 	@Transient
-	public boolean isTranscodedEmpty(){
-		return transcoded.isEmpty();
-	}
-	
-	@Transient
-	public boolean isLive(){
+	synchronized public boolean isLive(){
 		return getTConfig().isLive();
 	}
 	
-	public List<Transco> getTranscoded(){
-		return transcoded;
+	synchronized public List<Transco> getTranscos(){
+		return transcos;
 	}
 	
-	public void setTranscoded(List<Transco> transcoded){
-		this.transcoded = transcoded;
+	synchronized public void setTranscos(List<Transco> transcos){
+		this.transcos = transcos;
 	}
 	
-	@Transient
-	public int getNumOutputs() {
-		return tConfig.getNumOutputs();
-	}
-
-	public void increaseStatus() throws MCASException {
+	synchronized public void increaseStatus(boolean callback) throws MCASException {
 		status.increaseStatus();
 		iStatus = status.getInt();
+		if (callback){
+			callback();
+		}
 	}
 	
 	@Transient
-	public void setCancelled() {
+	synchronized public void setCancelled() {
 		status.setCancelled();
 		iStatus = status.getInt();
+		callback();
 	}
 	
 	@Transient
-	public boolean isCancelled() {
+	synchronized public boolean isCancelled() {
 		return (status.getInt() == Status.CANCELLED);
 	}
 	
 	@Transient
-	public void setError() {
+	synchronized public void setError() {
 		status.setError();
 		iStatus = status.getInt();
+		callback();
 	}
 	
 	@Transient
-	public void setPartialError() {
+	synchronized public void setPartialError() {
 		status.setPartialError();
 		iStatus = status.getInt();
+		callback();
 	}
 
-	public Status getStatus() {
+	synchronized public Status getStatus() {
 		return status.getStatus();
 	}
 	
-	public void setStatus(Status status) {
+	synchronized public void setStatus(Status status) {
 		this.status = status;
 		iStatus = status.getInt();
 	}
 	
 	@Transient
-	public void initRequest(){
+	synchronized public void initRequest(){
 		if (getTConfig().isLive()){
 			status = new LiveStatus();
 		} else {
@@ -158,84 +153,84 @@ public class TRequest implements Serializable {
 		}
 	}
 	
-	public String getSrc() {
+	synchronized public String getSrc() {
 		return src;
 	}
 
-	public void setSrc(String src) {
+	synchronized public void setSrc(String src) {
 		this.src = src;
 	}
 
-	public String getDst() {
+	synchronized public String getDst() {
 		return dst;
 	}
 
-	public void setDst(String dst) {
+	synchronized public void setDst(String dst) {
 		this.dst = dst;
 	}
 
-	public TranscoderConfig getTConfig() {
+	synchronized public TranscoderConfig getTConfig() {
 		if (tConfig == null){
 			this.initTConf();
 		}
 		return tConfig;
 	}
 
-	public void setTConfig(TranscoderConfig config) {
+	synchronized public void setTConfig(TranscoderConfig config) {
 		this.tConfig = config;
 	}
 	
-	public String getConfig() {
+	synchronized public String getConfig() {
 		return config;
 	}
 
-	public void setConfig(String config) {
+	synchronized public void setConfig(String config) {
 		this.config = config;
 	}
 
-	public String getTitle() {
+	synchronized public String getTitle() {
 		return title;
 	}
 
-	public void setTitle(String title) throws MCASException {
+	synchronized public void setTitle(String title) throws MCASException {
 		if (title == null || title.contains("_")){
 			throw new MCASException();
 		}
 		this.title = title;
 	}
 
-	public String getId() {
+	synchronized public String getId() {
 		return id;
 	}
 	
-	public void setId(String id){
+	synchronized public void setId(String id){
 		this.id = id;
 	}
 
 
-	public static TRequest getEqualRequest(String id){
+	synchronized public static TRequest getEqualRequest(String id){
 		TRequest req = new TRequest();
 		req.id = id;
 		return req;
 	}
 	
-	public String getOrigin()
+	synchronized public String getOrigin()
 	{
 		return origin;
 	}
 	
-	public void setOrigin(String callback){
+	synchronized public void setOrigin(String callback){
 		this.origin = callback;
 	}
 
 	@Override 
-	public boolean equals(Object o){
+	synchronized public boolean equals(Object o){
 		TRequest req = (TRequest) o;
 		return this.id.equals(req.getId());
 	}
 	
 	@Transient
-	public void initTConf() {
+	synchronized public void initTConf() {
 		try {
 			setTConfig(TranscoderUtils.loadConfig(config));
 		} catch (MCASException e){
@@ -248,7 +243,7 @@ public class TRequest implements Serializable {
 	}
 
 	@Transient
-	public boolean isWaiting() {
+	synchronized public boolean isWaiting() {
 		if (status.getInt() <= Status.QUEUED){
 			return true;
 		}
@@ -264,7 +259,7 @@ public class TRequest implements Serializable {
 	}
 
 	@Transient
-	public void callback() {
+	private void callback() {
 		try {
 			RequestUtils.callback(this);
 		} catch (Exception e){
@@ -272,8 +267,8 @@ public class TRequest implements Serializable {
 		}
 	}
 	
-	public List<String> getUris() throws MCASException{
-		List<String> uris = new ArrayList<String>();
+	public List<SimpleEntry<String, Integer>> getUris() throws MCASException{
+		List<SimpleEntry<String, Integer>> uris = new ArrayList<SimpleEntry<String, Integer>>();
 		try {
 			for (TProfile profile : this.getTConfig().getProfiles()){
 				uris.addAll(profile.getUris(new URI(dst), getTitle(), this.isLive()));
@@ -282,5 +277,49 @@ public class TRequest implements Serializable {
 			throw new MCASException();
 		}
 		return uris;
+	}
+
+	@Transient
+	public Transco getSingleTransco(int transco) {
+		return transcos.get(transco);
+	}
+	
+	@Transient
+	synchronized public void setTranscoStatus(Transco transco, int status) {
+		try {
+			transcos.get(transcos.indexOf(transco)).setStatus(status);
+		} catch (MCASException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Transient
+	synchronized public void updateStatus() {
+		boolean cancelled = false;
+		boolean done = false;
+		boolean error = false;
+		for (Transco transco : transcos){
+			if (transco.getStatus().hasNext()){
+				return;
+			} else {
+				cancelled = transco.getStatus().isCancelled();
+				done = transco.getStatus().isDone();
+				error = transco.getStatus().isError();
+			}
+		}
+		if (! error && ! cancelled){
+			try {
+				increaseStatus(true);
+			} catch (MCASException e) {
+				e.printStackTrace();
+				setError();
+			}
+		} else if (! cancelled && error && done) {
+			setPartialError();
+		} else if (! error && cancelled){
+			setCancelled();
+		} else {
+			setError();
+		}
 	}
 }

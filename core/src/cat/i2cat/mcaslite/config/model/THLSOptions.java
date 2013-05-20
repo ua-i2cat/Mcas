@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -44,7 +45,7 @@ public class THLSOptions extends TProfile {
 		}
 		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input + " -threads 0 ";
 		for (TLevel level : getLevels()){
-			cmd += " -r 15 -g 30 -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
+			cmd += " -g 30 -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
 			cmd += " -b:v " + level.getMaxRate() + "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k";
 			cmd += " -qmin 5 -qmax 60 -crf " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
@@ -77,14 +78,14 @@ public class THLSOptions extends TProfile {
 	}
 	
 	@Override
-	public List<String> getUris(URI destination, String title, boolean live) throws MCASException{
-		List<String> uris = new ArrayList<String>();
+	public List<SimpleEntry<String, Integer>> getUris(URI destination, String title, boolean live) throws MCASException{
+		List<SimpleEntry<String, Integer>> uris = new ArrayList<SimpleEntry<String, Integer>>();
 		try {
 			URI dst = new URI(destination.getScheme(), 
 				destination.getHost(), 
 				destination.getPath() + "/" + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat().toString(), 
 				null);
-			uris.add(dst.toString());
+			uris.add(new SimpleEntry<String, Integer>(dst.toString(), null));
 		} catch (URISyntaxException e){
 			e.printStackTrace();
 			throw new MCASException();

@@ -1,5 +1,7 @@
 package cat.i2cat.mcas.web.utils;
 
+import java.util.AbstractMap.SimpleEntry;
+
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -27,10 +29,14 @@ public class WebCallback extends Callback {
 			JSONObject json = new JSONObject();
 			json.put("id", request.getId());
 			json.put("status", request.getStatus().toString());
-			if (request.getTranscoded().size() > 0) {
+			if (request.getTranscos().size() > 0) {
 				JSONArray jsonAr = new JSONArray();
-				for (String uri : request.getUris()){
-					jsonAr.put(new JSONObject("{uri: '" + uri + "'}"));
+				for (SimpleEntry<String, Integer> uri : request.getUris()){
+					if (uri.getValue() != null){
+						jsonAr.put(new JSONObject("{url: '" + uri.getKey() + "', bitrate: '" + uri.getValue() + "'}"));
+					} else {
+						jsonAr.put(new JSONObject("{url: '" + uri.getKey() + "'}"));
+					}
 				}
 				json.put("uris", jsonAr);
 			}

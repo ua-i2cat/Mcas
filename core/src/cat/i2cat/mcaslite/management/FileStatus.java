@@ -4,15 +4,11 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 public class FileStatus extends Status{
 
-	private int status = CREATED;
-	
 	private int nextStatus(int status) throws MCASException{
 		switch(status){
 			case CREATED:
 				return QUEUED;
 			case QUEUED:
-				return PROCESS_M;
-			case PROCESS_M:
 				return PROCESS_T;
 			case PROCESS_T:
 				return DONE;
@@ -54,10 +50,22 @@ public class FileStatus extends Status{
 		return true;
 	}
 	
-	public boolean isDone() {
-		if (status == DONE){
-			return true;
-		}
-		return false;
+	public void setCopying() throws MCASException {
+		throw new MCASException();
+		
+	}
+
+	public void setTranscoding() throws MCASException {
+		throw new MCASException();
+		
+	}
+
+	public void setMoving() throws MCASException {
+		throw new MCASException();
+		
+	}
+
+	public void setDone() throws MCASException {
+		throw new MCASException();
 	}
 }

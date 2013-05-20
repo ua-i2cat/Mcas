@@ -15,8 +15,7 @@ import cat.i2cat.mcaslite.utils.MediaUtils;
 
 public class Transcoder implements Runnable, Cancellable {
 
-	private ProcessQueue queue;
-	private TRequest request;
+	private final TRequest request;
 	private MediaHandler mediaH;
 	private Transco transco;
 	private DefaultExecutor executor;
@@ -26,14 +25,13 @@ public class Transcoder implements Runnable, Cancellable {
 	private final Semaphore mutex;
 	
 	
-	public Transcoder(ProcessQueue queue, TRequest request, Transco transco, Semaphore semaphore, Semaphore mutex) throws MCASException{
+	public Transcoder(TRequest request, int transco, Semaphore semaphore, Semaphore mutex) throws MCASException{
 		this.request = request;
-		this.transco = transco;
+		this.transco = request.getSingleTransco(transco);
 		this.executor = new DefaultExecutor(); 
-		this.mediaH = new MediaHandler(queue, request);
+		this.mediaH = new MediaHandler(request);
 		this.semaphore = semaphore;
 		this.mutex = mutex;
-		this.queue = queue;
 	}
 
 	@Override
@@ -41,12 +39,11 @@ public class Transcoder implements Runnable, Cancellable {
 		boolean stopped = false;
 		try {
 			mutex.acquire();
-			mediaH.inputHandle(transco.getProfileName());
+			mediaH.inputHandle(transco);
 			mutex.release();
 			execute(transco, request.isLive());
 		} catch (MCASException e){
-			request.deleteTranscoded(transco);
-			queue.update(request);
+			request.setTranscoStatus(transco, Status.ERROR);
 			e.printStackTrace();
 			MediaUtils.deleteFile(transco.getOutputDir());
 		} catch (InterruptedException e) {
@@ -56,14 +53,17 @@ public class Transcoder implements Runnable, Cancellable {
 			semaphore.release();
 			setDone(true);
 			if (isCancelled()) {
-				MediaUtils.clean(request);
+				MediaUtils.cleanTransco(transco);
 				stopped = true;
 			}
 			try {
 				mediaH.outputHandle(stopped, transco);
+				request.setTranscoStatus(transco, Status.DONE);
 			} catch (MCASException e) {
+				request.setTranscoStatus(transco, Status.ERROR);
 				e.printStackTrace();
 			}
+			request.updateStatus();
 		}
 	}
 	
@@ -102,8 +102,7 @@ public class Transcoder implements Runnable, Cancellable {
 //	}
 	
 	private void execute(Transco transco, boolean live) throws MCASException{
-		request.addTrancoded(transco);
-		queue.update(request);
+		request.setTranscoStatus(transco, Status.PROCESS_T);
 		executeCommand(transco.getCommand().trim());
 		if (! live){
 			processManifest(transco);
@@ -156,14 +155,15 @@ public class Transcoder implements Runnable, Cancellable {
 
 	@Override
 	public boolean cancel(boolean mayInterruptIfRunning){
-		synchronized(queue){
-			setCancelled(mediaH.cancel(mayInterruptIfRunning) | cancelWorker(mayInterruptIfRunning));
-			return isCancelled();
+		setCancelled(mediaH.cancel(mayInterruptIfRunning) | cancelWorker(mayInterruptIfRunning));
+		if (isCancelled()){
+			request.setTranscoStatus(transco, Status.CANCELLED);
 		}
+		return isCancelled();
 	}
 	
 	private boolean cancelWorker(boolean mayInterruptIfRunning){
-		MediaUtils.clean(request);
+		MediaUtils.cleanTransco(transco);
 		if (! isDone()){
 			return stop(mayInterruptIfRunning);
 		} else {

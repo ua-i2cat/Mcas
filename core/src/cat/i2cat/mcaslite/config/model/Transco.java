@@ -6,6 +6,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.management.Status;
+import cat.i2cat.mcaslite.management.TranscoStatus;
 
 @Entity
 @Table(name = "transcos")
@@ -21,6 +26,8 @@ public class Transco {
 	private String profileName;
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+	@Transient
+	private Status status;
 
 	public Transco(){
 		
@@ -31,6 +38,7 @@ public class Transco {
 		this.outputDir = outputDir;
 		this.inputFile = inputFile;
 		this.profileName = profileName;
+		this.status = new TranscoStatus();
 	}
 	
 	public String getProfileName() {
@@ -73,4 +81,32 @@ public class Transco {
 		this.inputFile = inputFile;
 	}
 	
+	public void setStatus(int status) throws MCASException{
+		switch(status){
+			case Status.PROCESS_C:
+				this.status.setCopying();
+				return;
+			case Status.PROCESS_T:
+				this.status.setTranscoding();
+				return;
+			case Status.PROCESS_M:
+				this.status.setMoving();
+				return;
+			case Status.DONE:
+				this.status.setDone();
+				return;
+			case Status.CANCELLED:
+				this.status.setCancelled();
+				return;
+			case Status.ERROR:
+				this.status.setError();
+				return;
+			default:
+				throw new MCASException();
+		}
+	}
+	
+	public Status getStatus(){
+		return status;
+	}
 }

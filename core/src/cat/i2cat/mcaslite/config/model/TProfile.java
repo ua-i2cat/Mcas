@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,15 +127,15 @@ public class TProfile implements Serializable{
 		return transcos;
 	}
 	
-	public List<String> getUris(URI destination, String title, boolean live) throws MCASException {
-		List<String> uris = new ArrayList<String>();
+	public List<SimpleEntry<String, Integer>> getUris(URI destination, String title, boolean live) throws MCASException {
+		List<SimpleEntry<String, Integer>> uris = new ArrayList<SimpleEntry<String, Integer>>();
 		try {
 			for (TLevel level : this.getLevels()){
 				URI dst = new URI(destination.getScheme(), 
 						destination.getHost(),
 						destination.getPath() + "/" + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + this.getFormat().toString(), 
 						null);
-				uris.add(dst.toString());
+				uris.add(new SimpleEntry<String, Integer>(dst.toString(), level.getMaxRate()));
 			}
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
