@@ -65,6 +65,7 @@ public class DefaultsLoader {
 		TRTMPOptions rProfile = new TRTMPOptions();
 		rProfile.setDomain(XMLReader.getStringParameter(profile, "domain"));
 		rProfile.setApplication(XMLReader.getStringParameter(profile, "application"));
+		//rProfile.setSmil(Boolean.parseBoolean(XMLReader.getStringParameter(profile, "smil")));
 		setStdProfile(rProfile, profile);
 		return rProfile;
 	}

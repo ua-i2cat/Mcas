@@ -87,11 +87,6 @@ public class MediaUtils {
 		}
 	}
 	
-	public static boolean deleteFile(URI uri){
-		File fd = new File(uri);
-		return deleteFile(fd);
-	}
-	
 	public static boolean deleteFile(String file){
 		File fd = new File(file);
 		return deleteFile(fd);
@@ -111,9 +106,8 @@ public class MediaUtils {
 		return false;
 	}
 
-	private static void cleanTransco(Transco transco){
-		deleteFile(transco.getInputFile());
-		deleteFile(Paths.get(transco.getOutputDir()).getParent().toString());
+	public static void cleanTransco(Transco transco){
+		deleteFile(Paths.get(transco.getOutputDir()).toString());
 	}
 	
 	private static void cleanTranscos(List<Transco> transcos){
@@ -122,12 +116,11 @@ public class MediaUtils {
 		}
 	}
 	
-	public static synchronized void clean(TRequest request) {
-		if (request.getTranscoded().size() > 0){
-			cleanTranscos(request.getTranscoded());
-		} else {
-			deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
-		}
+	public static void clean(TRequest request) {
+		if (request.getTranscos().size() > 0){
+			cleanTranscos(request.getTranscos());
+		} 
+		deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
 	}
 
 }

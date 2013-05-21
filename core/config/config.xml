@@ -48,6 +48,11 @@
                 		<level name="high"/>
                 	</levels>
                 </profile>
+                <profile name="RTMP">
+                	<levels>
+                		<level name="high"/>
+                	</levels>
+                </profile>
             </profiles>
         </tconfig>
         <tconfig name="all">
@@ -90,8 +95,11 @@
             <profiles>
                 <profile name="RTMP">
                 	<levels>
-                		<level name="high"/>
-                		<level name="std"/>
+                		<level name="low"/>
+                	</levels>
+                </profile>
+                <profile name="HLS">
+                	<levels>
                 		<level name="low"/>
                 	</levels>
                 </profile>

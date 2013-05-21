@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.config.model.Transco;
 import cat.i2cat.mcaslite.exceptions.MCASException;
@@ -16,31 +15,30 @@ import cat.i2cat.mcaslite.utils.Uploader;
 
 public class MediaHandler implements Cancellable {
 
-	private ProcessQueue queue;
-	private TRequest request;
-	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class); 
+	private final TRequest request;
 	private Downloader downloader;
 	private Uploader uploader;
 	private boolean cancelled = false;
 	private boolean done = false;
 	private Watcher watcher;
 	
-	public MediaHandler(ProcessQueue queue, TRequest request) throws MCASException {
-		this.queue = queue;
+	public MediaHandler(TRequest request) throws MCASException {
 		this.request = request;
 	}
 
-	public void inputHandle(String profile) throws MCASException {
+	public void inputHandle(Transco transco) throws MCASException {
+		request.setTranscoStatus(transco, Status.PROCESS_C);
+		String profile = transco.getProfileName();
+		String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
 		if (request.isLive()){
-			initWatcher(profile);
+			initWatcher(profile, path);
 		} else {
 			copyToWorkingDir();
 		}
 	}
 	
-	private void initWatcher(String profile) throws MCASException {
+	private void initWatcher(String profile, String path) throws MCASException {
 		try {
-			String path = MediaUtils.createOutputWorkingDir(request.getId(), request.getTConfig().getOutputWorkingDir());
 			URI dst = new URI(request.getDst());
 			watcher = new Watcher(path, request.getTConfig(), dst, profile, request.getTitle());
 		} catch (URISyntaxException e) {
@@ -67,17 +65,10 @@ public class MediaHandler implements Cancellable {
 			e.printStackTrace();
 			request.setError();
 			MediaUtils.clean(request);
-			if (queue.remove(request)){
-				requestDao.save(request);
-			}
 			setDone(true);
 			throw new MCASException();
 		}
 		setDone(true);
-		if (! isCancelled()) {
-			request.increaseStatus();
-			queue.update(request);
-		}
 	}
 	
 	private void copyToWorkingDir() throws MCASException{
@@ -87,43 +78,25 @@ public class MediaHandler implements Cancellable {
 		}
 	}
 	
-	public void filesUpload() throws MCASException {
+	public void filesUpload(Transco transco) throws MCASException {
+		setDone(false);
 		try {
-			for (Transco transco : request.getTranscoded()){
-				uploader = new Uploader(new URI(request.getDst()));
-				uploader.upload(Paths.get(transco.getOutputDir()));	
-			}	
+			uploader = new Uploader(new URI(request.getDst()));
+			uploader.upload(Paths.get(transco.getOutputDir()));		
 		} catch (URISyntaxException e) {
 			throw new MCASException();
-		}
-		try {
-			setDone(true);
-			if (! isCancelled()) {
-				if (request.getNumOutputs() > request.getTranscoded().size()){
-					if (request.isTranscodedEmpty()){
-						MediaUtils.deleteInputFile(request.getId(), request.getTConfig().getInputWorkingDir());
-			//TODO			Uploader.deleteDestination(request.getDst());
-						request.setError();
-					} else {
-						request.setPartialError();
-					}
-				} else {
-					request.increaseStatus();
-				}
-				if (queue.remove(request)) {
-					requestDao.save(request);
-				}
-			}
 		} finally {
-			MediaUtils.clean(request);
+			setDone(true);
+			MediaUtils.cleanTransco(transco);
 		}
 	}
 	
-	public void outputHandle(boolean stopped) throws MCASException {
+	public void outputHandle(boolean stopped, Transco transco) throws MCASException {
+		request.setTranscoStatus(transco, Status.PROCESS_M);
 		if (request.isLive()){
 			cancelWatcher();
 		} else if (! stopped) {
-			filesUpload();
+			filesUpload(transco);
 		}
 	}
 	
@@ -144,16 +117,7 @@ public class MediaHandler implements Cancellable {
 	@Override
 	public boolean cancel(boolean mayInterruptIfRunning) {
 		if (! isDone()){
-			switch (request.getStatus().getInt()) {
-				case Status.PROCESS_M:
-					setCancelled(cancelDownload(mayInterruptIfRunning));
-					break;
-				case Status.PROCESS_MO:
-					setCancelled(cancelUpload(mayInterruptIfRunning));
-					break;
-				default:
-					setCancelled(false);
-			}
+			setCancelled(cancelDownload(mayInterruptIfRunning) | cancelUpload(mayInterruptIfRunning));
 			return isCancelled();
 		} else {
 			MediaUtils.clean(request);

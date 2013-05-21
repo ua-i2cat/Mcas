@@ -34,21 +34,19 @@ public class Uploader implements Cancellable {
 			File file = origin.toFile();
 			if (file.isDirectory()){
 				for (String fileName : file.list()){
-					//fileToOutputStream(Connection.getOutputStream(destination, fileName), new File(file, fileName));
 					fileToOutputStream(conn.getOutputStream(destination, fileName), new File(file, fileName));
 				}
 			} else if (file.exists() && !file.isDirectory()){
-//				fileToOutputStream(Connection.getOutputStream(destination, file.getName()), file);
 				fileToOutputStream(conn.getOutputStream(destination, file.getName()), file);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new MCASException();
 		}
 	}
 	
 	public void upload(byte[] byteArray, String fileName) throws MCASException{
 		try {
-//			byteArrayToOutputStream(Connection.getOutputStream(destination, fileName), byteArray);
 			byteArrayToOutputStream(conn.getOutputStream(destination, fileName), byteArray);
 		} catch (Exception e) {
 			throw new MCASException();
@@ -132,5 +130,9 @@ public class Uploader implements Cancellable {
 			setCancelled(true);
 		}
 		return true;
+	}
+
+	public void deleteContent(String fileName) throws MCASException {
+		conn.deleteContent(destination, fileName);
 	}
 }

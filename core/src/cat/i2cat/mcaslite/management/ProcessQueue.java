@@ -54,7 +54,6 @@ public class ProcessQueue {
 		if (index >= 0){
 			queue.remove(index);
 			queue.add(index, r);
-			r.callback();
 		}
 	}
 	
@@ -66,7 +65,6 @@ public class ProcessQueue {
 				nProcess--;
 			}
 			notifyAll();
-			r.callback();
 			return true;
 		} else {
 			return false;

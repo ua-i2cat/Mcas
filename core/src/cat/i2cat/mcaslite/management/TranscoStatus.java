@@ -2,23 +2,10 @@ package cat.i2cat.mcaslite.management;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 
-public class LiveStatus extends Status{
-
-	private int nextStatus(int status) throws MCASException{
-		switch(status){
-			case CREATED:
-				return QUEUED;
-			case QUEUED:
-				return PROCESS_L;
-			case PROCESS_L:
-				return DONE;
-			default:
-				throw new MCASException();
-		}
-	}
+public class TranscoStatus extends Status{
 	
 	public void increaseStatus() throws MCASException{
-		status = nextStatus(status);
+		throw new MCASException();
 	}
 	
 	public void setError(){
@@ -26,7 +13,7 @@ public class LiveStatus extends Status{
 	}
 	
 	public void setPartialError(){
-		status = P_ERROR;
+		status = ERROR;
 	}
 	
 	public void setCancelled(){
@@ -42,31 +29,42 @@ public class LiveStatus extends Status{
 	}
 	
 	public boolean hasNext() {
-		try {
-			nextStatus(status);
-		} catch (Exception e){
+		if (status < DONE){
+			return true;
+		} else {
 			return false;
 		}
-		return true;
 	}
 	
 	public void setCopying() throws MCASException {
-		throw new MCASException();
-		
+		if (status < PROCESS_C){
+			status = PROCESS_C;
+		} else {
+			throw new MCASException();
+		}
 	}
 
 	public void setTranscoding() throws MCASException {
-		throw new MCASException();
-		
+		if (status < PROCESS_T){
+			status = PROCESS_T;
+		} else {
+			throw new MCASException();
+		}
 	}
 
 	public void setMoving() throws MCASException {
-		throw new MCASException();
-		
+		if (status < PROCESS_M){
+			status = PROCESS_M;
+		} else {
+			throw new MCASException();
+		}
 	}
-
+	
 	public void setDone() throws MCASException {
-		throw new MCASException();
+		if (status < DONE){
+			status = DONE;
+		} else {
+			throw new MCASException();
+		}
 	}
-
 }

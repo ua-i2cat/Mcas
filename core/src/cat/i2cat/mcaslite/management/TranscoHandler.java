@@ -1,17 +1,22 @@
 package cat.i2cat.mcaslite.management;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Semaphore;
+
 import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.TranscoderUtils;
 import cat.i2cat.mcaslite.utils.XMLReader;
 
 
@@ -24,6 +29,7 @@ public class TranscoHandler implements Runnable {
 	private ProcessQueue queue;
 	private DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
 	private List<SimpleEntry<String, Cancellable>> workers = new ArrayList<SimpleEntry<String, Cancellable>>();
+	private final Semaphore semaphore;
 	
 	private boolean run = true;
 	
@@ -32,6 +38,7 @@ public class TranscoHandler implements Runnable {
 		maxRequests = XMLReader.getIntParameter(path, "maxreq");
 		queue = ProcessQueue.getInstance();
 		queue.setMaxProcess(XMLReader.getIntParameter(path, "maxproc"));
+		this.semaphore = new Semaphore(XMLReader.getIntParameter(path, "maxproc"), true);
 	}
 	
 	public static TranscoHandler getInstance(){
@@ -59,31 +66,29 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 	
-	public synchronized boolean cancelRequest(TRequest request, boolean mayInterruptIfRunning) {
-		synchronized(queue){//TODO: is this needed?
-			request = queue.getProcessObject(request);
-			if (request != null && (request.isProcessing() || request.isWaiting())){
-				try {
-					if (request.isProcessing() && ! cancelWorker(request.getId(), mayInterruptIfRunning)){
-						return false;
-					}
-				} catch (Exception e) {
+	public boolean cancelRequest(TRequest request, boolean mayInterruptIfRunning) {
+		request = queue.getProcessObject(request);
+		if (request != null && (request.isProcessing() || request.isWaiting())){
+			try {
+				if (request.isProcessing() && ! cancelWorker(request.getId(), mayInterruptIfRunning)){
 					return false;
 				}
-				request.setCancelled();
-				if (queue.remove(request)) {
-					requestDao.save(request);
-					return true;
-				}
+			} catch (Exception e) {
+				return false;
 			}
-			return false;
+			request.setCancelled();
+			if (queue.remove(request)) {
+				requestDao.save(request);
+				return true;
+			}
 		}
+		return false;
 	}
 
-	public synchronized boolean putRequest(TRequest request) throws MCASException {
+	public boolean putRequest(TRequest request) throws MCASException {
 		if (queue.size() < maxRequests) {
 			request.initRequest();
-			request.increaseStatus();
+			request.increaseStatus(false);
 			queue.put(request);
 			return true;
 		} else {
@@ -91,16 +96,11 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 	
-	private void increaseRequestState(TRequest request) throws MCASException {
-		request.increaseStatus();
-		queue.update(request);
-	}
-	
 	public void stop(){
 		run = false;
 	}
 	
-	public synchronized TRequest getRequest(String id) throws MCASException {
+	public TRequest getRequest(String id) throws MCASException {
 		TRequest request = queue.getProcessObject(TRequest.getEqualRequest(id));
 		if (request != null){
 			return request;
@@ -109,43 +109,54 @@ public class TranscoHandler implements Runnable {
 		}
 	}
 	
-	public synchronized Status getStatus(String id) throws MCASException {
+	public Status getStatus(String id) throws MCASException {
 		return getRequest(id).getStatus();
 	}
 	
 	private void transcode(TRequest request) throws MCASException{
-		increaseRequestState(request);
-		Transcoder transTh = new Transcoder(queue, request);
-		(new Thread(transTh)).start();
-		addWorkerInStack(transTh, request.getId());
+		try {
+			request.setTranscos(TranscoderUtils.transcoBuilder(request.getTConfig(), request.getId(), 
+					new URI(request.getSrc()), request.getTitle()));
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			throw new MCASException();
+		}
+		request.increaseStatus(true);
+		for (int i = 0; i < request.getTranscos().size() ; i++){
+			try {
+				semaphore.acquire();
+				Transcoder transcoder = new Transcoder(request, i, semaphore, new Semaphore(1,true));
+				(new Thread(transcoder)).start();
+				addWorkerInStack(transcoder, request.getId());
+			} catch (MCASException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return;
+			}
+		}
 	}
 	
 	private boolean cancelWorker(String id, boolean mayInterruptIfRunning) throws InterruptedException, ExecutionException{
 		Iterator<SimpleEntry<String, Cancellable>> it = workers.iterator();
+		boolean cancel = true;
+		boolean found = false;
 		while(it.hasNext()){
 			SimpleEntry<String, Cancellable> worker = it.next();
 			if (worker.getKey().equals(id)) {
+				found = true;
 				if (worker.getValue().cancel(mayInterruptIfRunning)) {
 					it.remove();
-					return true;
+					cancel = cancel & true;
 				} else {
-					return false;
+					cancel = cancel & false;
 				}
 			} 
 		}
-		return false;
+		return cancel & found;
 	}
 	
 	private void addWorkerInStack(Cancellable thread, String id){
-		Iterator<SimpleEntry<String, Cancellable>> it = workers.iterator();
-		while(it.hasNext()){
-			SimpleEntry<String, Cancellable> worker = it.next();
-			if (worker.getKey().equals(id)) {
-				worker.setValue(thread);
-				cleanWorkers();
-				return;
-			} 
-		}
 		workers.add(new SimpleEntry<String, Cancellable>(id, thread));
 		cleanWorkers();
 	}
