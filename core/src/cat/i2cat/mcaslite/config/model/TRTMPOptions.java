@@ -24,17 +24,7 @@ public class TRTMPOptions extends TProfile {
 	private String domain;
 	@Column
 	private String application;
-//	@Column
-//	private boolean smil;
-//	
-//	public boolean isSmil() {
-//		return smil;
-//	}
-//
-//	public void setSmil(boolean smil) {
-//		this.smil = smil;
-//	}
-
+	
 	public String getDomain() {
 		return domain;
 	}
@@ -101,35 +91,5 @@ public class TRTMPOptions extends TProfile {
 			return super.getUris(destination, title, live);
 		}
 	}
-	
-//	@Override
-//	public void processManifest(Transco transco, String title) throws MCASException{
-//		Element smil = new Element("smil");
-//		Document doc = new Document(smil);
-//		
-//		Element meta = new Element("meta");
-//		try {
-//			meta.setAttribute("base", (new URI("rtmp", getDomain(), "/" + getApplication() + "/" ,null).toString()));
-//		} catch (URISyntaxException e) {
-//			e.printStackTrace();
-//			throw new MCASException();
-//		}
-//		doc.getRootElement().addContent((new Element("head")).addContent(meta));
-//		
-//		Element bwSwitch = new Element("switch");
-//		for(TLevel level : getLevels()) {
-//			Element video = new Element("video");
-//			video.setAttribute("src", MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()));
-//			video.setAttribute("system-bitrate", ((Integer) (level.getaBitrate()*1000)).toString());
-//			bwSwitch.addContent(video);
-//		}
-//		doc.getRootElement().addContent((new Element("body")).addContent(bwSwitch));
-//		XMLOutputter xmlOutput = new XMLOutputter();
-//		xmlOutput.setFormat(Format.getPrettyFormat());
-//		Uploader upload = new Uploader(Paths.get(transco.getOutputDir()).toUri());
-//		xmlOutput.
-//		xmlOutput.output(doc, MediaUtils.fileNameMakerByProfile(title, getName()) + ".smil");
-		
-//	}
 
 }

@@ -34,7 +34,7 @@
         <vcodec>libx264</vcodec>
         <acodec>libmp3lame</acodec>
         <additionalFlags>-ar 44100</additionalFlags>
-        <domain>84.88.32.55</domain>
-        <application>oflaDemo</application>
+        <domain>192.168.10.49</domain>
+        <application>live</application>
     </profile> 
 </profiles>
