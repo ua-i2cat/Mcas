@@ -83,7 +83,22 @@ public class TranscoService {
 		return addTransco(request);
 	}
 
-	//TODO: status method
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("status")
+	public String transcoStatus(@QueryParam("id") String idStr) {
+		try {
+			TRequest request = transcoH.getRequest(idStr);
+			if (request == null){
+				throw new WebApplicationException(Response.Status.NOT_FOUND);
+			} else {
+				return transcoH.requestStatus(request);
+			}
+		} catch (MCASException e) {
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+		}
+	}
 	
 	@POST
 	@Path("cancel")
@@ -106,13 +121,13 @@ public class TranscoService {
 	}
 	
 	@GET
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public String getOptions() {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			Map<String, List<String>> map = new HashMap<String, List<String>>();
 			map.put("profiles", transcoH.getProfiles());
-			map.put("levels", transcoH.getLevels());		
+			map.put("levels", transcoH.getLevels());
 			return mapper.writeValueAsString(map);
 		} catch (Exception e) {
 			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);

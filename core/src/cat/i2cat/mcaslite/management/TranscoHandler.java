@@ -16,6 +16,7 @@ import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TRequest;
 import cat.i2cat.mcaslite.exceptions.MCASException;
+import cat.i2cat.mcaslite.utils.RequestUtils;
 import cat.i2cat.mcaslite.utils.TranscoderUtils;
 import cat.i2cat.mcaslite.utils.XMLReader;
 
@@ -183,5 +184,9 @@ public class TranscoHandler implements Runnable {
 			levels.add(level.getName());
 		}
 		return levels;
+	}
+	
+	public String requestStatus(TRequest request) throws MCASException{
+		return RequestUtils.requestToJSON(request);
 	}
 }

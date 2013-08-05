@@ -104,4 +104,9 @@ public class RequestUtils {
 		Callback cb = ClassFactory.getCallback(CALLBACK);
 		cb.callback(request);
 	}
+	
+	public static String requestToJSON(TRequest request) throws MCASException{
+		Callback cb = ClassFactory.getCallback(CALLBACK);
+		return cb.RequestToJson(request);
+	}
 }
