@@ -29,45 +29,54 @@ public class TDASHOptions extends TProfile {
 	@Column
 	private int segDuration;
 	@Column
-	private int fragDuration;
-	@Column
 	private int windowLength;
 
 	
 	@Override
 	public List<Transco> commandBuilder(String input, String output, boolean live, String title) throws MCASException{
 		List<Transco> transcos = new ArrayList<Transco>();
-		String COMMAND = "script.sh ";
-		String inp = "-y -i " + input + " -threads 0 ";
-		String pro = "-c:v " + getvCodec() + " -c:a " + getaCodec() + " -f mp4 ";
-		String nam = MediaUtils.fileNameMakerByProfile(title, getName()) + "_level ";
-		String mp4 = "-dash " + this.segDuration + " -frag " + this.fragDuration + " -rap -frag-rap -dash-profile main -segment-name %s_ " + " -out " + output + File.separator + MediaUtils.fileNameMakerByProfile(title, getName()) + "." + this.getFormat();
-		String out = File.separator + output + File.separator;
-		String OUTPUT = "\"" + out + "\" ";
-		String INPUT = "\"" + inp + "\" ";
-		String PROFILE = "\"" + pro + "\" ";
-		String NUMLVL = "\"" + levels.size() + "\" ";
-		String MP4BOX = "\"" + mp4 + "\" ";
-		String NAME = "\"" + nam + "\" ";
-		
-		String LEVELS = "";
-		for (int i = 0; i<levels.size(); i++){
-			TLevel level = levels.get(i);
-			LEVELS += " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" + " -b:v " + level.getMaxRate();
-			LEVELS += "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();
-			LEVELS += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k " + getAdditionalFlags();
-			LEVELS += " -y " + output + File.separator + i + ".mp4 ";
+		boolean fileSrc = false;
+		if (live){
+			try {
+				fileSrc = (new URI(input)).getScheme().equals("file");
+				if (fileSrc) {
+					input = (new File(new URI(input))).toString();
+				}
+			} catch (URISyntaxException e) {
+				throw new MCASException();
+			}
 		}
-		String cmd = COMMAND + INPUT + PROFILE + NUMLVL + OUTPUT + MP4BOX + NAME + "\"" + LEVELS + "\"";
-		System.out.println(cmd);
+		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input + " -threads 0 ";
+		for (TLevel level : getLevels()){
+			System.out.println("OUTPUT: " + output);
+			if (getvCodec()!= null){
+				cmd += " -c:v " + getvCodec() + " -profile:v baseline -preset medium";
+				cmd += " -g 24 -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
+				cmd += " -b:v " + level.getMaxRate() + "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k";
+				cmd += " -map 0:0 -f segment -segment_time " + getSegDuration() + " " + output + File.separator;
+				cmd += MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "_video_%d.mp4";
+				//cmd += " -qmin 5 -qmax 60 -crf " + level.getQuality();
+			}
+			if (getaCodec() != null) {				
+				cmd += " -c:a " + getaCodec();
+				cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
+				cmd += " -map 0:1 -f segment -segment_time " + getSegDuration() +" " + output + File.separator;
+				cmd += MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "_audio_%d.mp4";
+			}
+			/*if (! live){
+				cmd += " -segment_list "+ output + File.separator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + ".csv";
+			}
+			cmd += " -segment_time " + getSegDuration() + " " + output + File.separator;
+			cmd += MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "_%d.mp4";*/
+		}
 		transcos.add(new Transco(cmd, output, input, this.getName()));
 		return transcos;		
 	}
 	
 	@Override
 	public void processManifest(Transco transco, String title) throws MCASException{
-		DashManifestManager mpdModifier = new DashManifestManager(transco.getOutputDir());
-		mpdModifier.processManifest();
+		// mpdModifier = new DashManifestManager(transco.getOutputDir());
+		//mpdModifier.processManifest();
 	}
 	
 	@Override
@@ -109,16 +118,6 @@ public class TDASHOptions extends TProfile {
 
 	public void setSegDuration(int segDuration) {
 		this.segDuration = segDuration;
-	}
-
-
-	public int getFragDuration() {
-		return fragDuration;
-	}
-
-
-	public void setFragDuration(int fragDuration) {
-		this.fragDuration = fragDuration;
 	}
 
 

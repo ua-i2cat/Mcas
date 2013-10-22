@@ -80,7 +80,7 @@ public class DefaultsLoader {
 	private TDASHOptions getDASHProfile(Element profile) throws MCASException{
 		TDASHOptions dProfile = new TDASHOptions();
 		dProfile.setSegDuration(XMLReader.getIntParameter(profile, "segDuration"));
-		dProfile.setFragDuration(XMLReader.getIntParameter(profile, "fragDuration"));
+		dProfile.setWindowLength(XMLReader.getIntParameter(profile, "windowLength"));
 		setStdProfile(dProfile, profile);
 		return dProfile;
 	}
