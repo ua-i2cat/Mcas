@@ -175,7 +175,7 @@ public class DashManifestManager implements FileEventProcessor {
 			if (seg > 0) {
 				Path segment = Paths.get(path.toString(), filename + "_"
 						+ (--seg) + ".mp4");
-				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ \"\"" + segment.toString();
+				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ / " + segment.toString();
 				CommandLine commandLine = CommandLine.parse(cmd.trim());
 				try {
 					executor_init.execute(commandLine);
