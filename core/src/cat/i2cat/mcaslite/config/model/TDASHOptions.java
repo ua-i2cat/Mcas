@@ -15,6 +15,7 @@ import javax.persistence.Transient;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.DashManifestManager;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
+import cat.i2cat.mcaslite.management.HLSManifestManager;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 
 @Entity
@@ -91,8 +92,8 @@ public class TDASHOptions extends TProfile {
 	
 	@Transient
 	@Override
-	public FileEventProcessor getFileEP(URI dst, String title){
-		return new DashManifestManager();
+	public FileEventProcessor getFileEP(URI dst, String title) throws MCASException{
+		return new DashManifestManager(windowLength, segDuration, dst, getLevels(), this.getName(), title);
 	}
 	
 	public String getDashProfile() {

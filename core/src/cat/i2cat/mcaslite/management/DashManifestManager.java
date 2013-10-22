@@ -38,15 +38,13 @@ public class DashManifestManager implements FileEventProcessor {
 	private String title;
 	private DefaultExecutor executor_init;
 	private DefaultExecutor executor_isom;
-
 	private int windowLength;
 	private int segDuration;
 
 	public DashManifestManager() {
 	}
 
-	public DashManifestManager(int windowLength, int segDuration, URI dst,
-			List<TLevel> levels, String profileName, String title)
+	public DashManifestManager(int windowLength, int segDuration, URI dst,	List<TLevel> levels, String profileName, String title)
 			throws MCASException {
 		try {
 			this.windowLength = windowLength;
@@ -130,11 +128,9 @@ public class DashManifestManager implements FileEventProcessor {
 			throws MCASException {
 		try {
 			String file = event.context().toString();
-			if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4")) {
-				// CALL MP4Box
+			if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4") && (!(file.contains("init")))) {
 				System.out.println("File name: " + file);
 				encapsulateISOM(path, file);
-				// updateVideoFiles(path, file);
 			}
 		} catch (Exception e) {
 			throw new MCASException();
@@ -142,24 +138,27 @@ public class DashManifestManager implements FileEventProcessor {
 	}
 
 	private void encapsulateISOM(Path path, String file) throws MCASException {
-		// former updateVideoFiles HLS
 		try {
 			String[] parsedName = file.split("_");
 			String level;
 			if (levels.containsKey(parsedName[2])) {
 				level = parsedName[2];
 			} else {
+				level = parsedName[2];
+				System.out.println(parsedName[2]);
 				throw new MCASException();
 			}
 			// TODO change dashManifestOption constructor to acquiere title and
 			// profileName
 			String filename = MediaUtils.fileNameMakerByLevel(title,
 					profileName, level);
-			int seg = Integer.parseInt(parsedName[3].substring(0,
-					parsedName[3].lastIndexOf(".")));
+			int seg = Integer.parseInt(parsedName[4].substring(0,
+					parsedName[4].lastIndexOf(".")));
+			System.out.println(seg);
 			if (seg == 0) {
+				System.out.println("Genero Init");
 				// TODO init generation
-				Path init = Paths.get(path.toString(), filename + "_init.mp4");
+				Path init = Paths.get(path.toString(), filename);
 
 				String cmd = "i2test " + init.toString();
 				CommandLine commandLine = CommandLine.parse(cmd.trim());
@@ -171,17 +170,25 @@ public class DashManifestManager implements FileEventProcessor {
 					throw new MCASException();
 				}
 				uploader.upload(init);
-				init.toFile().delete();
+				//init.toFile().delete();
 			}
 			if (seg > 0) {
 				Path segment = Paths.get(path.toString(), filename + "_"
 						+ (--seg) + ".mp4");
+				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ \"\"" + segment.toString();
+				CommandLine commandLine = CommandLine.parse(cmd.trim());
+				try {
+					executor_init.execute(commandLine);
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new MCASException();
+				}
 				// TODO isom generation
 				Path segment_isom = Paths.get(path.toString(), filename + "_"
 						+ (--seg) + ".m4s");
 				uploader.upload(segment_isom);
-				segment.toFile().delete();
-				segment_isom.toFile().delete();
+				//segment.toFile().delete();
+				//segment_isom.toFile().delete();
 				// TODO descomentar
 				// if (seg >= windowLength /*TODO && request.getTconfig() name
 				// == live*/ )
