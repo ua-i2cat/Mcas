@@ -129,8 +129,7 @@ public class DashManifestManager implements FileEventProcessor {
 			throws MCASException {
 		try {
 			String file = event.context().toString();
-			if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4")
-					&& (!(file.contains("init")))) {
+			if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4") && (!(file.contains("init")))) {
 				System.out.println("File name: " + file);
 				encapsulateISOM(path, file);
 			}
@@ -150,8 +149,10 @@ public class DashManifestManager implements FileEventProcessor {
 				// System.out.println(parsedName[2]);
 				throw new MCASException();
 			}
-			String filename = MediaUtils.fileNameMakerByLevel(title,
-					profileName, level);
+			String filename = "";
+			for (int i = 0; i < (parsedName.length - 1); i++) {
+				filename += parsedName[i] + "_";
+			}
 			int seg = Integer
 					.parseInt(parsedName[parsedName.length - 1].substring(0,
 							parsedName[parsedName.length - 1].lastIndexOf(".")));
@@ -170,15 +171,11 @@ public class DashManifestManager implements FileEventProcessor {
 					throw new MCASException();
 				}
 
-				Path init_file = Paths.get(init.toString() + "_init.mp4");
+				Path init_file = Paths.get(init.toString() + "init.mp4");
 				uploader.upload(init_file);
 				init_file.toFile().delete();
 			}
-			if (seg > 0) {
-				filename = "";
-				for (int i = 0; i < (parsedName.length - 1); i++) {
-					filename += parsedName[i] + "_";
-				}
+			if (seg > 0) {				
 				Path segment = Paths.get(path.toString(), filename + (--seg)
 						+ ".mp4");
 				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ -out "
@@ -192,11 +189,11 @@ public class DashManifestManager implements FileEventProcessor {
 					throw new MCASException();
 				}
 				Path segment_isom = Paths.get(path.toString(), filename + "_"
-						+ (--seg) + ".m4s");
+						+ (--seg) + "_1.m4s");
 				uploader.upload(segment_isom);
 
-				segment.toFile().delete();
-				segment_isom.toFile().delete();
+				//segment.toFile().delete();
+				//segment_isom.toFile().delete();
 
 				// TODO descomentar
 				// if (seg >= windowLength /*TODO && request.getTconfig() name
