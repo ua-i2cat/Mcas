@@ -148,12 +148,10 @@ public class DashManifestManager implements FileEventProcessor {
 				System.out.println(parsedName[2]);
 				throw new MCASException();
 			}
-			// TODO change dashManifestOption constructor to acquiere title and
-			// profileName
 			String filename = MediaUtils.fileNameMakerByLevel(title,
 					profileName, level);
-			int seg = Integer.parseInt(parsedName[4].substring(0,
-					parsedName[4].lastIndexOf(".")));
+			int seg = Integer.parseInt(parsedName[parsedName.length-1].substring(0,
+					parsedName[parsedName.length-1].lastIndexOf(".")));
 			System.out.println(seg);
 			if (seg == 0) {
 				System.out.println("Genero Init");
@@ -170,12 +168,15 @@ public class DashManifestManager implements FileEventProcessor {
 					throw new MCASException();
 				}
 				uploader.upload(init);
-				//init.toFile().delete();
+				init.toFile().delete();
 			}
 			if (seg > 0) {
-				Path segment = Paths.get(path.toString(), filename + "_"
-						+ (--seg) + ".mp4");
-				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ / " + segment.toString();
+				filename = "";
+				for (int i = 0; i < (parsedName.length - 1); i++) {
+					filename += parsedName[i] + "_";
+				}
+				Path segment = Paths.get(path.toString(), filename + (--seg) + ".mp4");
+				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ -out " + path.toString()+ "/out.mpd " + segment.toString();
 				CommandLine commandLine = CommandLine.parse(cmd.trim());
 				try {
 					executor_init.execute(commandLine);
@@ -183,12 +184,11 @@ public class DashManifestManager implements FileEventProcessor {
 					e.printStackTrace();
 					throw new MCASException();
 				}
-				// TODO isom generation
 				Path segment_isom = Paths.get(path.toString(), filename + "_"
 						+ (--seg) + ".m4s");
 				uploader.upload(segment_isom);
-				//segment.toFile().delete();
-				//segment_isom.toFile().delete();
+				segment.toFile().delete();
+				segment_isom.toFile().delete();
 				// TODO descomentar
 				// if (seg >= windowLength /*TODO && request.getTconfig() name
 				// == live*/ )
