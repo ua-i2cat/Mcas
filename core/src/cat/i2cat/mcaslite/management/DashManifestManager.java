@@ -130,7 +130,6 @@ public class DashManifestManager implements FileEventProcessor {
 		try {
 			String file = event.context().toString();
 			if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4") && (!(file.contains("init")))) {
-				System.out.println("File name: " + file);
 				encapsulateISOM(path, file);
 			}
 		} catch (Exception e) {
@@ -145,8 +144,6 @@ public class DashManifestManager implements FileEventProcessor {
 			if (levels.containsKey(parsedName[2])) {
 				level = parsedName[2];
 			} else {
-				// level = parsedName[2];
-				// System.out.println(parsedName[2]);
 				throw new MCASException();
 			}
 			String filename = "";
@@ -156,7 +153,6 @@ public class DashManifestManager implements FileEventProcessor {
 			int seg = Integer
 					.parseInt(parsedName[parsedName.length - 1].substring(0,
 							parsedName[parsedName.length - 1].lastIndexOf(".")));
-			System.out.println(seg);
 			if (seg == 0) {
 				System.out.println("Genero Init");
 				Path init = Paths.get(path.toString(), filename);
@@ -183,17 +179,16 @@ public class DashManifestManager implements FileEventProcessor {
 
 				CommandLine commandLine = CommandLine.parse(cmd.trim());
 				try {
-					executor_init.execute(commandLine);
+					executor_isom.execute(commandLine);
 				} catch (Exception e) {
 					e.printStackTrace();
 					throw new MCASException();
 				}
-				Path segment_isom = Paths.get(path.toString(), filename + "_"
-						+ (--seg) + "_1.m4s");
+				Path segment_isom = Paths.get(path.toString(), filename + (seg) + "_1.m4s");
 				uploader.upload(segment_isom);
 
-				//segment.toFile().delete();
-				//segment_isom.toFile().delete();
+				segment.toFile().delete();
+				segment_isom.toFile().delete();
 
 				// TODO descomentar
 				// if (seg >= windowLength /*TODO && request.getTconfig() name
