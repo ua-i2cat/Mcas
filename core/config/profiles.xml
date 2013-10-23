@@ -24,7 +24,7 @@
     <profile name="Dash" class="DASH">
     	<format>mpd</format>
         <vcodec>libx264</vcodec>
-        <acodec>libfdk_aac</acodec>
+        <acodec></acodec>
         <additionalFlags>-profile:v baseline -map 0 -flags -global_header</additionalFlags>
         <segDuration>1</segDuration>
         <windowLength>10</windowLength>

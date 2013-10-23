@@ -16,7 +16,7 @@
         <maxRate>4000</maxRate>
     </level>
     <level name="low">
-        <width>-1</width>
+        <width>360</width>
         <quality>32</quality>
         <abitrate>64</abitrate>
         <achannels>2</achannels>

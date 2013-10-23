@@ -49,7 +49,7 @@ public class TDASHOptions extends TProfile {
 		}
 		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input + " -threads 0 ";
 		for (TLevel level : getLevels()){
-			if (getvCodec()!= null){
+			if (getvCodec()!= null && (!live)){
 				cmd += " -c:v " + getvCodec() + " -profile:v baseline -preset medium";
 				cmd += " -g 24 -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
 				cmd += " -b:v " + level.getMaxRate() + "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k";
@@ -57,12 +57,25 @@ public class TDASHOptions extends TProfile {
 				cmd += MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "_video_%d.mp4";
 				//cmd += " -qmin 5 -qmax 60 -crf " + level.getQuality();
 			}
-			if (getaCodec() != null) {				
+			else if (getvCodec()!= null) {
+				cmd += " -c:v " + getvCodec() + " -profile:v baseline -preset medium";
+				cmd += " -g 24 -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
+				cmd += " -b:v " + level.getMaxRate() + "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k";
+				cmd += " -map 0:0 -f segment -segment_time " + getSegDuration() + " " + output + File.separator;
+				cmd += MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "_video_%d.mp4";
+			}
+			if ((getaCodec() != "") && (!live)) {				
 				cmd += " -c:a " + getaCodec();
 				cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 				cmd += " -map 0:1 -f segment -segment_time " + getSegDuration() +" " + output + File.separator;
 				cmd += MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "_audio_%d.mp4";
 			}
+			else if (getaCodec() != "") {				
+				cmd += " -c:a " + getaCodec();
+				cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
+				cmd += " -map 0:1 -f segment -segment_time " + getSegDuration() +" " + output + File.separator;
+				cmd += MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "_audio_%d.mp4";
+			}			
 		}
 		transcos.add(new Transco(cmd, output, input, this.getName()));
 		return transcos;		
