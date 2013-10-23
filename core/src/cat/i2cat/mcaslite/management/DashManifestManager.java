@@ -44,7 +44,8 @@ public class DashManifestManager implements FileEventProcessor {
 	public DashManifestManager() {
 	}
 
-	public DashManifestManager(int windowLength, int segDuration, URI dst,	List<TLevel> levels, String profileName, String title)
+	public DashManifestManager(int windowLength, int segDuration, URI dst,
+			List<TLevel> levels, String profileName, String title)
 			throws MCASException {
 		try {
 			this.windowLength = windowLength;
@@ -128,7 +129,8 @@ public class DashManifestManager implements FileEventProcessor {
 			throws MCASException {
 		try {
 			String file = event.context().toString();
-			if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4") && (!(file.contains("init")))) {
+			if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4")
+					&& (!(file.contains("init")))) {
 				System.out.println("File name: " + file);
 				encapsulateISOM(path, file);
 			}
@@ -144,8 +146,8 @@ public class DashManifestManager implements FileEventProcessor {
 			if (levels.containsKey(parsedName[2])) {
 				level = parsedName[2];
 			} else {
-				level = parsedName[2];
-				System.out.println(parsedName[2]);
+				// level = parsedName[2];
+				// System.out.println(parsedName[2]);
 				throw new MCASException();
 			}
 			String filename = MediaUtils.fileNameMakerByLevel(title,
@@ -167,6 +169,7 @@ public class DashManifestManager implements FileEventProcessor {
 					e.printStackTrace();
 					throw new MCASException();
 				}
+<<<<<<< HEAD
 				uploader.upload(init);
 				init.toFile().delete();
 			}
@@ -177,6 +180,17 @@ public class DashManifestManager implements FileEventProcessor {
 				}
 				Path segment = Paths.get(path.toString(), filename + (--seg) + ".mp4");
 				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ -out " + path.toString()+ "/out.mpd " + segment.toString();
+=======
+				Path init_file = Paths.get(init.toString() + "_init.mp4");
+				uploader.upload(init_file);
+				// init.toFile().delete();
+			}
+			if (seg > 0) {
+				Path segment = Paths.get(path.toString(), filename + "_"
+						+ (--seg) + ".mp4");
+				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ / "
+						+ segment.toString();
+>>>>>>> TVRING-144: fix videoupload for init_file
 				CommandLine commandLine = CommandLine.parse(cmd.trim());
 				try {
 					executor_init.execute(commandLine);
@@ -187,8 +201,13 @@ public class DashManifestManager implements FileEventProcessor {
 				Path segment_isom = Paths.get(path.toString(), filename + "_"
 						+ (--seg) + ".m4s");
 				uploader.upload(segment_isom);
+<<<<<<< HEAD
 				segment.toFile().delete();
 				segment_isom.toFile().delete();
+=======
+				// segment.toFile().delete();
+				// segment_isom.toFile().delete();
+>>>>>>> TVRING-144: fix videoupload for init_file
 				// TODO descomentar
 				// if (seg >= windowLength /*TODO && request.getTconfig() name
 				// == live*/ )
