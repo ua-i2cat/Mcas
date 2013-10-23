@@ -152,12 +152,12 @@ public class DashManifestManager implements FileEventProcessor {
 			}
 			String filename = MediaUtils.fileNameMakerByLevel(title,
 					profileName, level);
-			int seg = Integer.parseInt(parsedName[parsedName.length-1].substring(0,
-					parsedName[parsedName.length-1].lastIndexOf(".")));
+			int seg = Integer
+					.parseInt(parsedName[parsedName.length - 1].substring(0,
+							parsedName[parsedName.length - 1].lastIndexOf(".")));
 			System.out.println(seg);
 			if (seg == 0) {
 				System.out.println("Genero Init");
-				// TODO init generation
 				Path init = Paths.get(path.toString(), filename);
 
 				String cmd = "i2test " + init.toString();
@@ -169,28 +169,21 @@ public class DashManifestManager implements FileEventProcessor {
 					e.printStackTrace();
 					throw new MCASException();
 				}
-<<<<<<< HEAD
-				uploader.upload(init);
-				init.toFile().delete();
+
+				Path init_file = Paths.get(init.toString() + "_init.mp4");
+				uploader.upload(init_file);
+				init_file.toFile().delete();
 			}
 			if (seg > 0) {
 				filename = "";
 				for (int i = 0; i < (parsedName.length - 1); i++) {
 					filename += parsedName[i] + "_";
 				}
-				Path segment = Paths.get(path.toString(), filename + (--seg) + ".mp4");
-				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ -out " + path.toString()+ "/out.mpd " + segment.toString();
-=======
-				Path init_file = Paths.get(init.toString() + "_init.mp4");
-				uploader.upload(init_file);
-				// init.toFile().delete();
-			}
-			if (seg > 0) {
-				Path segment = Paths.get(path.toString(), filename + "_"
-						+ (--seg) + ".mp4");
-				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ / "
-						+ segment.toString();
->>>>>>> TVRING-144: fix videoupload for init_file
+				Path segment = Paths.get(path.toString(), filename + (--seg)
+						+ ".mp4");
+				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ -out "
+						+ path.toString() + "/out.mpd " + segment.toString();
+
 				CommandLine commandLine = CommandLine.parse(cmd.trim());
 				try {
 					executor_init.execute(commandLine);
@@ -201,13 +194,10 @@ public class DashManifestManager implements FileEventProcessor {
 				Path segment_isom = Paths.get(path.toString(), filename + "_"
 						+ (--seg) + ".m4s");
 				uploader.upload(segment_isom);
-<<<<<<< HEAD
+
 				segment.toFile().delete();
 				segment_isom.toFile().delete();
-=======
-				// segment.toFile().delete();
-				// segment_isom.toFile().delete();
->>>>>>> TVRING-144: fix videoupload for init_file
+
 				// TODO descomentar
 				// if (seg >= windowLength /*TODO && request.getTconfig() name
 				// == live*/ )
