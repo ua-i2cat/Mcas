@@ -22,8 +22,6 @@ import cat.i2cat.mcaslite.utils.MediaUtils;
 
 public class TDASHOptions extends TProfile {
 
-	//private static final long serialVersionUID = 1L;
-
 	@Column(length = 100)
 	private String dashProfile;
 	@Column
