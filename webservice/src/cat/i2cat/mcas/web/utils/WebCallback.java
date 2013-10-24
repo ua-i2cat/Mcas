@@ -20,11 +20,11 @@ public class WebCallback extends Callback {
 	public void callback(TRequest request) throws MCASException {
 		Client client = Client.create();
 		WebResource service = client.resource(request.getOrigin());
-		service.path("/transco/update").type("application/json").post(ClientResponse.class, RequestToJson(request));
+		service.path("/transco/update").type("application/json").post(ClientResponse.class, requestToJson(request));
 	}
 
 	@Override
-	public String RequestToJson(TRequest request) throws MCASException {
+	public String requestToJson(TRequest request) throws MCASException {
 		try {
 			JSONObject json = new JSONObject();
 			json.put("id", request.getId());

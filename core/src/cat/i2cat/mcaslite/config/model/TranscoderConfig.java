@@ -1,7 +1,7 @@
 package cat.i2cat.mcaslite.config.model;
 
-import java.io.Serializable;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -21,10 +21,9 @@ import cat.i2cat.mcaslite.management.FileEventProcessor;
 
 
 @Entity
-@Table(name = "transcoConfig")
-public class TranscoderConfig implements Serializable {
+@Table(name = "tConfig")
+public class TranscoderConfig {
 	
-	private static final long serialVersionUID = 5142563434573216847L;
 	public static final int FFMPEG 		= 1;
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -38,8 +37,8 @@ public class TranscoderConfig implements Serializable {
 	@Column(nullable = false)
 	private int timeout;
 	@ManyToMany(cascade=CascadeType.ALL)
-	@JoinTable(name="config_profile", joinColumns={@JoinColumn(name="config")}, inverseJoinColumns={@JoinColumn(name="profile")})
-	private List<TProfile> profiles;
+	@JoinTable(name="config_association", joinColumns={@JoinColumn(name="config")}, inverseJoinColumns={@JoinColumn(name="association")})
+	private List<TProjectTLevelAssociation> associations;
 	@Column
 	private boolean live = false;
 	
@@ -70,14 +69,34 @@ public class TranscoderConfig implements Serializable {
 		this.timeout = timeout;
 	}
 	
+	public List<TProjectTLevelAssociation> getAssociations() {
+		return associations;
+	}
+
+	public void setAssociations(List<TProjectTLevelAssociation> associations) {
+		this.associations = associations;
+	}
+	
 	public List<TProfile> getProfiles() {
+		List<TProfile> profiles = new ArrayList<TProfile>();
+		for (TProjectTLevelAssociation association : associations){
+			TProfile profile = association.getProfile();
+			profile.setLevels(association.getLevels());
+			profiles.add(profile);
+		}
 		return profiles;
 	}
 	
-	public void setProfiles(List<TProfile> profiles) {
-		this.profiles = profiles;
+	public void setProfiles(List<TProfile> profiles){
+		associations.clear();
+		for (TProfile profile : profiles){
+			TProjectTLevelAssociation association = new TProjectTLevelAssociation();
+			association.setProfile(profile);
+			association.setLevels(profile.getLevels());
+			associations.add(association);
+		}
 	}
-
+	
 	public String getInputWorkingDir() {
 		return inputWorkingDir;
 	}
@@ -104,12 +123,12 @@ public class TranscoderConfig implements Serializable {
 	
 	@Transient
 	public int getNumOutputs(){
-		return profiles.size();
+		return getProfiles().size();
 	}
 	
 	@Transient
 	public FileEventProcessor getFileEP(URI dst, String profileName, String title) throws MCASException{
-		for(TProfile profile : profiles){
+		for(TProfile profile : getProfiles()){
 			if (profile.getName().equals(profileName)){
 				return profile.getFileEP(dst, title);
 			}

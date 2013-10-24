@@ -9,6 +9,7 @@ import cat.i2cat.mcaslite.config.model.TDASHOptions;
 import cat.i2cat.mcaslite.config.model.THLSOptions;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.config.model.TProfile;
+import cat.i2cat.mcaslite.config.model.TProjectTLevelAssociation;
 import cat.i2cat.mcaslite.config.model.TRTMPOptions;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
 import cat.i2cat.mcaslite.exceptions.MCASException;
@@ -31,19 +32,22 @@ public class DefaultsLoader {
 		tConfig.setOutputWorkingDir(XMLReader.getStringParameter(config, "workdir.output"));
 		tConfig.setTimeout(XMLReader.getIntParameter(config, "timeout"));
 		tConfig.setLive(Boolean.parseBoolean(XMLReader.getStringParameter(config, "live")));
-		tConfig.setProfiles(getConfigProfiles(config.getChild("profiles").getChildren("profile")));
+		tConfig.setAssociations(getConfigAssociations(config.getChild("profiles").getChildren("profile")));
 		return tConfig;
 	}
 	
-	private List<TProfile> getConfigProfiles(List<Element> configProfiles) throws MCASException {
+	private List<TProjectTLevelAssociation> getConfigAssociations(List<Element> configProfiles) throws MCASException {
 		DAO<TProfile> profileDao = new DAO<TProfile>(TProfile.class);
-		List<TProfile> tProfiles = new ArrayList<TProfile>();
+		DAO<TProjectTLevelAssociation> associationDao = new DAO<TProjectTLevelAssociation>(TProjectTLevelAssociation.class);
+		List<TProjectTLevelAssociation> associations = new ArrayList<TProjectTLevelAssociation>();
 		for(Element el : configProfiles){
-			TProfile profile = profileDao.findByName(el.getAttributeValue("name"));
-			profile.setLevels(getProfileLevels(getProfileLevelsName(el)));
-			tProfiles.add(profile);
+			TProjectTLevelAssociation association = new TProjectTLevelAssociation();
+			association.setProfile(profileDao.findByName(el.getAttributeValue("name")));
+			association.setLevels(getProfileLevels(getProfileLevelsName(el)));
+			associations.add(association);
+			associationDao.save(association);
 		}
-		return tProfiles;
+		return associations;
 	}
 
 	private TProfile getProfile(Element profile) throws MCASException{

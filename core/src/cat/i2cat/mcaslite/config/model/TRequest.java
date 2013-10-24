@@ -1,6 +1,5 @@
 package cat.i2cat.mcaslite.config.model;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Date;
@@ -30,9 +29,7 @@ import cat.i2cat.mcaslite.utils.TranscoderUtils;
 
 @Entity
 @Table(name = "requests")
-public class TRequest implements Serializable {
-	
-	private static final long serialVersionUID = 4594851791163577128L;
+public class TRequest {
 	
 	@Column(nullable = false, length = 255)
 	private String src;
@@ -271,12 +268,25 @@ public class TRequest implements Serializable {
 		List<SimpleEntry<String, Integer>> uris = new ArrayList<SimpleEntry<String, Integer>>();
 		try {
 			for (TProfile profile : this.getTConfig().getProfiles()){
-				uris.addAll(profile.getUris(new URI(dst), getTitle(), this.isLive()));
+				Transco transco = getTranscoByProfile(profile.getName());
+				if (transco != null && transco.getStatus().isDone()){
+					uris.addAll(profile.getUris(new URI(dst), getTitle(), this.isLive()));
+				}
 			}
 		} catch (URISyntaxException e){
 			throw new MCASException();
 		}
 		return uris;
+	}
+	
+	@Transient
+	private Transco getTranscoByProfile(String profileName){
+		for (Transco transco : transcos){
+			if(transco.getProfileName().equals(profileName)){
+				return transco;
+			}
+		}
+		return null;
 	}
 
 	@Transient
@@ -302,9 +312,9 @@ public class TRequest implements Serializable {
 			if (transco.getStatus().hasNext()){
 				return;
 			} else {
-				cancelled = transco.getStatus().isCancelled();
-				done = transco.getStatus().isDone();
-				error = transco.getStatus().isError();
+				cancelled = cancelled || transco.getStatus().isCancelled();
+				done = done || transco.getStatus().isDone();
+				error = error || transco.getStatus().isError();
 			}
 		}
 		if (! error && ! cancelled){
