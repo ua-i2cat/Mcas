@@ -18,8 +18,6 @@ import cat.i2cat.mcaslite.utils.MediaUtils;
 @DiscriminatorValue("RTMP")
 public class TRTMPOptions extends TProfile {
 
-	private static final long serialVersionUID = 1L;
-	
 	@Column
 	private String domain;
 	@Column

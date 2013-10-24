@@ -1,14 +1,12 @@
 package cat.i2cat.mcaslite.config.model;
 
 import java.io.File;
-import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -19,24 +17,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
+import javax.persistence.Table;
 
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileEventProcessor;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 
 @Entity
+@Table(name = "tProfiles")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(
     name="type", 
     discriminatorType = DiscriminatorType.STRING
 )
 @DiscriminatorValue("Default")
-public class TProfile implements Serializable{
-
-	private static final long serialVersionUID = 4031066984726638669L;
+public class TProfile {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
@@ -50,8 +46,7 @@ public class TProfile implements Serializable{
 	private String aCodec;
 	@Column(nullable = false, length = 100)
 	private String additionalFlags;
-	@ManyToMany(cascade=CascadeType.ALL)
-	@JoinTable(name="profile_level", joinColumns={@JoinColumn(name="profile")}, inverseJoinColumns={@JoinColumn(name="level")})
+	@Transient
 	protected List<TLevel> levels;
 	
 	public List<TLevel> getLevels() {

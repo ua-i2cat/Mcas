@@ -1,7 +1,5 @@
 package cat.i2cat.mcaslite.config.model;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,9 +11,7 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 
 @Entity
 @Table(name = "tLevels")
-public class TLevel implements Serializable{
-
-	private static final long serialVersionUID = -2998112001342903672L;
+public class TLevel {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
