@@ -25,7 +25,7 @@
     	<format>mpd</format>
         <vcodec>libx264</vcodec>
         <acodec></acodec>
-        <additionalFlags>-profile:v baseline -map 0 -flags -global_header</additionalFlags>
+        <additionalFlags>-profile:v baseline -preset medium -pix_fmt yuv420p</additionalFlags>
         <segDuration>1</segDuration>
         <windowLength>10</windowLength>
     </profile>

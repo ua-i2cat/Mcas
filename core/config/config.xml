@@ -36,8 +36,9 @@
 <!-- 				</profile> -->
 				<profile name="Dash">
 					<levels>
-						<level name="high" />
-						<level name="low" />
+						<level name="low640" />
+<!-- 						<level name="high" /> -->
+<!-- 						<level name="low" /> -->
 					</levels>
 				</profile>
 				<!-- <profile name="WebM"> <levels> <level name="high"/> </levels> </profile> 

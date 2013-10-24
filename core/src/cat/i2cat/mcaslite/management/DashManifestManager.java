@@ -187,7 +187,7 @@ public class DashManifestManager implements FileEventProcessor {
 				Path segment_isom = Paths.get(path.toString(), filename + (seg) + "_1.m4s");
 				uploader.upload(segment_isom);
 
-				segment.toFile().delete();
+				//segment.toFile().delete();
 				segment_isom.toFile().delete();
 
 				// TODO descomentar
