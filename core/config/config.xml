@@ -27,7 +27,7 @@
 		<cancelTryout>3</cancelTryout>
 		<retryTryout>3</retryTryout>
 	</cloud>-->
-	<callback>cat.i2cat.mcas.web.utils.WebCallback</callback>
+	<callback>cat.i2cat.mcas.web.utils.TextCallback</callback>
 	<connection></connection>
     <transcoconfigs>
         <tconfig name="default">
@@ -46,39 +46,10 @@
                 <profile name="WebM">
                 	<levels>
                 		<level name="high"/>
+                		<level name="low"/>
                 	</levels>
                 </profile>
                 <profile name="RTMP">
-                	<levels>
-                		<level name="high"/>
-                	</levels>
-                </profile>
-            </profiles>
-        </tconfig>
-        <tconfig name="all">
-            <workdir>
-                <input>input</input>
-                <output>output</output>
-            </workdir>
-            <timeout>86400</timeout>
-            <live>false</live>
-            <profiles>
-                <profile name="H264">
-                	<levels>
-                		<level name="high"/>
-                	</levels>
-                </profile>
-                <profile name="WebM">
-                	<levels>
-                		<level name="high"/>
-                	</levels>
-                </profile>
-                <profile name="Dash">
-                	<levels>
-                		<level name="high"/>
-                	</levels>
-                </profile>
-                <profile name="HLS">
                 	<levels>
                 		<level name="high"/>
                 	</levels>
@@ -93,16 +64,16 @@
             <timeout>86400</timeout>
             <live>true</live>
             <profiles>
-                <!-- <profile name="RTMP">
+                <profile name="RTMP">
                 	<levels>
                 		<level name="high"/>
                 		<level name="low"/>
                 	</levels>
-                </profile>-->
+                </profile>
                 <profile name="HLS">
                 	<levels>
                 		<level name="high"/>
-                		<!-- <level name="low"/>-->
+                		<level name="low"/>
                 	</levels>
                 </profile>
             </profiles>

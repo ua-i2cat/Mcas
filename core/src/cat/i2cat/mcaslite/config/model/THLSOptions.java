@@ -22,7 +22,7 @@ import cat.i2cat.mcaslite.utils.MediaUtils;
 @DiscriminatorValue("HLS")
 public class THLSOptions extends TProfile {
 
-	private static final long serialVersionUID = 1L;
+	//private static final long serialVersionUID = 1L;
 
 	@Column
 	private int segDuration;

@@ -9,7 +9,7 @@ public class Callback {
 		
 	}
 	
-	public String RequestToJson(TRequest request) throws MCASException{
+	public String requestToJson(TRequest request) throws MCASException{
 		throw new MCASException();
 	}
 
