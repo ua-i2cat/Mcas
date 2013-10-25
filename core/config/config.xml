@@ -45,13 +45,14 @@
                 </profile>
                 <profile name="WebM">
                 	<levels>
-                		<level name="high"/>
-                		<level name="low"/>
+                		<level name="low360"/>
                 	</levels>
                 </profile>
                 <profile name="RTMP">
                 	<levels>
                 		<level name="high"/>
+                		<level name="high360"/>
+                		<level name="low360"/>
                 	</levels>
                 </profile>
             </profiles>

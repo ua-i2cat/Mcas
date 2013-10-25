@@ -89,7 +89,7 @@ public class TranscoHandler implements Runnable {
 	public boolean putRequest(TRequest request) throws MCASException {
 		if (queue.size() < maxRequests) {
 			request.initRequest();
-			request.increaseStatus(false);
+			request.increaseStatus(true);
 			queue.put(request);
 			return true;
 		} else {
