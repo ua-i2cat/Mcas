@@ -65,7 +65,13 @@ public class Transcoder implements Runnable, Cancellable {
 				request.setTranscoStatus(transco, Status.ERROR);
 				e.printStackTrace();
 			}
-			request.updateStatus();
+			try {
+				mutex.acquire();
+				request.updateStatus();
+				mutex.release();
+			} catch (InterruptedException e) {
+				mutex.release();
+			}
 		}
 	}
 	

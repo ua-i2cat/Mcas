@@ -123,10 +123,11 @@ public class TranscoHandler implements Runnable {
 			throw new MCASException();
 		}
 		request.increaseStatus(true);
+		Semaphore mutex = new Semaphore(1,true);
 		for (int i = 0; i < request.getTranscos().size() ; i++){
 			try {
 				semaphore.acquire();
-				Transcoder transcoder = new Transcoder(request, i, semaphore, new Semaphore(1,true));
+				Transcoder transcoder = new Transcoder(request, i, semaphore, mutex);
 				(new Thread(transcoder)).start();
 				addWorkerInStack(transcoder, request.getId());
 			} catch (MCASException e) {

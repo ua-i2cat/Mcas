@@ -64,7 +64,6 @@ public class TranscoderUtils {
 		try {
 			return tConfigDao.findByName(config);
 		}catch (Exception e){
-			e.printStackTrace();
 			throw new MCASException();
 		}
 	}

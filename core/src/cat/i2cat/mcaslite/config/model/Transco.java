@@ -81,7 +81,7 @@ public class Transco {
 		this.inputFile = inputFile;
 	}
 	
-	public void setStatus(int status) throws MCASException{
+	public synchronized void setStatus(int status) throws MCASException{
 		switch(status){
 			case Status.PROCESS_C:
 				this.status.setCopying();
@@ -106,7 +106,7 @@ public class Transco {
 		}
 	}
 	
-	public Status getStatus(){
+	public synchronized Status getStatus(){
 		return status;
 	}
 }

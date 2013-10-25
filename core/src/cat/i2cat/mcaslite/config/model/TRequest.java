@@ -22,6 +22,7 @@ import javax.persistence.Transient;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileStatus;
 import cat.i2cat.mcaslite.management.LiveStatus;
+import cat.i2cat.mcaslite.management.ProcessQueue;
 import cat.i2cat.mcaslite.management.Status;
 import cat.i2cat.mcaslite.utils.DefaultsLoader;
 import cat.i2cat.mcaslite.utils.RequestUtils;
@@ -331,5 +332,6 @@ public class TRequest {
 		} else {
 			setError();
 		}
+		ProcessQueue.getInstance().remove(this);
 	}
 }
