@@ -19,6 +19,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import cat.i2cat.mcaslite.config.dao.DAO;
 import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.management.FileStatus;
 import cat.i2cat.mcaslite.management.LiveStatus;
@@ -52,7 +53,7 @@ public class TRequest {
 	@Column
 	private int iStatus;
 	
-	@Column(nullable = false, length = 1000)
+	@Column(nullable = true, length = 1000)
 	private String origin;
 	@Column
 	private Date lastModified;
@@ -332,6 +333,9 @@ public class TRequest {
 		} else {
 			setError();
 		}
-		ProcessQueue.getInstance().remove(this);
+		DAO<TRequest> requestDao = new DAO<TRequest>(TRequest.class);
+		if (ProcessQueue.getInstance().remove(this)){
+			requestDao.save(this);
+		}
 	}
 }

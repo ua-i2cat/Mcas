@@ -2,7 +2,7 @@
 <!-- config.xml -->
 <system>
     <maxreq>1000</maxreq>
-    <maxproc>2</maxproc>
+    <maxproc>1</maxproc>
     <downloader>
         <dblocksize>102400</dblocksize>
         <httptimeout>30000</httptimeout>
@@ -40,19 +40,14 @@
             <profiles>
                 <profile name="H264">
                 	<levels>
-                		<level name="high"/>
+                		<level name="std1280"/>
+                		<level name="std640"/>
                 	</levels>
                 </profile>
                 <profile name="WebM">
                 	<levels>
-                		<level name="low360"/>
-                	</levels>
-                </profile>
-                <profile name="RTMP">
-                	<levels>
-                		<level name="high"/>
-                		<level name="high360"/>
-                		<level name="low360"/>
+                		<level name="std1280"/>
+                		<level name="std640"/>
                 	</levels>
                 </profile>
             </profiles>

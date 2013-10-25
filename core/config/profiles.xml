@@ -4,7 +4,7 @@
     <profile name="H264">
         <format>mp4</format>
         <vcodec>libx264</vcodec>
-        <acodec>libfdk_aac</acodec>
+        <acodec>libfaac</acodec>
         <additionalFlags></additionalFlags>
     </profile>
     <profile name="WebM">
