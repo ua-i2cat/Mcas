@@ -129,7 +129,8 @@ public class DashManifestManager implements FileEventProcessor {
 			throws MCASException {
 		try {
 			String file = event.context().toString();
-			if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4") && (!(file.contains("init")))) {
+			if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4")
+					&& (!(file.contains("init")))) {
 				encapsulateISOM(path, file);
 			}
 		} catch (Exception e) {
@@ -171,7 +172,7 @@ public class DashManifestManager implements FileEventProcessor {
 				uploader.upload(init_file);
 				init_file.toFile().delete();
 			}
-			if (seg > 0) {				
+			if (seg > 0) {
 				Path segment = Paths.get(path.toString(), filename + (--seg)
 						+ ".mp4");
 				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ -out "
@@ -184,17 +185,18 @@ public class DashManifestManager implements FileEventProcessor {
 					e.printStackTrace();
 					throw new MCASException();
 				}
-				Path segment_isom = Paths.get(path.toString(), filename + (seg) + "_1.m4s");
+				Path segment_isom = Paths.get(path.toString(), filename + (seg)
+						+ "_1.m4s");
 				uploader.upload(segment_isom);
 
-				//segment.toFile().delete();
+				segment.toFile().delete();
 				segment_isom.toFile().delete();
+				// TODO descomentar, funciona
+				/*if (seg >= windowLength) {
+					uploader.deleteContent(filename + (seg - windowLength)
+							+ "_1.m4s");
 
-				// TODO descomentar
-				// if (seg >= windowLength /*TODO && request.getTconfig() name
-				// == live*/ )
-				// uploader.deleteContent(filename + "_" + (seg - windowLength)
-				// + ".m4s");
+				}*/
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
