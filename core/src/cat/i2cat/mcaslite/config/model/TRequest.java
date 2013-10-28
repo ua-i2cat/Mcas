@@ -328,7 +328,7 @@ public class TRequest {
 			}
 		} else if (! cancelled && error && done) {
 			setPartialError();
-		} else if (! error && cancelled){
+		} else if (cancelled){
 			setCancelled();
 		} else {
 			setError();
