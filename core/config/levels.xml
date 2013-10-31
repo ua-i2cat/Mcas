@@ -43,6 +43,13 @@
         <achannels>2</achannels>
         <maxRate>2000</maxRate>
     </level>
+        <level name="360">
+        <width>640</width>
+        <quality>32</quality>
+        <abitrate>64</abitrate>
+        <achannels>2</achannels>
+        <maxRate>1000</maxRate>
+    </level>
     <level name="high1920">
         <width>1920</width>
         <quality>20</quality>

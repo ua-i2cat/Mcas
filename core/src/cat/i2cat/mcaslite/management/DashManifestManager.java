@@ -177,8 +177,8 @@ public class DashManifestManager implements FileEventProcessor {
 		}
 		String lvls = "-l " + levnum + " " + levtmp;
 		String mpd_cmd = "i2mpd " + type + framerate + time + lvls
-			+ fmt + "-n prueba_Dash " + audioStreams + "-D "
-			+ path.toString() + File.separator;
+			+ fmt + "-n " + this.title + "_" + this.profileName + " " + audioStreams + "-D "
+			+ path.toString() + "/";
 		CommandLine commandMpd = CommandLine.parse(mpd_cmd.trim());
 		System.out.println(commandMpd);
 		try {
@@ -187,7 +187,7 @@ public class DashManifestManager implements FileEventProcessor {
 		    e.printStackTrace();
 		    throw new MCASException();
 		}
-		Path mpd_file = Paths.get(path.toString(), "prueba_Dash.mpd");
+		Path mpd_file = Paths.get(path.toString(), this.title + "_" + this.profileName + ".mpd");
 		uploader.upload(mpd_file);
 		mpd_file.toFile().delete();
 
