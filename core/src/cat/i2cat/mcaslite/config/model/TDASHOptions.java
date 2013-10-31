@@ -45,7 +45,7 @@ public class TDASHOptions extends TProfile {
 				throw new MCASException();
 			}
 		}
-		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input + " -threads 0 ";
+		String cmd = "ffmpeg " + (live && fileSrc ? "-i " : "-i ") + input + " -threads 0 ";
 		for (TLevel level : getLevels()){
 			if ((getvCodec()!= "") && (!live)){
 				cmd += " -c:v " + getvCodec() + " " + getAdditionalFlags();

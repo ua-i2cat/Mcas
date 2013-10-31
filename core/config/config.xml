@@ -36,25 +36,27 @@
                 <output>output</output>
             </workdir>
             <timeout>86400</timeout>
-            <live>false</live>
+            <live>true</live>
             <profiles>
-                <profile name="H264">
+                <profile name="Dash">
                 	<levels>
-                		<level name="high"/>
+                		<level name="1080"/>
+                		<level name="720"/>
+                		<level name="480"/>
                 	</levels>
                 </profile>
-                <profile name="WebM">
-                	<levels>
-                		<level name="high"/>
-                		<level name="low"/>
-                	</levels>
-                </profile>
-                <profile name="RTMP">
-                	<levels>
-                		<level name="high"/>
-                		<level name="std"/>
-                	</levels>
-                </profile>
+<!--                 <profile name="WebM"> -->
+<!--                 	<levels> -->
+<!--                 		<level name="high"/> -->
+<!--                 		<level name="low"/> -->
+<!--                 	</levels> -->
+<!--                 </profile> -->
+<!--                 <profile name="RTMP"> -->
+<!--                 	<levels> -->
+<!--                 		<level name="high"/> -->
+<!--                 		<level name="std"/> -->
+<!--                 	</levels> -->
+<!--                 </profile> -->
             </profiles>
         </tconfig>
         <tconfig name="live">
