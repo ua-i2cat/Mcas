@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import cat.i2cat.mcaslite.exceptions.MCASException;
 import cat.i2cat.mcaslite.utils.MediaUtils;
 import cat.i2cat.mcaslite.config.model.TLevel;
 import cat.i2cat.mcaslite.utils.Uploader;
+import cat.i2cat.mcaslite.config.model.*;
 
 public class DashManifestManager implements FileEventProcessor {
 
@@ -40,6 +42,7 @@ public class DashManifestManager implements FileEventProcessor {
 	private DefaultExecutor executor_isom;
 	private int windowLength;
 	private int segDuration;
+	private DefaultExecutor executor_mpd;
 
 	public DashManifestManager() {
 	}
@@ -58,6 +61,7 @@ public class DashManifestManager implements FileEventProcessor {
 			this.title = title;
 			this.executor_init = new DefaultExecutor();
 			this.executor_isom = new DefaultExecutor();
+			this.executor_mpd = new DefaultExecutor();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new MCASException();
@@ -158,6 +162,42 @@ public class DashManifestManager implements FileEventProcessor {
 				System.out.println("Genero Init");
 				Path init = Paths.get(path.toString(), filename);
 
+				
+				/**
+				 * usage: %s -t <live/ondemand> -r <framerate> -d
+				 * <duration/availabilityStartTime/0> -l <num_rep> <rep1, rep2,
+				 * ..., repnum_rep> -f <video/audio/both> [-n <file_name>] -a
+				 * <num_audio_streams>
+				 * 
+				 */
+				//bin/i2mpd -t live -r 13 -d 2013-10-29T16:16:49:00Z -l 3 1080 720 480 -f video -n minombre -a 0
+				
+				String type = "-t ondemand ";
+				String framerate = "-r 24 ";
+				String time = "-d PT0H0M52.21S ";;
+				String fmt = "-f video ";
+				String audioStreams = "-a 0 ";
+				int levnum = 0;
+				String levtmp = "";
+				for (String levelname : this.levels.keySet()){
+					TLevel tl = this.levels.get(levelname);
+					levnum++;
+					levtmp+= levelname + " ";
+				}
+				String lvls= "-l " + levnum + " " + levtmp; 
+				String mpd_cmd = "i2mpd " + type + framerate + time + lvls + fmt + "-n prueba_Dash " + audioStreams + "-D " + path.toString();
+				CommandLine commandMpd = CommandLine.parse(mpd_cmd.trim());
+				System.out.println(commandMpd);
+				try {
+					executor_mpd.execute(commandMpd);
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new MCASException();
+				}
+				Path mpd_file = Paths.get(path.toString(), "prueba_Dash.mpd");
+				uploader.upload(mpd_file);
+				mpd_file.toFile().delete();
+				
 				String cmd = "i2test " + init.toString();
 				CommandLine commandLine = CommandLine.parse(cmd.trim());
 				System.out.println(commandLine.toString());
@@ -167,7 +207,7 @@ public class DashManifestManager implements FileEventProcessor {
 					e.printStackTrace();
 					throw new MCASException();
 				}
-
+				
 				Path init_file = Paths.get(init.toString() + "init.mp4");
 				uploader.upload(init_file);
 				init_file.toFile().delete();
@@ -192,11 +232,12 @@ public class DashManifestManager implements FileEventProcessor {
 				segment.toFile().delete();
 				segment_isom.toFile().delete();
 				// TODO descomentar, funciona
-				/*if (seg >= windowLength) {
-					uploader.deleteContent(filename + (seg - windowLength)
-							+ "_1.m4s");
-
-				}*/
+				/*
+				 * if (seg >= windowLength) { uploader.deleteContent(filename +
+				 * (seg - windowLength) + "_1.m4s");
+				 * 
+				 * }
+				 */
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
