@@ -25,21 +25,21 @@
         <level name="1080">
         <width>1920</width>
         <quality>20</quality>
-        <abitrate>128</abitrate>
+        <abitrate>320</abitrate>
         <achannels>2</achannels>
         <maxRate>8000</maxRate>
     </level>
     <level name="720">
         <width>1280</width>
         <quality>25</quality>
-        <abitrate>96</abitrate>
+        <abitrate>192</abitrate>
         <achannels>2</achannels>
         <maxRate>4000</maxRate>
     </level>
     <level name="480">
         <width>854</width>
         <quality>32</quality>
-        <abitrate>64</abitrate>
+        <abitrate>192</abitrate>
         <achannels>2</achannels>
         <maxRate>2000</maxRate>
     </level>
