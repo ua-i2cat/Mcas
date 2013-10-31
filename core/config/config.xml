@@ -40,8 +40,8 @@
             <profiles>
                 <profile name="Dash">
                 	<levels>
-                		<level name="1080"/>
-<!--                 		<level name="720"/> -->
+<!--                 		<level name="1080"/> -->
+                		<level name="720"/>
 <!--                 		<level name="480"/> -->
                 		<level name="360"/>
                 	</levels>

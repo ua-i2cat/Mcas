@@ -162,9 +162,9 @@ public class DashManifestManager implements FileEventProcessor {
 		System.out.println("Genero Init");
 		Path init = Paths.get(path.toString(), filename);
 
-		String type = "-t ondemand ";
+		String type = "-t live ";
 		String framerate = "-r 24 ";
-		String time = "-d PT0H0M52.21S ";
+		String time = "-d 0 ";
 		;
 		String fmt = "-f video ";
 		String audioStreams = "-a 0 ";

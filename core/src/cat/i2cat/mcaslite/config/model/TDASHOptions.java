@@ -45,7 +45,7 @@ public class TDASHOptions extends TProfile {
 				throw new MCASException();
 			}
 		}
-		String cmd = "ffmpeg " + (live && fileSrc ? "-i " : "-i ") + input + " -threads 0 ";
+		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input + " -threads 0 ";
 		for (TLevel level : getLevels()){
 			if ((getvCodec()!= "") && (!live)){
 				cmd += " -c:v " + getvCodec() + " " + getAdditionalFlags();
@@ -57,7 +57,7 @@ public class TDASHOptions extends TProfile {
 			}
 			else if (getvCodec()!= "") {
 				cmd += " -vcodec " + getvCodec() + " " + getAdditionalFlags();
-				cmd += " -g 24 -r 24 -b:v " + level.getMaxRate() + "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k";
+				cmd += " -g 4 -r 4 -b:v " + level.getMaxRate() + "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k";
 			    cmd += " -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
 			    cmd += " -map 0:0 -f segment -segment_time " + getSegDuration() + " " + output + File.separator;
 			    cmd += MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "_video_%d.mp4";
