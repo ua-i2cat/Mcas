@@ -16,11 +16,39 @@
         <maxRate>4000</maxRate>
     </level>
     <level name="low">
-        <width>-1</width>
+        <width>360</width>
         <quality>32</quality>
         <abitrate>64</abitrate>
         <achannels>2</achannels>
         <maxRate>2000</maxRate>
+    </level>
+        <level name="1080">
+        <width>1920</width>
+        <quality>20</quality>
+        <abitrate>320</abitrate>
+        <achannels>2</achannels>
+        <maxRate>8000</maxRate>
+    </level>
+    <level name="720">
+        <width>1280</width>
+        <quality>25</quality>
+        <abitrate>192</abitrate>
+        <achannels>2</achannels>
+        <maxRate>4000</maxRate>
+    </level>
+    <level name="480">
+        <width>854</width>
+        <quality>32</quality>
+        <abitrate>192</abitrate>
+        <achannels>2</achannels>
+        <maxRate>2000</maxRate>
+    </level>
+        <level name="360">
+        <width>640</width>
+        <quality>32</quality>
+        <abitrate>64</abitrate>
+        <achannels>2</achannels>
+        <maxRate>1000</maxRate>
     </level>
     <level name="high1920">
         <width>1920</width>

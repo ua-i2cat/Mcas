@@ -2,7 +2,7 @@
 <!-- config.xml -->
 <system>
     <maxreq>1000</maxreq>
-    <maxproc>1</maxproc>
+    <maxproc>2</maxproc>
     <downloader>
         <dblocksize>102400</dblocksize>
         <httptimeout>30000</httptimeout>
@@ -36,20 +36,28 @@
                 <output>output</output>
             </workdir>
             <timeout>86400</timeout>
-            <live>false</live>
+            <live>true</live>
             <profiles>
-                <profile name="H264">
+                <profile name="Dash">
                 	<levels>
-                		<level name="std1280"/>
-                		<level name="std640"/>
+<!--                 		<level name="1080"/> -->
+                		<level name="720"/>
+<!--                 		<level name="480"/> -->
+                		<level name="360"/>
                 	</levels>
                 </profile>
-                <profile name="WebM">
-                	<levels>
-                		<level name="std1280"/>
-                		<level name="std640"/>
-                	</levels>
-                </profile>
+<!--                 <profile name="WebM"> -->
+<!--                 	<levels> -->
+<!--                 		<level name="high"/> -->
+<!--                 		<level name="low"/> -->
+<!--                 	</levels> -->
+<!--                 </profile> -->
+<!--                 <profile name="RTMP"> -->
+<!--                 	<levels> -->
+<!--                 		<level name="high"/> -->
+<!--                 		<level name="std"/> -->
+<!--                 	</levels> -->
+<!--                 </profile> -->
             </profiles>
         </tconfig>
         <tconfig name="live">
