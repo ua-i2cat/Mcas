@@ -33,215 +33,208 @@ import cat.i2cat.mcaslite.config.model.*;
 
 public class DashManifestManager implements FileEventProcessor {
 
-	private String output;
-	private Map<String, TLevel> levels = new HashMap<String, TLevel>();
-	private Uploader uploader;
-	private String profileName;
-	private String title;
-	private DefaultExecutor executor_init;
-	private DefaultExecutor executor_isom;
-	private int windowLength;
-	private int segDuration;
-	private DefaultExecutor executor_mpd;
+    private String output;
+    private Map<String, TLevel> levels = new HashMap<String, TLevel>();
+    private Uploader uploader;
+    private String profileName;
+    private String title;
+    private DefaultExecutor executor_init;
+    private DefaultExecutor executor_isom;
+    private int windowLength;
+    private int segDuration;
+    private DefaultExecutor executor_mpd;
 
-	public DashManifestManager() {
+    public DashManifestManager() {
+    }
+
+    public DashManifestManager(int windowLength, int segDuration, URI dst,
+	    List<TLevel> levels, String profileName, String title)
+	    throws MCASException {
+	try {
+	    this.windowLength = windowLength;
+	    for (TLevel level : levels) {
+		this.levels.put(level.getName(), level);
+	    }
+	    this.segDuration = segDuration;
+	    this.uploader = new Uploader(dst);
+	    this.profileName = profileName;
+	    this.title = title;
+	    this.executor_init = new DefaultExecutor();
+	    this.executor_isom = new DefaultExecutor();
+	    this.executor_mpd = new DefaultExecutor();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new MCASException();
 	}
+    }
 
-	public DashManifestManager(int windowLength, int segDuration, URI dst,
-			List<TLevel> levels, String profileName, String title)
-			throws MCASException {
+    public void processManifest() throws MCASException {
+	try {
+	    SAXBuilder builder = new SAXBuilder();
+	    File folder = new File(output);
+	    String mpdFile = null;
+
+	    for (File file : folder.listFiles()) {
+		if (file.getName().endsWith((".mpd"))) {
+		    mpdFile = file.getPath();
+		}
+	    }
+
+	    Document doc = (Document) builder.build(mpdFile);
+	    Element rootNode = doc.getRootElement();
+
+	    parseMpd(rootNode);
+
+	    XMLOutputter xmlOutput = new XMLOutputter();
+	    xmlOutput.setFormat(Format.getPrettyFormat());
+	    xmlOutput.output(doc, new FileWriter(mpdFile));
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new MCASException();
+	}
+    }
+
+    private void parseMpd(Element rootNode) {
+	Namespace ns = rootNode.getNamespace();
+	Element period = rootNode.getChild("Period", ns);
+	Element adaptationSet2 = new Element("AdaptationSet", ns);
+	Element contentComponent = new Element("ContentComponent", ns);
+	adaptationSet2.addContent(contentComponent);
+
+	for (Element adaptationSet : period.getChildren("AdaptationSet", ns)) {
+	    for (Element contComponent : adaptationSet.getChildren(
+		    "ContentComponent", ns)) {
+		adaptationSet.removeChild("ContentComponent", ns);
+	    }
+	    contentComponent.setAttribute("id", "1");
+	    contentComponent.setAttribute("contentType", "video");
+
+	    for (Element representation : adaptationSet.getChildren(
+		    "Representation", ns)) {
+		representation.removeAttribute("audioSamplinRate");
+		representation.removeChildren("AudioChannelConfiguration", ns);
+		adaptationSet.removeChild("Representation", ns);
+		adaptationSet2.addContent(representation);
+	    }
+	}
+	for (Attribute aS : period.getChild("AdaptationSet", ns)
+		.getAttributes()) {
+	    Attribute aS2 = aS.clone();
+	    period.getChild("AdaptationSet", ns).removeAttribute(aS2);
+	    adaptationSet2.setAttribute(aS2);
+	}
+	period.removeChildren("AdaptationSet", ns);
+	period.addContent(adaptationSet2);
+    }
+
+    @Override
+    public void eventHandle(WatchEvent<?> event, Path path)
+	    throws MCASException {
+	try {
+	    String file = event.context().toString();
+	    if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4")
+		    && (!(file.contains("init")))) {
+		encapsulateISOM(path, file);
+	    }
+	} catch (Exception e) {
+	    throw new MCASException();
+	}
+    }
+
+    private void encapsulateISOM(Path path, String file) throws MCASException {
+	try {
+	    String[] parsedName = file.split("_");
+	    String level;
+	    if (levels.containsKey(parsedName[2])) {
+		level = parsedName[2];
+	    } else {
+		throw new MCASException();
+	    }
+	    String filename = "";
+	    for (int i = 0; i < (parsedName.length - 1); i++) {
+		filename += parsedName[i] + "_";
+	    }
+	    int seg = Integer
+		    .parseInt(parsedName[parsedName.length - 1].substring(0,
+			    parsedName[parsedName.length - 1].lastIndexOf(".")));
+	    if (seg == 0) {
+		System.out.println("Genero Init");
+		Path init = Paths.get(path.toString(), filename);
+
+		String type = "-t ondemand ";
+		String framerate = "-r 24 ";
+		String time = "-d PT0H0M52.21S ";
+		;
+		String fmt = "-f video ";
+		String audioStreams = "-a 0 ";
+		int levnum = 0;
+		String levtmp = "";
+		for (String levelname : this.levels.keySet()) {
+		    this.levels.get(levelname);
+		    levnum++;
+		    levtmp += levelname + " ";
+		}
+		String lvls = "-l " + levnum + " " + levtmp;
+		String mpd_cmd = "i2mpd " + type + framerate + time + lvls
+			+ fmt + "-n prueba_Dash " + audioStreams + "-D "
+			+ path.toString() + File.separator;
+		CommandLine commandMpd = CommandLine.parse(mpd_cmd.trim());
+		System.out.println(commandMpd);
 		try {
-			this.windowLength = windowLength;
-			for (TLevel level : levels) {
-				this.levels.put(level.getName(), level);
-			}
-			this.segDuration = segDuration;
-			this.uploader = new Uploader(dst);
-			this.profileName = profileName;
-			this.title = title;
-			this.executor_init = new DefaultExecutor();
-			this.executor_isom = new DefaultExecutor();
-			this.executor_mpd = new DefaultExecutor();
+		    executor_mpd.execute(commandMpd);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new MCASException();
+		    e.printStackTrace();
+		    throw new MCASException();
 		}
-	}
+		Path mpd_file = Paths.get(path.toString(), "prueba_Dash.mpd");
+		uploader.upload(mpd_file);
+		mpd_file.toFile().delete();
 
-	public void processManifest() throws MCASException {
+		String cmd = "i2test " + init.toString();
+		CommandLine commandLine = CommandLine.parse(cmd.trim());
+		System.out.println(commandLine.toString());
 		try {
-			SAXBuilder builder = new SAXBuilder();
-			File folder = new File(output);
-			String mpdFile = null;
-
-			for (File file : folder.listFiles()) {
-				if (file.getName().endsWith((".mpd"))) {
-					mpdFile = file.getPath();
-				}
-			}
-
-			Document doc = (Document) builder.build(mpdFile);
-			Element rootNode = doc.getRootElement();
-
-			parseMpd(rootNode);
-
-			XMLOutputter xmlOutput = new XMLOutputter();
-			xmlOutput.setFormat(Format.getPrettyFormat());
-			xmlOutput.output(doc, new FileWriter(mpdFile));
-
+		    executor_init.execute(commandLine);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new MCASException();
+		    e.printStackTrace();
+		    throw new MCASException();
 		}
-	}
 
-	private void parseMpd(Element rootNode) {
-		Namespace ns = rootNode.getNamespace();
-		Element period = rootNode.getChild("Period", ns);
-		Element adaptationSet2 = new Element("AdaptationSet", ns);
-		Element contentComponent = new Element("ContentComponent", ns);
-		adaptationSet2.addContent(contentComponent);
+		Path init_file = Paths.get(init.toString() + "init.mp4");
+		uploader.upload(init_file);
+		init_file.toFile().delete();
+	    }
+	    if (seg > 0) {
+		Path segment = Paths.get(path.toString(), filename + (--seg)
+			+ ".mp4");
+		String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ -out "
+			+ path.toString() + "/out.mpd " + segment.toString();
 
-		for (Element adaptationSet : period.getChildren("AdaptationSet", ns)) {
-			for (Element contComponent : adaptationSet.getChildren(
-					"ContentComponent", ns)) {
-				adaptationSet.removeChild("ContentComponent", ns);
-			}
-			contentComponent.setAttribute("id", "1");
-			contentComponent.setAttribute("contentType", "video");
-
-			for (Element representation : adaptationSet.getChildren(
-					"Representation", ns)) {
-				representation.removeAttribute("audioSamplinRate");
-				representation.removeChildren("AudioChannelConfiguration", ns);
-				adaptationSet.removeChild("Representation", ns);
-				adaptationSet2.addContent(representation);
-			}
-		}
-		for (Attribute aS : period.getChild("AdaptationSet", ns)
-				.getAttributes()) {
-			Attribute aS2 = aS.clone();
-			period.getChild("AdaptationSet", ns).removeAttribute(aS2);
-			adaptationSet2.setAttribute(aS2);
-		}
-		period.removeChildren("AdaptationSet", ns);
-		period.addContent(adaptationSet2);
-	}
-
-	@Override
-	public void eventHandle(WatchEvent<?> event, Path path)
-			throws MCASException {
+		CommandLine commandLine = CommandLine.parse(cmd.trim());
 		try {
-			String file = event.context().toString();
-			if (event.kind().equals(ENTRY_CREATE) && file.contains(".mp4")
-					&& (!(file.contains("init")))) {
-				encapsulateISOM(path, file);
-			}
+		    executor_isom.execute(commandLine);
 		} catch (Exception e) {
-			throw new MCASException();
+		    e.printStackTrace();
+		    throw new MCASException();
 		}
+		Path segment_isom = Paths.get(path.toString(), filename + (seg)
+			+ "_1.m4s");
+		uploader.upload(segment_isom);
+
+		segment.toFile().delete();
+		segment_isom.toFile().delete();
+		// TODO descomentar, funciona
+		/*
+		 * if (seg >= windowLength) { uploader.deleteContent(filename +
+		 * (seg - windowLength) + "_1.m4s");
+		 * 
+		 * }
+		 */
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new MCASException();
 	}
-
-	private void encapsulateISOM(Path path, String file) throws MCASException {
-		try {
-			String[] parsedName = file.split("_");
-			String level;
-			if (levels.containsKey(parsedName[2])) {
-				level = parsedName[2];
-			} else {
-				throw new MCASException();
-			}
-			String filename = "";
-			for (int i = 0; i < (parsedName.length - 1); i++) {
-				filename += parsedName[i] + "_";
-			}
-			int seg = Integer
-					.parseInt(parsedName[parsedName.length - 1].substring(0,
-							parsedName[parsedName.length - 1].lastIndexOf(".")));
-			if (seg == 0) {
-				System.out.println("Genero Init");
-				Path init = Paths.get(path.toString(), filename);
-
-				
-				/**
-				 * usage: %s -t <live/ondemand> -r <framerate> -d
-				 * <duration/availabilityStartTime/0> -l <num_rep> <rep1, rep2,
-				 * ..., repnum_rep> -f <video/audio/both> [-n <file_name>] -a
-				 * <num_audio_streams>
-				 * 
-				 */
-				//bin/i2mpd -t live -r 13 -d 2013-10-29T16:16:49:00Z -l 3 1080 720 480 -f video -n minombre -a 0
-				
-				String type = "-t ondemand ";
-				String framerate = "-r 24 ";
-				String time = "-d PT0H0M52.21S ";;
-				String fmt = "-f video ";
-				String audioStreams = "-a 0 ";
-				int levnum = 0;
-				String levtmp = "";
-				for (String levelname : this.levels.keySet()){
-					TLevel tl = this.levels.get(levelname);
-					levnum++;
-					levtmp+= levelname + " ";
-				}
-				String lvls= "-l " + levnum + " " + levtmp; 
-				String mpd_cmd = "i2mpd " + type + framerate + time + lvls + fmt + "-n prueba_Dash " + audioStreams + "-D " + path.toString();
-				CommandLine commandMpd = CommandLine.parse(mpd_cmd.trim());
-				System.out.println(commandMpd);
-				try {
-					executor_mpd.execute(commandMpd);
-				} catch (Exception e) {
-					e.printStackTrace();
-					throw new MCASException();
-				}
-				Path mpd_file = Paths.get(path.toString(), "prueba_Dash.mpd");
-				uploader.upload(mpd_file);
-				mpd_file.toFile().delete();
-				
-				String cmd = "i2test " + init.toString();
-				CommandLine commandLine = CommandLine.parse(cmd.trim());
-				System.out.println(commandLine.toString());
-				try {
-					executor_init.execute(commandLine);
-				} catch (Exception e) {
-					e.printStackTrace();
-					throw new MCASException();
-				}
-				
-				Path init_file = Paths.get(init.toString() + "init.mp4");
-				uploader.upload(init_file);
-				init_file.toFile().delete();
-			}
-			if (seg > 0) {
-				Path segment = Paths.get(path.toString(), filename + (--seg)
-						+ ".mp4");
-				String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ -out "
-						+ path.toString() + "/out.mpd " + segment.toString();
-
-				CommandLine commandLine = CommandLine.parse(cmd.trim());
-				try {
-					executor_isom.execute(commandLine);
-				} catch (Exception e) {
-					e.printStackTrace();
-					throw new MCASException();
-				}
-				Path segment_isom = Paths.get(path.toString(), filename + (seg)
-						+ "_1.m4s");
-				uploader.upload(segment_isom);
-
-				segment.toFile().delete();
-				segment_isom.toFile().delete();
-				// TODO descomentar, funciona
-				/*
-				 * if (seg >= windowLength) { uploader.deleteContent(filename +
-				 * (seg - windowLength) + "_1.m4s");
-				 * 
-				 * }
-				 */
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new MCASException();
-		}
-	}
+    }
 }
