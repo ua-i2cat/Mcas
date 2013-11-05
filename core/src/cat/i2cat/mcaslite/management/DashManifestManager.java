@@ -155,27 +155,35 @@ public class DashManifestManager implements FileEventProcessor {
 	    for (int i = 0; i < (parsedName.length - 1); i++) {
 		filename += parsedName[i] + "_";
 	    }
+	    String filename_init = "";
+	    for (int i = 0; i < (parsedName.length - 2); i++) {
+		filename_init += parsedName[i] + "_";
+	    }
 	    int seg = Integer
 		    .parseInt(parsedName[parsedName.length - 1].substring(0,
 			    parsedName[parsedName.length - 1].lastIndexOf(".")));
 	    if (seg == 0) {
 		System.out.println("Genero Init");
-		Path init = Paths.get(path.toString(), filename);
-
-		String type = "-t live ";
+		Path init_uploader = Paths.get(path.toString(), filename);
+		Path init_generator = Paths.get(path.toString(), filename_init);
+		
+		String type = "-t ondemand ";
 		String framerate = "-r 24 ";
-		String time = "-d 0 ";
-		;
-		String fmt = "-f video ";
+		String time = "-d PT0H12M51.00S ";
+		
+		String fmt = "-f both ";
 		String audioStreams = "-a 0 ";
 		int levnum = 0;
-		String levtmp = "";
+		String video_levels = "";
+		String audio_levels = "";
 		for (String levelname : this.levels.keySet()) {
-		    this.levels.get(levelname);
+		    TLevel t = this.levels.get(levelname);
 		    levnum++;
-		    levtmp += levelname + " ";
+		    video_levels += levelname + " ";
+		    audio_levels += t.getaBitrate() + " ";
 		}
-		String lvls = "-l " + levnum + " " + levtmp;
+		String lvls = "-l " + levnum + " " + video_levels;
+		lvls += "-L " + levnum + " " + audio_levels;
 		String mpd_cmd = "i2mpd " + type + framerate + time + lvls
 			+ fmt + "-n " + this.title + "_" + this.profileName + " " + audioStreams + "-D "
 			+ path.toString() + "/";
@@ -191,7 +199,7 @@ public class DashManifestManager implements FileEventProcessor {
 		uploader.upload(mpd_file);
 		mpd_file.toFile().delete();
 
-		String cmd = "i2test " + init.toString();
+		String cmd = "i2test " + init_generator.toString() + " both";
 		CommandLine commandLine = CommandLine.parse(cmd.trim());
 		System.out.println(commandLine.toString());
 		try {
@@ -201,7 +209,7 @@ public class DashManifestManager implements FileEventProcessor {
 		    throw new MCASException();
 		}
 
-		Path init_file = Paths.get(init.toString() + "init.mp4");
+		Path init_file = Paths.get(init_uploader.toString() + "init.mp4");
 		uploader.upload(init_file);
 		init_file.toFile().delete();
 	    }

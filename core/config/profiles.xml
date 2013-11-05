@@ -23,7 +23,7 @@
     </profile>
     <profile name="Dash" class="DASH">
     	<format>mpd</format>
-        <vcodec></vcodec>
+        <vcodec>libx264</vcodec>
         <acodec>libfdk_aac</acodec>
         <additionalFlags>-profile:v baseline -preset medium -pix_fmt yuv420p</additionalFlags>
         <segDuration>1</segDuration>

@@ -25,7 +25,7 @@
         <level name="1080">
         <width>1920</width>
         <quality>20</quality>
-        <abitrate>320</abitrate>
+        <abitrate>256</abitrate>
         <achannels>2</achannels>
         <maxRate>8000</maxRate>
     </level>
@@ -39,14 +39,14 @@
     <level name="480">
         <width>854</width>
         <quality>32</quality>
-        <abitrate>192</abitrate>
+        <abitrate>128</abitrate>
         <achannels>2</achannels>
         <maxRate>2000</maxRate>
     </level>
         <level name="360">
         <width>640</width>
         <quality>32</quality>
-        <abitrate>64</abitrate>
+        <abitrate>96</abitrate>
         <achannels>2</achannels>
         <maxRate>1000</maxRate>
     </level>
