@@ -145,12 +145,6 @@ public class DashManifestManager implements FileEventProcessor {
     private void encapsulateISOM(Path path, String file) throws MCASException {
 	try {
 	    String[] parsedName = file.split("_");
-	    String level;
-	    if (levels.containsKey(parsedName[2])) {
-		level = parsedName[2];
-	    } else {
-		throw new MCASException();
-	    }
 	    String filename = "";
 	    for (int i = 0; i < (parsedName.length - 1); i++) {
 		filename += parsedName[i] + "_";
@@ -198,8 +192,8 @@ public class DashManifestManager implements FileEventProcessor {
 		Path mpd_file = Paths.get(path.toString(), this.title + "_" + this.profileName + ".mpd");
 		uploader.upload(mpd_file);
 		mpd_file.toFile().delete();
-
-		String cmd = "i2test " + init_generator.toString() + " both";
+		String init_fmt = "";
+		String cmd = "i2test -o " + init_generator.toString() + " -f both";
 		CommandLine commandLine = CommandLine.parse(cmd.trim());
 		System.out.println(commandLine.toString());
 		try {
