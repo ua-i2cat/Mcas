@@ -146,93 +146,99 @@ public class DashManifestManager implements FileEventProcessor {
 	try {
 	    String[] parsedName = file.split("_");
 	    String filename = "";
+	    boolean video = false, audio = false;
 	    for (int i = 0; i < (parsedName.length - 1); i++) {
-		filename += parsedName[i] + "_";
-	    }
-	    String filename_init = "";
-	    for (int i = 0; i < (parsedName.length - 2); i++) {
-		filename_init += parsedName[i] + "_";
+	    	if (parsedName[i].compareTo(new String("video")) == 0)
+	    		video = true;
+	    	if (parsedName[i].compareTo(new String("audio")) == 0)
+	    		audio = true;
+	    	filename += parsedName[i] + "_";
 	    }
 	    int seg = Integer
 		    .parseInt(parsedName[parsedName.length - 1].substring(0,
 			    parsedName[parsedName.length - 1].lastIndexOf(".")));
 	    if (seg == 0) {
-		System.out.println("Genero Init");
-		Path init_uploader = Paths.get(path.toString(), filename);
-		Path init_generator = Paths.get(path.toString(), filename_init);
-		
-		String type = "-t ondemand ";
-		String framerate = "-r 24 ";
-		String time = "-d PT0H12M51.00S ";
-		
-		String fmt = "-f both ";
-		String audioStreams = "-a 0 ";
-		int levnum = 0;
-		String video_levels = "";
-		String audio_levels = "";
-		for (String levelname : this.levels.keySet()) {
-		    TLevel t = this.levels.get(levelname);
-		    levnum++;
-		    video_levels += levelname + " ";
-		    audio_levels += t.getaBitrate() + " ";
-		}
-		String lvls = "-l " + levnum + " " + video_levels;
-		lvls += "-L " + levnum + " " + audio_levels;
-		String mpd_cmd = "i2mpd " + type + framerate + time + lvls
-			+ fmt + "-n " + this.title + "_" + this.profileName + " " + audioStreams + "-D "
-			+ path.toString() + "/";
-		CommandLine commandMpd = CommandLine.parse(mpd_cmd.trim());
-		System.out.println(commandMpd);
-		try {
-		    executor_mpd.execute(commandMpd);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new MCASException();
-		}
-		Path mpd_file = Paths.get(path.toString(), this.title + "_" + this.profileName + ".mpd");
-		uploader.upload(mpd_file);
-		mpd_file.toFile().delete();
-		String init_fmt = "";
-		String cmd = "i2test -o " + init_generator.toString() + " -f both";
-		CommandLine commandLine = CommandLine.parse(cmd.trim());
-		System.out.println(commandLine.toString());
-		try {
-		    executor_init.execute(commandLine);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new MCASException();
-		}
-
-		Path init_file = Paths.get(init_uploader.toString() + "init.mp4");
-		uploader.upload(init_file);
-		init_file.toFile().delete();
+			System.out.println("Genero Init");
+			Path init_uploader = Paths.get(path.toString(), filename);
+			Path init_generator = Paths.get(path.toString(), filename);
+			
+			String type = "-t ondemand ";
+			String framerate = "-r 24 ";
+			String time = "-d PT0H12M51.00S ";
+			
+			String fmt = "-f both ";
+			String audioStreams = "-a 0 ";
+			int levnum = 0;
+			String video_levels = "";
+			String audio_levels = "";
+			for (String levelname : this.levels.keySet()) {
+			    TLevel t = this.levels.get(levelname);
+			    levnum++;
+			    video_levels += levelname + " ";
+			    audio_levels += t.getaBitrate() + " ";
+			}
+			String lvls = "-l " + levnum + " " + video_levels;
+			lvls += "-L " + levnum + " " + audio_levels;
+			String mpd_cmd = "i2mpd " + type + framerate + time + lvls
+				+ fmt + "-n " + this.title + "_" + this.profileName + " " + audioStreams + "-D "
+				+ path.toString() + "/";
+			CommandLine commandMpd = CommandLine.parse(mpd_cmd.trim());
+			System.out.println(commandMpd);
+			try {
+			    executor_mpd.execute(commandMpd);
+			} catch (Exception e) {
+			    e.printStackTrace();
+			    throw new MCASException();
+			}
+			Path mpd_file = Paths.get(path.toString(), this.title + "_" + this.profileName + ".mpd");
+			uploader.upload(mpd_file);
+			mpd_file.toFile().delete();
+			String init_fmt = "";
+			if (video)
+				init_fmt = " -f video";
+			if (audio)
+				init_fmt = " -f audio";
+				
+			String cmd = "i2test -o " + init_generator.toString() + init_fmt;
+			CommandLine commandLine = CommandLine.parse(cmd.trim());
+			System.out.println(commandLine.toString());
+			try {
+			    executor_init.execute(commandLine);
+			} catch (Exception e) {
+			    e.printStackTrace();
+			    throw new MCASException();
+			}
+	
+			Path init_file = Paths.get(init_uploader.toString() + "init.mp4");
+			uploader.upload(init_file);
+			init_file.toFile().delete();
 	    }
 	    if (seg > 0) {
-		Path segment = Paths.get(path.toString(), filename + (--seg)
-			+ ".mp4");
-		String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ -out "
-			+ path.toString() + "/out.mpd " + segment.toString();
-
-		CommandLine commandLine = CommandLine.parse(cmd.trim());
-		try {
-		    executor_isom.execute(commandLine);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new MCASException();
-		}
-		Path segment_isom = Paths.get(path.toString(), filename + (seg)
-			+ "_1.m4s");
-		uploader.upload(segment_isom);
-
-		segment.toFile().delete();
-		segment_isom.toFile().delete();
-		// TODO descomentar, funciona
-		/*
-		 * if (seg >= windowLength) { uploader.deleteContent(filename +
-		 * (seg - windowLength) + "_1.m4s");
-		 * 
-		 * }
-		 */
+			Path segment = Paths.get(path.toString(), filename + (--seg)
+				+ ".mp4");
+			String cmd = "MP4Box -dash 1 -frag 1 -rap -frag-rap -dash-profile main -segment-name %s_ -out "
+				+ path.toString() + "/out.mpd " + segment.toString();
+	
+			CommandLine commandLine = CommandLine.parse(cmd.trim());
+			try {
+			    executor_isom.execute(commandLine);
+			} catch (Exception e) {
+			    e.printStackTrace();
+			    throw new MCASException();
+			}
+			Path segment_isom = Paths.get(path.toString(), filename + (seg)
+				+ "_1.m4s");
+			uploader.upload(segment_isom);
+	
+			segment.toFile().delete();
+			segment_isom.toFile().delete();
+			// TODO descomentar, funciona
+			/*
+			 * if (seg >= windowLength) { uploader.deleteContent(filename +
+			 * (seg - windowLength) + "_1.m4s");
+			 * 
+			 * }
+			 */
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
