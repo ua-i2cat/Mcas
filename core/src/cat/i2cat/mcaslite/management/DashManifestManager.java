@@ -171,7 +171,14 @@ public class DashManifestManager implements FileEventProcessor {
                 Integer segmentDuration = this.segDuration * timescale;
                 System.out.println("Segment Duration: " + segmentDuration);
 
-                String fmt = "-f both ";
+                String fmt = null;
+                if (video && audio)
+                	fmt = "-f both ";
+                else if (video)
+                	fmt = "-f video ";
+                else 
+                	fmt = "-f audio ";
+                
                 String audioStreams = "-a 0 ";
                 int levnum = 0;
                 String video_levels = "";
