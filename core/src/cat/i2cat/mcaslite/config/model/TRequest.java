@@ -271,7 +271,7 @@ public class TRequest {
 		try {
 			for (TProfile profile : this.getTConfig().getProfiles()){
 				Transco transco = getTranscoByProfile(profile.getName());
-				if (transco != null && transco.getStatus().isDone()){
+				if (transco != null){
 					uris.addAll(profile.getUris(new URI(dst), getTitle(), this.isLive()));
 				}
 			}
