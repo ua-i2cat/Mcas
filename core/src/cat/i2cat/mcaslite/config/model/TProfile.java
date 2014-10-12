@@ -49,9 +49,29 @@ public class TProfile implements Serializable{
 	private String aCodec;
 	@Column(nullable = false, length = 100)
 	private String additionalFlags;
+	@Column(nullable = false)
+	private int fps;
+	@Column(nullable = false)
+	private int gop;
 	@ManyToMany(cascade=CascadeType.ALL)
 	@JoinTable(name="profile_level", joinColumns={@JoinColumn(name="profile")}, inverseJoinColumns={@JoinColumn(name="level")})
 	protected List<TLevel> levels;
+	
+	public int getFps() {
+		return fps;
+	}
+
+	public void setFps(int fps) {
+		this.fps = fps;
+	}
+	
+	public int getGop() {
+		return gop;
+	}
+
+	public void setGop(int gop) {
+		this.gop = gop;
+	}
 	
 	public List<TLevel> getLevels() {
 		return levels;
@@ -116,8 +136,11 @@ public class TProfile implements Serializable{
 		List<Transco> transcos = new ArrayList<Transco>();
 		String cmd = "ffmpeg -i " + input + " -threads 0 ";
 		for (TLevel level : levels){
-			cmd += " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" + " -b:v " + level.getMaxRate();
-			cmd += "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();
+			cmd += (getGop() > 0 ? " -g " + getGop() : "");
+			cmd += (getFps() > 0 ? " -r " + getFps() : "");
+			cmd += (level.getWidth() > 0 ? " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" : "");
+			cmd += " -b:v " + level.getMaxRate() + "k";
+			cmd += " -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + "k -b:a " + level.getaBitrate() + "k ";
 			cmd += getAdditionalFlags() + " -c:v " + getvCodec() + " -c:a " + getaCodec() + " -f " + getFormat();
 			cmd += " -y " + output + File.separator + MediaUtils.fileNameMakerByLevel(title, getName(), level.getName()) + "." + getFormat();

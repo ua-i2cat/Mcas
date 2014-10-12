@@ -56,8 +56,11 @@ public class TRTMPOptions extends TProfile {
 		}
 		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input + " -threads 0 ";
 		for (TLevel level : levels){
-			cmd += (live ? " -r 15 " : "") + " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" + " -b:v " + level.getMaxRate();
-			cmd += "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();
+			cmd += (getGop() > 0 ? " -g " + getGop() : "");
+			cmd += (getFps() > 0 ? " -r " + getFps() : "");
+			cmd += (level.getWidth() > 0 ? " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" : "");
+			cmd += " -b:v " + level.getMaxRate() + "k";
+			cmd += " -maxrate " + level.getMaxRate() + "k" + " -qmin 5 -qmax 60 -crf " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + "k -b:a " + level.getaBitrate() + "k ";
 			cmd += getAdditionalFlags() + " -c:v " + getvCodec() + " -c:a " + getaCodec() + " -f " + getFormat();
 			if (! live){

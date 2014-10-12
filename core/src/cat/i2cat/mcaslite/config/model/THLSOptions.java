@@ -44,8 +44,10 @@ public class THLSOptions extends TProfile {
 		}
 		String cmd = "ffmpeg " + (live && fileSrc ? "-re -i " : "-i ") + input + " -threads 0 ";
 		for (TLevel level : getLevels()){
-			cmd += " -r 15 -g 30 -vf scale=\""+ level.getWidth() +":trunc(ow/a/2)*2\"";
-			cmd += " -b:v " + level.getMaxRate() + "k -bufsize 10000k -maxrate " + level.getMaxRate() + "k";
+			cmd += (getGop() > 0 ? " -g " + getGop() : "");
+			cmd += (getFps() > 0 ? " -r " + getFps() : "");
+			cmd += (level.getWidth() > 0 ? " -vf scale=\"" + level.getWidth() + ":trunc(ow/a/2)*2\"" : "");
+			cmd += " -b:v " + level.getMaxRate() + "k -maxrate " + level.getMaxRate() + "k";
 			cmd += " -qmin 5 -qmax 60 -crf " + level.getQuality();
 			cmd += " -ac " + level.getaChannels() + " -b:a " + level.getaBitrate() + "k ";
 			cmd += " -c:v " + getvCodec() + " -c:a " + getaCodec() + " " + getAdditionalFlags();

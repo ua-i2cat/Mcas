@@ -19,11 +19,15 @@ public class TranscoderUtils {
 	public static List<Transco> transcoBuilder(TranscoderConfig config, String id, URI src, String title) throws MCASException{
 		List<Transco> commands = new ArrayList<Transco>();
 		for(TProfile profile : config.getProfiles()){
+			String input;
+			if (config.isLive() && !src.getScheme().equals("file")){
+				input = src.toString();
+			} else {
+				input = getInput(id,config.getInputWorkingDir());
+			}
 			commands.addAll(profile.commandBuilder(
-				(config.isLive()) ? src.toString() : getInput(id,config.getInputWorkingDir()), 
-				getOutput(id, config.getOutputWorkingDir(), profile.getName()), 
-				config.isLive(),
-				title));
+				input, getOutput(id, config.getOutputWorkingDir(), profile.getName()), 
+				config.isLive(), title));
 		}
 		return commands;
 	}

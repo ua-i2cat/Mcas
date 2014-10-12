@@ -8,8 +8,8 @@ public abstract class Status {
 	public static final int QUEUED 		= 2;
 	public static final int PROCESS_M 	= 3;
 	public static final int PROCESS_T 	= 4;
-	public static final int PROCESS_MO	= 5;
-	public static final int PROCESS_L	= 6;
+	public static final int PROCESS_L	= 5;
+	public static final int PROCESS_MO	= 6;
 	public static final int DONE		= 7;
 	public static final int ERROR		= 100;
 	public static final int CANCELLED	= 101;

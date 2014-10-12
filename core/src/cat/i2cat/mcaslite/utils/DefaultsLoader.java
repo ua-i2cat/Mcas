@@ -2,12 +2,13 @@ package cat.i2cat.mcaslite.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.jdom2.Element;
 
 import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.TDASHOptions;
 import cat.i2cat.mcaslite.config.model.THLSOptions;
 import cat.i2cat.mcaslite.config.model.TLevel;
+import cat.i2cat.mcaslite.config.model.TLiveOptions;
 import cat.i2cat.mcaslite.config.model.TProfile;
 import cat.i2cat.mcaslite.config.model.TRTMPOptions;
 import cat.i2cat.mcaslite.config.model.TranscoderConfig;
@@ -45,15 +46,15 @@ public class DefaultsLoader {
 		}
 		return tProfiles;
 	}
-
+	
 	private TProfile getProfile(Element profile) throws MCASException{
 		String classAtr = profile.getAttributeValue("class");
 		if (classAtr != null && classAtr.equals("HLS")){
 			return getHLSProfile(profile);
-		} else if (classAtr != null && classAtr.equals("DASH")){
-			return getDASHProfile(profile);
 		} else if (classAtr != null && classAtr.equals("RTMP")){
 			return getRTMPProfile(profile);
+		} else if (classAtr != null && classAtr.equals("Live")){
+			return getLiveProfile(profile);
 		} else {
 			TProfile tProfile = new TProfile();
 			setStdProfile(tProfile, profile);
@@ -69,7 +70,7 @@ public class DefaultsLoader {
 		return rProfile;
 	}
 	
-	private THLSOptions getHLSProfile(Element profile) throws MCASException{
+	private THLSOptions getHLSProfile(Element profile) throws MCASException {
 		THLSOptions hProfile = new THLSOptions(); 
 		hProfile.setWindowLength(XMLReader.getIntParameter(profile, "windowLength"));
 		hProfile.setSegDuration(XMLReader.getIntParameter(profile, "segDuration"));
@@ -77,12 +78,15 @@ public class DefaultsLoader {
 		return hProfile;
 	}
 	
-	private TDASHOptions getDASHProfile(Element profile) throws MCASException{
-		TDASHOptions dProfile = new TDASHOptions();
-		dProfile.setSegDuration(XMLReader.getIntParameter(profile, "segDuration"));
-		dProfile.setFragDuration(XMLReader.getIntParameter(profile, "fragDuration"));
-		setStdProfile(dProfile, profile);
-		return dProfile;
+	private TLiveOptions getLiveProfile(Element profile) throws MCASException {
+		TLiveOptions lProfile = new TLiveOptions();
+		lProfile.setDomain(XMLReader.getStringParameter(profile, "domain"));
+		lProfile.setApplication(XMLReader.getStringParameter(profile, "application"));
+		lProfile.setWindowLength(XMLReader.getIntParameter(profile, "windowLength"));
+		lProfile.setSegDuration(XMLReader.getIntParameter(profile, "segDuration"));
+		lProfile.setRecord(Boolean.parseBoolean(XMLReader.getStringParameter(profile, "record")));
+		setStdProfile(lProfile, profile);
+		return lProfile;
 	}
 	
 	private void setStdProfile(TProfile tProfile, Element profile) throws MCASException{
@@ -91,6 +95,8 @@ public class DefaultsLoader {
 		tProfile.setvCodec(XMLReader.getStringParameter(profile, "vcodec"));
 		tProfile.setName(XMLReader.getElementName(profile));
 		tProfile.setAdditionalFlags(XMLReader.getStringParameter(profile, "additionalFlags"));
+		tProfile.setGop(XMLReader.getIntParameter(profile, "gop"));
+		tProfile.setFps(XMLReader.getIntParameter(profile, "fps"));
 	}
 	
 	private List<TLevel> getProfileLevels(List<String> profileLevels) throws MCASException{

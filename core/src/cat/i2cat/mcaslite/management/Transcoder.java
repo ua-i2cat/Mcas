@@ -63,10 +63,11 @@ public class Transcoder implements Runnable, Cancellable {
 					mediaH.inputHandle(transco.getProfileName());
 					execute(transco, request.isLive());
 				} catch (MCASException e) {
-					request.deleteTranscoded(transco);
-					queue.update(request);
-					e.printStackTrace();
-					MediaUtils.deleteFile(transco.getOutputDir());
+					if (!request.isLive()){
+						request.deleteTranscoded(transco);
+						queue.update(request);
+						MediaUtils.deleteFile(transco.getOutputDir());
+					}
 				}
 			}
 			setDone(true);
@@ -151,7 +152,7 @@ public class Transcoder implements Runnable, Cancellable {
 				case Status.PROCESS_T:
 					return cancelWorker(mayInterruptIfRunning);
 				case Status.PROCESS_L:
-					return cancelWorker(mayInterruptIfRunning);
+					return stopLiveWorker(mayInterruptIfRunning);
 				default:
 					return false;
 			}
@@ -162,6 +163,23 @@ public class Transcoder implements Runnable, Cancellable {
 		MediaUtils.clean(request);
 		if (! isDone()){
 			return stop(mayInterruptIfRunning);
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean stopLiveWorker(boolean mayInterruptIfRunning){
+		if (! isDone()){
+			if (this.executor != null) {
+				if (mayInterruptIfRunning) {
+					while (this.executor.getWatchdog().isWatching()) {
+						this.executor.getWatchdog().destroyProcess();
+					}
+				}
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return true;
 		}

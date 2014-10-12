@@ -32,7 +32,19 @@ public class MediaHandler implements Cancellable {
 
 	public void inputHandle(String profile) throws MCASException {
 		if (request.isLive()){
-			initWatcher(profile);
+			try {
+				initWatcher(profile);
+				URI uri = new URI(request.getSrc());
+				if (uri.getScheme().equals("file")){
+					copyToWorkingDir();
+				} else {
+					request.increaseStatus();
+				}
+			} catch (Exception e){
+				cancelWatcher();
+				e.printStackTrace();
+				throw new MCASException();
+			}
 		} else {
 			copyToWorkingDir();
 		}
@@ -122,6 +134,7 @@ public class MediaHandler implements Cancellable {
 	public void outputHandle(boolean stopped) throws MCASException {
 		if (request.isLive()){
 			cancelWatcher();
+			filesUpload();
 		} else if (! stopped) {
 			filesUpload();
 		}

@@ -5,36 +5,49 @@
         <format>mp4</format>
         <vcodec>libx264</vcodec>
         <acodec>libfdk_aac</acodec>
+        <gop>0</gop>
+        <fps>0</fps>
         <additionalFlags></additionalFlags>
     </profile>
     <profile name="WebM">
         <format>webm</format>
         <vcodec>libvpx</vcodec>
         <acodec>libvorbis</acodec>
+        <gop>0</gop>
+        <fps>0</fps>
         <additionalFlags> </additionalFlags>
     </profile>
     <profile name="HLS" class="HLS">
         <format>m3u8</format>
         <vcodec>libx264</vcodec>
         <acodec>libfdk_aac</acodec>
-        <additionalFlags>-profile:v baseline -map 0 -flags -global_header</additionalFlags>
+        <gop>25</gop>
+        <fps>25</fps>
+        <additionalFlags>-preset superfast -profile:v baseline -map 0 -flags -global_header</additionalFlags>
         <segDuration>3</segDuration>
         <windowLength>3</windowLength>
-    </profile>
-    <profile name="Dash" class="DASH">
-    	<format>mpd</format>
-        <vcodec>libx264</vcodec>
-        <acodec>libfdk_aac</acodec>
-        <additionalFlags></additionalFlags>
-        <segDuration>500</segDuration>
-        <fragDuration>100</fragDuration>
     </profile>
     <profile name="RTMP" class="RTMP">
         <format>flv</format>
         <vcodec>libx264</vcodec>
         <acodec>libmp3lame</acodec>
-        <additionalFlags>-ar 44100</additionalFlags>
+        <gop>25</gop>
+        <fps>25</fps>
+        <additionalFlags>-preset superfast -ar 44100</additionalFlags>
         <domain>84.88.32.55</domain>
         <application>oflaDemo</application>
+    </profile>
+    <profile name="Live" class="Live">
+        <format></format>
+        <vcodec>libx264</vcodec>
+        <acodec>libmp3lame</acodec>
+        <gop>25</gop>
+        <fps>25</fps>
+        <record>true</record>
+        <additionalFlags>-profile:v baseline -preset superfast -ar 44100</additionalFlags>
+        <domain>127.0.0.1</domain>
+        <application>i2cat</application>
+        <segDuration>3</segDuration>
+        <windowLength>3</windowLength>
     </profile> 
 </profiles>

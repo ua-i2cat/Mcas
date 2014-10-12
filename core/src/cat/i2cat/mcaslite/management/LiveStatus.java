@@ -11,8 +11,12 @@ public class LiveStatus extends Status{
 			case CREATED:
 				return QUEUED;
 			case QUEUED:
+				return PROCESS_M;
+			case PROCESS_M:
 				return PROCESS_L;
 			case PROCESS_L:
+				return PROCESS_MO;
+			case PROCESS_MO:
 				return DONE;
 			default:
 				throw new MCASException();

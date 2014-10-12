@@ -63,7 +63,7 @@
                 		<level name="high"/>
                 	</levels>
                 </profile>
-                <profile name="WebM">
+                <!-- <profile name="WebM">
                 	<levels>
                 		<level name="high"/>
                 	</levels>
@@ -77,7 +77,7 @@
                 	<levels>
                 		<level name="high"/>
                 	</levels>
-                </profile>
+                </profile>-->
             </profiles>
         </tconfig>
         <tconfig name="live">
@@ -88,10 +88,10 @@
             <timeout>86400</timeout>
             <live>true</live>
             <profiles>
-                <profile name="RTMP">
+                <profile name="Live">
                 	<levels>
                 		<level name="high"/>
-                		<level name="std"/>
+                		<!--  <level name="std"/>-->
                 		<level name="low"/>
                 	</levels>
                 </profile>
