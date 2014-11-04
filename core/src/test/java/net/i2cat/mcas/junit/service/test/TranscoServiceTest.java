@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.junit.service.test;
 
 import java.util.UUID;
@@ -231,3 +236,4 @@ public class TranscoServiceTest {
 	
 	
 }
+*/

@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.junit.suite.test;
 
 import org.junit.runner.RunWith;
@@ -28,3 +33,4 @@ import net.i2cat.mcas.junit.utils.test.UploaderTest;
 	TranscoHandlerTest.class
 })
 public class TestSuite {}
+*/

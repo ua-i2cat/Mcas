@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.test;
 
 import java.net.URI;
@@ -32,3 +37,4 @@ public static final String uri = "http://localhost:8080/MCASlite";
 		}
 	}
 }
+*/

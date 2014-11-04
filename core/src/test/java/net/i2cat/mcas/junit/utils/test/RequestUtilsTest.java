@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.junit.utils.test;
 
 import static org.junit.Assert.assertTrue;
@@ -86,3 +91,4 @@ public class RequestUtilsTest {
 	//TODO: test jsonBuilder
 
 }
+*/

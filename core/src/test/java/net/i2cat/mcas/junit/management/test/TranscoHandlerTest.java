@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.junit.management.test;
 
 import java.io.File;
@@ -145,3 +150,4 @@ class PThread implements Runnable {
 	}
 
 }
+*/

@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.test;
 
 import java.io.FileWriter;
@@ -128,3 +133,4 @@ class Producer implements Runnable {
 	
 	
 }
+*/

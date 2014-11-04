@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.test;
 
 import java.net.URI;
@@ -37,3 +42,4 @@ public class BenchmarkTest {
 		}
 	}
 }
+*/

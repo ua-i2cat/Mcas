@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.junit;
 
 import static org.junit.Assert.assertTrue;
@@ -9,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import net.i2cat.mcas.config.model.TranscoRequestV;
+import net.i2cat.mcas.config.model.TRequest;
 import net.i2cat.mcas.exceptions.MCASException;
 import net.i2cat.mcas.management.TranscoHandler;
 import static org.powermock.api.easymock.PowerMock.*;
@@ -37,6 +42,7 @@ public class TranscoHandlerTest {
 	
 	@Test
 	public void testPutEmptyQueue() throws MCASException{
-		assertTrue((new TranscoHandler()).putRequest(new TranscoRequestV()));
+		assertTrue((new TranscoHandler()).putRequest(new TRequest()));
 	}
 }
+*/

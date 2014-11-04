@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.junit.utils.test;
 
 import java.io.File;
@@ -99,3 +104,4 @@ public class TranscoderUtilsTest {
 	}
 
 }
+*/

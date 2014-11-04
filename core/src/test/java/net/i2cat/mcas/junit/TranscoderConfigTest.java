@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.junit;
 
 import static org.junit.Assert.assertNotNull;
@@ -39,3 +44,4 @@ public class TranscoderConfigTest {
 	}
 
 }
+*/

@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.junit.utils.test;
 
 import static org.junit.Assert.assertEquals;
@@ -144,3 +149,4 @@ public class MediaUtilsTest {
 	}
 
 }
+*/

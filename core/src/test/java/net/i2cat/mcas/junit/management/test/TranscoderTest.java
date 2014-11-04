@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.junit.management.test;
 
 import static org.powermock.api.easymock.PowerMock.replay;
@@ -200,3 +205,4 @@ public class TranscoderTest {
 		assertEquals(2, requestOut.getTranscoded().size());
 	}
 }
+*/

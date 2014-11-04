@@ -1,3 +1,8 @@
+/**************************************
+Test disabled as it has become obsolete
+***************************************/
+
+/*
 package net.i2cat.mcas.junit.utils.test;
 
 import java.io.BufferedInputStream;
@@ -7,14 +12,11 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URI;
 
-import junit.framework.Assert;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import net.i2cat.mcas.exceptions.MCASException;
 import net.i2cat.mcas.utils.Uploader;
@@ -94,3 +96,4 @@ public class UploaderTest {
 	}
 	
 }
+*/
