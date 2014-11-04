@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.config.model;
+package net.i2cat.mcas.config.model;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,10 +12,10 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.FileEventProcessor;
-import cat.i2cat.mcaslite.management.HLSManifestManager;
-import cat.i2cat.mcaslite.utils.MediaUtils;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.FileEventProcessor;
+import net.i2cat.mcas.management.HLSManifestManager;
+import net.i2cat.mcas.utils.MediaUtils;
 
 @Entity
 @DiscriminatorValue("HLS")

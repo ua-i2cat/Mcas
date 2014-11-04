@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit.management.test;
+package net.i2cat.mcas.junit.management.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -14,10 +14,10 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import cat.i2cat.mcaslite.config.model.TranscoRequestV;
-import cat.i2cat.mcaslite.config.model.TranscoRequestV.Status;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.TranscoQueue;
+import net.i2cat.mcas.config.model.TranscoRequestV;
+import net.i2cat.mcas.config.model.TranscoRequestV.Status;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.TranscoQueue;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(TranscoQueue.class)

@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.management;
+package net.i2cat.mcas.management;
 
 public interface Cancellable {
 

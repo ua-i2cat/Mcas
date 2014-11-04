@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.management;
+package net.i2cat.mcas.management;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,10 +18,10 @@ import java.util.Map;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 
-import cat.i2cat.mcaslite.config.model.TLevel;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.Uploader;
+import net.i2cat.mcas.config.model.TLevel;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.utils.MediaUtils;
+import net.i2cat.mcas.utils.Uploader;
 
 public class HLSManifestManager implements FileEventProcessor {
 	private int windowLength;

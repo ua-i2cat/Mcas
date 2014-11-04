@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.management;
+package net.i2cat.mcas.management;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,13 +6,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.Downloader;
-import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.Uploader;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.TRequest;
+import net.i2cat.mcas.config.model.Transco;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.utils.Downloader;
+import net.i2cat.mcas.utils.MediaUtils;
+import net.i2cat.mcas.utils.Uploader;
 
 public class MediaHandler implements Cancellable {
 

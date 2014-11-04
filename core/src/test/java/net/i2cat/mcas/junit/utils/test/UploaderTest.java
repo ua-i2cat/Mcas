@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit.utils.test;
+package net.i2cat.mcas.junit.utils.test;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -16,8 +16,8 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.Uploader;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.utils.Uploader;
 
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.createMock;

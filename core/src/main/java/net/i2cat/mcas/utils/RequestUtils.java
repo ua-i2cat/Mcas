@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.utils;
+package net.i2cat.mcas.utils;
 
 import java.io.File;
 import java.net.HttpURLConnection;
@@ -10,14 +10,14 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.TLevel;
-import cat.i2cat.mcaslite.config.model.TProfile;
-import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.Callback;
-import cat.i2cat.mcaslite.management.ClassFactory;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.TLevel;
+import net.i2cat.mcas.config.model.TProfile;
+import net.i2cat.mcas.config.model.TRequest;
+import net.i2cat.mcas.config.model.TranscoderConfig;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.Callback;
+import net.i2cat.mcas.management.ClassFactory;
 
 
 public class RequestUtils {

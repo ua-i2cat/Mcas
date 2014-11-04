@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit.service.test;
+package net.i2cat.mcas.junit.service.test;
 
 import java.util.UUID;
 
@@ -16,11 +16,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.TranscoHandler;
-import cat.i2cat.mcaslite.service.TranscoService;
-import cat.i2cat.mcaslite.utils.RequestUtils;
+import net.i2cat.mcas.config.model.TRequest;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.TranscoHandler;
+import net.i2cat.mcas.service.TranscoService;
+import net.i2cat.mcas.utils.RequestUtils;
 
 import static org.powermock.api.easymock.PowerMock.resetAll;
 import static org.powermock.api.easymock.PowerMock.expectNew;

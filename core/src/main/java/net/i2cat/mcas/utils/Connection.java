@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.utils;
+package net.i2cat.mcas.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Paths;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
+import net.i2cat.mcas.exceptions.MCASException;
 
 public class Connection  {
 

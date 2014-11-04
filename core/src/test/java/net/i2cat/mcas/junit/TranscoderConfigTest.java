@@ -1,18 +1,17 @@
-package cat.i2cat.mcaslite.junit;
+package net.i2cat.mcas.junit;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.TLevel;
-import cat.i2cat.mcaslite.config.model.TProfile;
-import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.exceptions.MCASException;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.TLevel;
+import net.i2cat.mcas.config.model.TProfile;
+import net.i2cat.mcas.config.model.TranscoderConfig;
+import net.i2cat.mcas.exceptions.MCASException;
 
 public class TranscoderConfigTest {
 	
@@ -22,19 +21,20 @@ public class TranscoderConfigTest {
 		try {
 			TranscoderConfig config = tConfigDao.findById(1);
 			assertNotNull(config);
-			List<TLevel> levels = config.getLevels();
-			for(TLevel level : levels){
-				assertNotNull(level);
-			}
 			List<TProfile> profiles = config.getProfiles();
 			for (TProfile profile : profiles){
 				assertNotNull(profile);
+
+				List<TLevel> levels = profile.getLevels();
+				for(TLevel level : levels){
+					assertNotNull(level);
+				}
 			}
 			config = tConfigDao.findByName("default");
 			assertNotNull(config);
 		} catch (MCASException e) {
 			e.printStackTrace();
-			Assert.fail();
+			fail();
 		}  
 	}
 

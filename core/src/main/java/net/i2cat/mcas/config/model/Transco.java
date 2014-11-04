@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.config.model;
+package net.i2cat.mcas.config.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

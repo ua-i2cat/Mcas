@@ -1,6 +1,6 @@
-package cat.i2cat.mcaslite.management;
+package net.i2cat.mcas.management;
 
-import cat.i2cat.mcaslite.utils.Connection;
+import net.i2cat.mcas.utils.Connection;
 
 public class ClassFactory {
 	 
@@ -12,7 +12,7 @@ public class ClassFactory {
 	 
 	    try {
 	    	if( className!=null && !className.isEmpty()) {
-	    		Class cls = Class.forName(className);
+	    		Class<?> cls = Class.forName(className);
 	            cb = (Callback)cls.newInstance();
 	        } else {
 	        	cb = new Callback();
@@ -30,7 +30,7 @@ public class ClassFactory {
 	 
 	    try {
 	    	if( className!=null && !className.isEmpty()) {
-	    		Class cls = Class.forName(className);
+	    		Class<?> cls = Class.forName(className);
 	            conn = (Connection)cls.newInstance();
 	        } else {
 	        	conn = new Connection();

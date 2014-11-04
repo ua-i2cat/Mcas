@@ -1,6 +1,6 @@
-package cat.i2cat.mcaslite.management;
+package net.i2cat.mcas.management;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
+import net.i2cat.mcas.exceptions.MCASException;
 
 public class LiveStatus extends Status{
 

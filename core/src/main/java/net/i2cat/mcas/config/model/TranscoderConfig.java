@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.config.model;
+package net.i2cat.mcas.config.model;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -16,8 +16,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.FileEventProcessor;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.FileEventProcessor;
 
 
 @Entity

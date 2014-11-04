@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.config.dao;
+package net.i2cat.mcas.config.dao;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
+import net.i2cat.mcas.exceptions.MCASException;
 
 public class DAO<T> {
 	

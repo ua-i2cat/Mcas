@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.management;
+package net.i2cat.mcas.management;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -10,13 +10,13 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.TProfile;
-import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.TranscoderUtils;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.TProfile;
+import net.i2cat.mcas.config.model.TRequest;
+import net.i2cat.mcas.config.model.Transco;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.utils.MediaUtils;
+import net.i2cat.mcas.utils.TranscoderUtils;
 
 public class Transcoder implements Runnable, Cancellable {
 

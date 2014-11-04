@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.utils;
+package net.i2cat.mcas.utils;
 
 import java.io.File;
 import java.net.URI;
@@ -8,11 +8,11 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.TProfile;
-import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.exceptions.MCASException;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.TProfile;
+import net.i2cat.mcas.config.model.Transco;
+import net.i2cat.mcas.config.model.TranscoderConfig;
+import net.i2cat.mcas.exceptions.MCASException;
 
 public class TranscoderUtils {
 	

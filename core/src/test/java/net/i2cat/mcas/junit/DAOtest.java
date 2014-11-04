@@ -1,17 +1,14 @@
-package cat.i2cat.mcaslite.junit;
+package net.i2cat.mcas.junit;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.UUID;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
-
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.TranscoRequestV;
-import cat.i2cat.mcaslite.exceptions.MCASException;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.TranscoRequestV;
+import net.i2cat.mcas.exceptions.MCASException;
 
 public class DAOtest {
 
@@ -25,7 +22,7 @@ public class DAOtest {
 			assertEquals(request.getIdStr(), id);
 		} catch (MCASException e) {
 			e.printStackTrace();
-			Assert.fail();
+			fail();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.config.model;
+package net.i2cat.mcas.config.model;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -19,13 +19,13 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.FileStatus;
-import cat.i2cat.mcaslite.management.LiveStatus;
-import cat.i2cat.mcaslite.management.Status;
-import cat.i2cat.mcaslite.utils.DefaultsLoader;
-import cat.i2cat.mcaslite.utils.RequestUtils;
-import cat.i2cat.mcaslite.utils.TranscoderUtils;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.FileStatus;
+import net.i2cat.mcas.management.LiveStatus;
+import net.i2cat.mcas.management.Status;
+import net.i2cat.mcas.utils.DefaultsLoader;
+import net.i2cat.mcas.utils.RequestUtils;
+import net.i2cat.mcas.utils.TranscoderUtils;
 
 @Entity
 @Table(name = "requests")

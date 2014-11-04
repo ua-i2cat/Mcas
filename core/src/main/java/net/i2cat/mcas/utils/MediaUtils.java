@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.utils;
+package net.i2cat.mcas.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +9,10 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.exceptions.MCASException;
+import net.i2cat.mcas.config.model.TRequest;
+import net.i2cat.mcas.config.model.Transco;
+import net.i2cat.mcas.config.model.TranscoderConfig;
+import net.i2cat.mcas.exceptions.MCASException;
 
 public class MediaUtils {
 	

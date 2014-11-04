@@ -1,9 +1,9 @@
-package cat.i2cat.mcaslite.management;
+package net.i2cat.mcas.management;
 
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
+import net.i2cat.mcas.exceptions.MCASException;
 
 public interface FileEventProcessor {
 

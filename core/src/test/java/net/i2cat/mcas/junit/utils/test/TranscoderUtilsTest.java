@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit.utils.test;
+package net.i2cat.mcas.junit.utils.test;
 
 import java.io.File;
 import java.util.List;
@@ -12,12 +12,12 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.DefaultsUtils;
-import cat.i2cat.mcaslite.utils.TranscoderUtils;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.Transco;
+import net.i2cat.mcas.config.model.TranscoderConfig;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.utils.DefaultsUtils;
+import net.i2cat.mcas.utils.TranscoderUtils;
 
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.createMock;
@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(TranscoderUtils.class)
-@SuppressStaticInitializationFor("cat.i2cat.mcaslite.config.dao.DAO")
+@SuppressStaticInitializationFor("net.i2cat.mcas.config.dao.DAO")
 public class TranscoderUtilsTest {
 	
 	private static String DEFAULT = "default";

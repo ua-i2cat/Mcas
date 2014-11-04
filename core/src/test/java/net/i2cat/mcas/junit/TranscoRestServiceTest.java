@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit;
+package net.i2cat.mcas.junit;
 
 import java.net.URI;
 import java.util.UUID;

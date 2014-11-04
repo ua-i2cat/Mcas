@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit.utils.test;
+package net.i2cat.mcas.junit.utils.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -13,12 +13,12 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.DefaultsUtils;
-import cat.i2cat.mcaslite.utils.MediaUtils;
+import net.i2cat.mcas.config.model.TRequest;
+import net.i2cat.mcas.config.model.Transco;
+import net.i2cat.mcas.config.model.TranscoderConfig;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.utils.DefaultsUtils;
+import net.i2cat.mcas.utils.MediaUtils;
 
 import static org.powermock.api.easymock.PowerMock.resetAll;
 import static org.powermock.api.easymock.PowerMock.expectNew;

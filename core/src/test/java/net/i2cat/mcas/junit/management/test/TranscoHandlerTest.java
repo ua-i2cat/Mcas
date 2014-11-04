@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit.management.test;
+package net.i2cat.mcas.junit.management.test;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,20 +32,20 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.anyObject;
 import static org.junit.Assert.assertTrue;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.ApplicationConfig;
-import cat.i2cat.mcaslite.config.model.TranscoRequestV;
-import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.TranscoHandler;
-import cat.i2cat.mcaslite.management.TranscoQueue;
-import cat.i2cat.mcaslite.utils.DefaultsUtils;
-import cat.i2cat.mcaslite.utils.Downloader;
-import cat.i2cat.mcaslite.utils.Uploader;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.ApplicationConfig;
+import net.i2cat.mcas.config.model.TranscoRequestV;
+import net.i2cat.mcas.config.model.TranscoderConfig;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.TranscoHandler;
+import net.i2cat.mcas.management.TranscoQueue;
+import net.i2cat.mcas.utils.DefaultsUtils;
+import net.i2cat.mcas.utils.Downloader;
+import net.i2cat.mcas.utils.Uploader;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({TranscoHandler.class, DefaultsUtils.class})
-@SuppressStaticInitializationFor("cat.i2cat.mcaslite.config.dao.DAO")
+@SuppressStaticInitializationFor("net.i2cat.mcas.config.dao.DAO")
 public class TranscoHandlerTest {
 	
 	private TranscoHandler transcoHandle;

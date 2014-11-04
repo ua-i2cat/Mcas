@@ -1,18 +1,18 @@
-package cat.i2cat.mcaslite.utils;
+package net.i2cat.mcas.utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom2.Element;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.THLSOptions;
-import cat.i2cat.mcaslite.config.model.TLevel;
-import cat.i2cat.mcaslite.config.model.TLiveOptions;
-import cat.i2cat.mcaslite.config.model.TProfile;
-import cat.i2cat.mcaslite.config.model.TRTMPOptions;
-import cat.i2cat.mcaslite.config.model.TranscoderConfig;
-import cat.i2cat.mcaslite.exceptions.MCASException;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.THLSOptions;
+import net.i2cat.mcas.config.model.TLevel;
+import net.i2cat.mcas.config.model.TLiveOptions;
+import net.i2cat.mcas.config.model.TProfile;
+import net.i2cat.mcas.config.model.TRTMPOptions;
+import net.i2cat.mcas.config.model.TranscoderConfig;
+import net.i2cat.mcas.exceptions.MCASException;
 
 
 public class DefaultsLoader {

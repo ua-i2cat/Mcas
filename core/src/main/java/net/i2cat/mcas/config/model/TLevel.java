@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.config.model;
+package net.i2cat.mcas.config.model;
 
 import java.io.Serializable;
 
@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
+import net.i2cat.mcas.exceptions.MCASException;
 
 @Entity
 @Table(name = "tLevels")

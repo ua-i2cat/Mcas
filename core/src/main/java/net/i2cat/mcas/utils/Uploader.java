@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.utils;
+package net.i2cat.mcas.utils;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -10,9 +10,9 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.Cancellable;
-import cat.i2cat.mcaslite.management.ClassFactory;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.Cancellable;
+import net.i2cat.mcas.management.ClassFactory;
 
 public class Uploader implements Cancellable {
 	

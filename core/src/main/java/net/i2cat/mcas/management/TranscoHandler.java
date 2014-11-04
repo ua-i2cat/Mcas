@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.management;
+package net.i2cat.mcas.management;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.TLevel;
-import cat.i2cat.mcaslite.config.model.TProfile;
-import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.XMLReader;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.TLevel;
+import net.i2cat.mcas.config.model.TProfile;
+import net.i2cat.mcas.config.model.TRequest;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.utils.XMLReader;
 
 
 public class TranscoHandler implements Runnable {

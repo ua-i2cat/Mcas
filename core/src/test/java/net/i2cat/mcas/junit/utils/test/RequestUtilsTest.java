@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit.utils.test;
+package net.i2cat.mcas.junit.utils.test;
 
 import static org.junit.Assert.assertTrue;
 
@@ -18,7 +18,7 @@ import static org.powermock.api.easymock.PowerMock.replayAll;
 import static org.powermock.api.easymock.PowerMock.verifyAll;
 import static org.easymock.EasyMock.expect;
 
-import cat.i2cat.mcaslite.utils.RequestUtils;
+import net.i2cat.mcas.utils.RequestUtils;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(RequestUtils.class)

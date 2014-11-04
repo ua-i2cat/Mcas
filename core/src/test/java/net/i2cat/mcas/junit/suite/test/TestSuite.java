@@ -1,18 +1,18 @@
-package cat.i2cat.mcaslite.junit.suite.test;
+package net.i2cat.mcas.junit.suite.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import cat.i2cat.mcaslite.junit.management.test.MediaHandlerTest;
-import cat.i2cat.mcaslite.junit.management.test.TranscoHandlerTest;
-import cat.i2cat.mcaslite.junit.management.test.TranscoQueueTest;
-import cat.i2cat.mcaslite.junit.management.test.TranscoderTest;
-import cat.i2cat.mcaslite.junit.service.test.TranscoServiceTest;
-import cat.i2cat.mcaslite.junit.utils.test.DownloaderTest;
-import cat.i2cat.mcaslite.junit.utils.test.MediaUtilsTest;
-import cat.i2cat.mcaslite.junit.utils.test.RequestUtilsTest;
-import cat.i2cat.mcaslite.junit.utils.test.TranscoderUtilsTest;
-import cat.i2cat.mcaslite.junit.utils.test.UploaderTest;
+import net.i2cat.mcas.junit.management.test.MediaHandlerTest;
+import net.i2cat.mcas.junit.management.test.TranscoHandlerTest;
+import net.i2cat.mcas.junit.management.test.TranscoQueueTest;
+import net.i2cat.mcas.junit.management.test.TranscoderTest;
+import net.i2cat.mcas.junit.service.test.TranscoServiceTest;
+import net.i2cat.mcas.junit.utils.test.DownloaderTest;
+import net.i2cat.mcas.junit.utils.test.MediaUtilsTest;
+import net.i2cat.mcas.junit.utils.test.RequestUtilsTest;
+import net.i2cat.mcas.junit.utils.test.TranscoderUtilsTest;
+import net.i2cat.mcas.junit.utils.test.UploaderTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({

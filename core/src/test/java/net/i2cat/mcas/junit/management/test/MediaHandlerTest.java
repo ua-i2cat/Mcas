@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit.management.test;
+package net.i2cat.mcas.junit.management.test;
 
 import java.io.File;
 import java.net.URI;
@@ -16,18 +16,18 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import cat.i2cat.mcaslite.config.dao.DAO;
-import cat.i2cat.mcaslite.config.model.Transco;
-import cat.i2cat.mcaslite.config.model.TranscoRequestV;
-import cat.i2cat.mcaslite.config.model.TranscoRequestV.Status;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.MediaHandler;
-import cat.i2cat.mcaslite.management.TranscoQueue;
-import cat.i2cat.mcaslite.utils.DefaultsUtils;
-import cat.i2cat.mcaslite.utils.Downloader;
-import cat.i2cat.mcaslite.utils.MediaUtils;
-import cat.i2cat.mcaslite.utils.TranscoderUtils;
-import cat.i2cat.mcaslite.utils.Uploader;
+import net.i2cat.mcas.config.dao.DAO;
+import net.i2cat.mcas.config.model.Transco;
+import net.i2cat.mcas.config.model.TranscoRequestV;
+import net.i2cat.mcas.config.model.TranscoRequestV.Status;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.MediaHandler;
+import net.i2cat.mcas.management.TranscoQueue;
+import net.i2cat.mcas.utils.DefaultsUtils;
+import net.i2cat.mcas.utils.Downloader;
+import net.i2cat.mcas.utils.MediaUtils;
+import net.i2cat.mcas.utils.TranscoderUtils;
+import net.i2cat.mcas.utils.Uploader;
 
 import static org.powermock.api.easymock.PowerMock.resetAll;
 import static org.powermock.api.easymock.PowerMock.expectNew;
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MediaHandler.class, TranscoQueue.class, MediaUtils.class})
-@SuppressStaticInitializationFor("cat.i2cat.mcaslite.config.dao.DAO")
+@SuppressStaticInitializationFor("net.i2cat.mcas.config.dao.DAO")
 public class MediaHandlerTest {
 
 	private static TranscoQueue queue;

@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.test;
+package net.i2cat.mcas.test;
 
 import java.net.URI;
 

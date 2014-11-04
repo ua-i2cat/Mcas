@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.exceptions;
+package net.i2cat.mcas.exceptions;
 
 public class MCASException extends Exception {
 

@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.config.model;
+package net.i2cat.mcas.config.model;
 
 import java.io.File;
 import java.io.Serializable;
@@ -22,9 +22,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.FileEventProcessor;
-import cat.i2cat.mcaslite.utils.MediaUtils;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.FileEventProcessor;
+import net.i2cat.mcas.utils.MediaUtils;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

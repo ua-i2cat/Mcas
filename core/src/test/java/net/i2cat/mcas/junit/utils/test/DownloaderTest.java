@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit.utils.test;
+package net.i2cat.mcas.junit.utils.test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,8 +22,8 @@ import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expectLastCall;
 
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.utils.Downloader;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.utils.Downloader;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Downloader.class)

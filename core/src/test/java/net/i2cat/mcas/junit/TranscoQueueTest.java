@@ -1,4 +1,4 @@
-package cat.i2cat.mcaslite.junit;
+package net.i2cat.mcas.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -10,10 +10,10 @@ import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 
-import cat.i2cat.mcaslite.config.model.TranscoRequestV;
-import cat.i2cat.mcaslite.config.model.TranscoRequestV.Status;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.TranscoQueue;
+import net.i2cat.mcas.config.model.TranscoRequestV;
+import net.i2cat.mcas.config.model.TranscoRequestV.Status;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.TranscoQueue;
 
 public class TranscoQueueTest {
 
