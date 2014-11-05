@@ -1,12 +1,12 @@
-package cat.i2cat.mcas.web.utils;
+package net.i2cat.mcas.web.utils;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.Callback;
+import net.i2cat.mcas.config.model.TRequest;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.Callback;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;

@@ -1,4 +1,4 @@
-package cat.i2cat.mcas.web.service;
+package net.i2cat.mcas.web.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,11 +22,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import cat.i2cat.mcaslite.config.model.TRequest;
-import cat.i2cat.mcaslite.exceptions.MCASException;
-import cat.i2cat.mcaslite.management.TranscoHandler;
-import cat.i2cat.mcaslite.utils.DefaultsLoader;
-import cat.i2cat.mcaslite.utils.RequestUtils;
+import net.i2cat.mcas.config.model.TRequest;
+import net.i2cat.mcas.exceptions.MCASException;
+import net.i2cat.mcas.management.TranscoHandler;
+import net.i2cat.mcas.utils.DefaultsLoader;
+import net.i2cat.mcas.utils.RequestUtils;
 
 import com.sun.jersey.spi.resource.Singleton;
 

@@ -1,4 +1,4 @@
-package cat.i2cat.mcas.web.service;
+package net.i2cat.mcas.web.service;
 
 
 import java.io.File;

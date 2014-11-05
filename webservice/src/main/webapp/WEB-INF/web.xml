@@ -10,7 +10,7 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
   <listener>
-    <listener-class>cat.i2cat.mcas.web.service.MCASInitializer</listener-class>
+    <listener-class>net.i2cat.mcas.web.service.MCASInitializer</listener-class>
   </listener>
   <servlet>
     <description>JAX-RS Tools Generated - Do not modify</description>
