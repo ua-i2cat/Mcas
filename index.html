@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Mcas : Media Content Adaptation System">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Mcas</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/ua-i2cat/mcas">View on GitHub</a>
+
+          <h1 id="project_title">Mcas</h1>
+          <h2 id="project_tagline">Media Content Adaptation System</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/ua-i2cat/mcas/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/ua-i2cat/mcas/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>
+<a id="welcome-to-mcas-home-page" class="anchor" href="#welcome-to-mcas-home-page" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to MCAS home page</h3>
+
+<p><strong>Media Content Adaptive System</strong> (MCAS) offers a cloud-based software-as-a-service video and audio transcoding solution. Using a simple RESTful API is easy to connect with providers in order to stream content over the internet to a wide range of devices.</p>
+
+<p>MCAS makes use of cloud platforms to achieve massive scalability and reach the maximum efficiency transcoding outputs in parallel.</p>
+
+<h4>
+<a id="main-features" class="anchor" href="#main-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Main Features</h4>
+
+<p>MCAS is designed to enable live or video on demand streamingusing common industry de facto standards, as is Apple HLS, Adobe RTMP or RTSP/RTP with H264 or VP8 and AAC or MP3. 
+Coding options are highly configurable via user defined presets. Presets are configured by two abstraction layers: levels and profiles. Levels are codec agnostic and they make reference to quality (aspect ratio, maximum bitrate, compression level, etc.). Profiles are codec and protocol dependent (HLS, RTMP, MP4, etc.). So a preset is a collection of profiles and levels. Presets, profiles and levels are easily configured in an external SQL database.
+MCAS workflow has been simplified to the minimal expression by the next RESTful methods:</p>
+
+<ul>
+<li>
+<strong>addTranco</strong>: given a media source (RTSP/RTP or media file), a preset and destination, starts a transcodification job.</li>
+<li>
+<strong>addCustomTransco</strong>: given a media source (RTSP/RTP or media file), a destination, a profile and level, starts a transcodification job.</li>
+<li>
+<strong>cancelTransco</strong>: given a transcodification id cancels the correspondent job if it’s still present in system.</li>
+<li>
+<strong>getOptions</strong>: it returns available profiles, levels and presets.</li>
+</ul>
+
+<h4>
+<a id="mcas-presets-profiles-and-levels" class="anchor" href="#mcas-presets-profiles-and-levels" aria-hidden="true"><span class="octicon octicon-link"></span></a>MCAS Presets, Profiles and Levels</h4>
+
+<p>Transcoding configuration is stored in a database which can be external and accessible by the MCAS system or may be internal, as an embedded database. It supports any <strong>Hibernate 4.0</strong> compatible database server. Presets, levels and profiles are defined in the database as it follows.</p>
+
+<h5>
+<a id="presets" class="anchor" href="#presets" aria-hidden="true"><span class="octicon octicon-link"></span></a>Presets</h5>
+
+<p>Presets are a collection of profiles and levels. Each preset may include one or more profiles and each profiles is related to one or more levels. Relevant profile parameters are:</p>
+
+<ul>
+<li>
+<strong>Name (string)</strong>: name of the preset, must be unique.</li>
+<li>
+<strong>Live (boolean)</strong>: a flag to notify whether it is a live stream (1) or a video on demand stream (0).</li>
+<li>
+<strong>Timeout (integer)</strong>: timeout for the transcodification process expressed in seconds.</li>
+<li>
+<strong>Profiles</strong>: list of profiles for that preset.</li>
+<li>
+<strong>Levels</strong>: list of levels for a profile.
+Basically defining a preset consists of deciding which formats (one per profile)  and which qualities (one per level) are going to be used on the output. For example, a common configuration for live streaming would be to enable HLS and RTMP profiles with high and low quality level for each profile. With this configuration the transcoding would be available in two different bitrates for each stream format (HLS and RTMP). As an example it could be written in XML as it follows:</li>
+</ul>
+
+<pre><code>&lt;preset name="example"&gt;
+    &lt;timeout&gt;86400&lt;/timeout&gt;
+    &lt;live&gt;false&lt;/live&gt;
+    &lt;profiles&gt;
+        &lt;profile name="HLS"&gt;
+            &lt;levels&gt;
+                &lt;level name="high"/&gt;
+                &lt;level name="low"/&gt;
+            &lt;/levels&gt;
+        &lt;/profile&gt;
+        &lt;profile name="RTMP"&gt;
+            &lt;levels&gt;
+                &lt;level name="high"/&gt;
+                &lt;level name="low"/&gt;
+            &lt;/levels&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+&lt;/preset&gt;
+</code></pre>
+
+<h5>
+<a id="profiles" class="anchor" href="#profiles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Profiles</h5>
+
+<p>A profile defines the codec and protocol for streaming (HLS, RTMP, MP4 or WebM). Relevant parameters are:</p>
+
+<ul>
+<li>Name (string): name of the profile.</li>
+<li>Format (string): the output format/container (mp4, webm, m3u8, flv, etc.)</li>
+<li>Video Codec (string): the video codec that is going to be used (mostly libx264 or libvpx).</li>
+<li>Audio Codec (string): the audio codec that is going to be used (libfaac, libvorbis, libmp3lame).</li>
+<li>Additional Flags (string): additional flags that may be needed depending on codec (for example “-profile:v baseline” if we are transcoding in h264 for mobile devices).
+As an example it could be written in XML as it follows:</li>
+</ul>
+
+<pre><code>&lt;profile name="H264"&gt;
+    &lt;format&gt;mp4&lt;/format&gt;
+    &lt;vcodec&gt;libx264&lt;/vcodec&gt;
+    &lt;acodec&gt;libfaac&lt;/acodec&gt;
+    &lt;additionalFlags&gt;-profile:v baseline&lt;/additionalFlags&gt;
+&lt;/profile&gt;
+</code></pre>
+
+<h5>
+<a id="levels" class="anchor" href="#levels" aria-hidden="true"><span class="octicon octicon-link"></span></a>Levels</h5>
+
+<p>A level defines some quality aspects of the desired output, like compression level, maximum bitrate or size. Relevant parameters are:</p>
+
+<ul>
+<li>
+<strong>Name (string)</strong>: name of the profile.</li>
+<li>
+<strong>Width (integer)</strong>: desired width of the output, the height is calculated in consequence in order to keep original aspect ratio. Width value of -1 is used to keep original size.</li>
+<li>
+<strong>Quality (integer)</strong>: it defines the compression level (Constant Rate Factor), it is a value from 0 to 50 where 0 means lossless compression level and 50 is the highest compression. Commonly is considered that values under 18 are considered to be visually lossless.</li>
+<li>
+<strong>Audio bitrate (integer)</strong>: it defines the constant audio bitrate, expressed in Kbits per second.</li>
+<li>
+<strong>Maxrate (integer)</strong>: it defines the maximum video rate for the output, expressed in Kbits per second.
+As an example it could be written in XML as it follows:</li>
+</ul>
+
+<pre><code>&lt;level name="high"&gt;
+    &lt;width&gt;-1&lt;/width&gt;
+    &lt;quality&gt;20&lt;/quality&gt;
+    &lt;abitrate&gt;128&lt;/abitrate&gt;
+    &lt;maxRate&gt;8000&lt;/maxRate&gt;
+&lt;/level&gt;
+</code></pre>
+
+<h4>
+<a id="product-specification" class="anchor" href="#product-specification" aria-hidden="true"><span class="octicon octicon-link"></span></a>Product Specification</h4>
+
+<h5>
+<a id="protocols" class="anchor" href="#protocols" aria-hidden="true"><span class="octicon octicon-link"></span></a>Protocols</h5>
+
+<p>RTP (RFC 3550), TCP (RFC 793), UDP (RFC 768), HTTP (RFC 2616), HLS, RTPM</p>
+
+<h5>
+<a id="video-codecs" class="anchor" href="#video-codecs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Video Codecs</h5>
+
+<p>Flash Video (FLV), H.261, H.263, H.264 / AVC / MPEG-4 AVC, MJPEG, MPEG-1/2 video, MPEG-4 part 2, VP8</p>
+
+<h5>
+<a id="audio-codecs" class="anchor" href="#audio-codecs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Audio codecs</h5>
+
+<p>G.711 µ-law (PCMU), G.711 A-law (PCMA), AAC, G.722, G.726, FLAC, Speex, Vorbis, MP3, Opus</p>
+
+<h5>
+<a id="system-management" class="anchor" href="#system-management" aria-hidden="true"><span class="octicon octicon-link"></span></a>System Management</h5>
+
+<p>Web-based controlbased on a RESTful API toenable third-partyintegration</p>
+
+<h5>
+<a id="additional-features" class="anchor" href="#additional-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Additional Features</h5>
+
+<p>Active callback on work process update via text file or a RESTful method call.
+Supports external self-defined callback class for custom integration.</p>
+
+<h5>
+<a id="operating-systems" class="anchor" href="#operating-systems" aria-hidden="true"><span class="octicon octicon-link"></span></a>Operating Systems</h5>
+
+<ul>
+<li>Linux (Ubuntu 10.04/12.04) </li>
+<li>Windows 7</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Mcas maintained by <a href="https://github.com/ua-i2cat">ua-i2cat</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
